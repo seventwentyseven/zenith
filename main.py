@@ -78,7 +78,7 @@ app.register_blueprint(api, url_prefix='/web_api')
 @app.errorhandler(404)
 async def page_not_found(e):
     # NOTE: we set the 404 status explicitly
-    return (await render_template('404.html'), 404)
+    return (await render_template('errors/404.html'), 404)
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 if __name__ == '__main__':
