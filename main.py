@@ -43,11 +43,17 @@ _version = repr(version)
 def appVersion() -> str:
     return _version
 
-_app_name = glob.config.app_name
+_app_name = glob.config.app_name_short
 @app.before_serving
 @app.template_global()
 def appName() -> str:
     return _app_name
+
+_app_name_l = glob.config.app_name_long
+@app.before_serving
+@app.template_global()
+def appNameLong() -> str:
+    return _app_name_l
 
 _captcha_key = glob.config.hCaptcha_sitekey
 @app.before_serving
@@ -78,7 +84,7 @@ app.register_blueprint(api, url_prefix='/web_api')
 @app.errorhandler(404)
 async def page_not_found(e):
     # NOTE: we set the 404 status explicitly
-    return (await render_template('errors/404.html'), 404)
+    return (await render_template('/errors/404.html'), 404)
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 if __name__ == '__main__':

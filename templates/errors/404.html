@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %} {{ appName()}} - 404 {% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col flex-1 w-full overflow-y-hidden" id="app">
+    <div class="flex-grow">
+        <div class="flex items-center justify-center" style="height: 71vh;">
+            <div class="p-8 mt-4 rounded-lg lg:mt-0 bg-hsl-15">
+                <h1 class="text-6xl font-bold text-center text-white text-opacity-60">404</h1><br>
+                    <p class="mt-2 text-xl font-semibold text-center text-white">We couldn't find page you're looking for.</p>
+                <div>
+                    <a href="/" class="inline-flex items-center justify-center w-full h-12 px-6 mt-4 font-medium tracking-wide text-white transition duration-200 rounded shadow-md bg-hsl-45 hover:bg-hsl-60 focus:shadow-outline focus:outline-none">
+                    Go back home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

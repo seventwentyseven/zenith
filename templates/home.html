@@ -5,6 +5,119 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 {% endblock %}
 
+{% macro scorecard(mode_name="undefined", icon="osu", uid="1", uname="undefined", pp="NaN", scoreid="1", setid="1")%}
+<div class="w-auto p-4 rounded-md" style="background: linear-gradient(hsl(275, 20%, 20%, 0.9), hsl(275, 20%, 20%, 0.8)), url(https://assets.ppy.sh/beatmaps/{{ setid }}/covers/cover.jpg); background-size: cover; background-position: center;">
+    <div class="flex items-center gap-2 mb-2 text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+        </svg>
+        <a href="/scores/{{ scoreid }}">
+            <h1 class="text-xl hover:text-hsl-70 transform duration-200">{{ mode_name }} Record</h1>
+        </a>
+    </div>
+    <div class="flex beatmap-stats">
+        <div class="beatmap-image">
+            <img class="w-12 h-auto mr-2 rounded-md" src="https://a.{{ domain() }}/{{ uid }}" alt="{{ uname}} Avatar"
+            onerror="this.src='/static/images/avatar_notwork.png';">
+        </div>
+        <div class="beatmap-infomation">
+            <h1 class="text-xl text-gray-300">{{ pp }} <span class="font-bold">PP</span></h1>
+        </div>
+    </div>
+    <h1 class="mt-2 text-xs text-gray-300">Played by <a href="/u/{{ uid }}"><span class="font-bold hover:text-hsl-70 transform duration-200">{{ uname }}</span></a></h1>
+</div>
+{% endmacro %}
+{% macro usercard_small(uid, uname, time_ago)%}
+<div class="mt-2">
+    <div class="flex w-full h-10 rounded-md" style="background: linear-gradient(hsl(275, 20%, 20%, 0.8), hsl(275, 20%, 20%, 0.8)), url(https://osu.ppy.sh/images/headers/profile-covers/c2.jpg);">
+        <img src="https://a.{{ domain() }}/{{ uid }}" class="w-10 h-10 rounded-md" alt="{{ uname }} Avatar"
+        onerror="this.src='/static/images/avatar_notwork.png';">
+        <div class="grid items-center w-full grid-cols-2 ml-2 font-medium text-white">
+            <a href="/u/{{ uid }}">
+                <h1 class="hover:text-hsl-70 transform duration-200">{{ uname }}</h1>
+            </a>
+            <h1 class="mr-4 text-sm font-medium text-right text-gray-300">{{ time_ago }}</h1>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
 {% block content %}
-<div class="w-10/12 md:w-auto">A motherfucking test <img src="https://i.kym-cdn.com/entries/icons/original/000/021/565/angry.JPG"></div>
+<script>
+    axios.get('https://osu.{{ domain() }}/api/get_player_count')
+    .then((response) => {
+      var online = response.data.counts.online;
+      var registered = response.data.counts.total;
+      document.getElementById('online-count').innerHTML = online;
+      document.getElementById('registered-count').innerHTML = registered;
+    });
+</script>
+
+<div class="flex flex-col flex-1 w-full overflow-y-auto overflow-x-hidden mt-3">
+    <div class="flex-grow">
+        <div class="px-4 pt-4 mx-auto lg:py-4 md:px-8 xl:px-20 sm:max-w-xl md:max-w-full">
+            <section id="start">
+                <div class="max-w-screen-xl px-6 py-12 mx-auto overflow-hidden rounded-lg lg:p-12 bg-hsl-35">
+                    <div class="z-10 lg:max-w-lg">
+                        <div>
+                            <p class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-white uppercase rounded-full te" style="background-color: hsl(263, 15%, 15%);">
+                                <span class="mr-3">
+                                    <span class="font-bold text-green-400" id="online-count">0</span> Online Users
+                                </span>
+                                <span>
+                                    <span class="font-bold text-pink-500" id="registered-count">0</span> Registered Users
+                                </span>
+                            </p>
+                        </div>
+                        <div class="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-200 sm:text-4xl sm:leading-none">
+                            {{ appNameLong() }}.tk
+                        </div>
+                        <p class="text-base text-gray-200 md:text-lg">
+                            We're another osu! private server. But, we try to do our best to bring you best experience and constant updates. Why not register and check us out?
+                        </p>
+                        {% if 'authenticated' not in session %}
+                        <div class="flex items-center mt-6">
+                            <a href="/register" class="inline-flex items-center justify-center h-12 px-6 mr-6 font-medium tracking-wide text-white transition duration-200 rounded shadow-md focus:shadow-outline focus:outline-none bg-hsl-45 hover:bg-hsl-40">
+                                Register
+                            </a>
+                            <a href="/login" class="inline-flex items-center font-semibold text-white transition-colors duration-200">
+                                Login
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+            <section id="server">
+                <div class="container relative mx-auto mt-6 lg:max-w-screen-xl">
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        <div class="lg:col-span-2" id="records">
+                            <div class ="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-2">
+                                {{ scorecard("Vanilla", "osu", "3", "def750", "727", "1", "1576056") }}
+                                {{ scorecard("Vanilla", "osu", "3", "def750", "727", "1", "1576056") }}
+                                {{ scorecard("Vanilla", "osu", "3", "def750", "727", "1", "1576056") }}
+                                {{ scorecard("Vanilla", "osu", "3", "def750", "727", "1", "1576056") }}
+                                {{ scorecard("Vanilla", "osu", "3", "def750", "727", "1", "1576056") }}
+                                {{ scorecard("Vanilla", "osu", "3", "def750", "727", "1", "1576056") }}
+                                {{ scorecard("Vanilla", "osu", "3", "def750", "727", "1", "1576056") }}
+                                {{ scorecard("Vanilla", "osu", "3", "def750", "727", "1", "1576056") }}
+                            </div>
+                        </div>
+
+                        <div class="w-full p-4 rounded-md bg-hsl-15">
+                            <div class="flex items-center gap-2 mb-3 text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                                <h1 class="text-xl">Recent Users</h1>
+                            </div>
+                            {{ usercard_small("4", "def750", "9 months ago") }}
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
 {% endblock %}
