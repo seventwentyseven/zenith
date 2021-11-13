@@ -1,5 +1,5 @@
 new Vue({
-  el: "#dashboard",
+  el: "#records",
   delimiters: ["<%", "%>"],
   data() {
       return {
