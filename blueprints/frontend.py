@@ -132,3 +132,9 @@ async def logout():
     # render login
     return await flash('success', 'Successfully logged out!', 'home')
 
+@frontend.route('/testflash')
+@frontend.route('/testflash/<status>/')
+@frontend.route('/testflash/<status>/<message>')
+async def testflash(status:str="error", message:str="Lorem Ipsum"):
+    return await flash(status, message, 'home')
+

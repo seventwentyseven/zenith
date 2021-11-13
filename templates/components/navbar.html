@@ -42,16 +42,14 @@
 
             <a href="/clans" class="hover:text-gray-300 px-3 py-2 font-medium transform hover:scale-105 transition duration-300">Clans</a>
 
-            <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
+            <div x-data="{ open: false }" @click.away="open = false" class="relative">
               <!-- Dropdown toggle button -->
-              <button @mouseover="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
-                <a href="/beatmaps">
+              <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
                   <span class="mr-2.5">Beatmaps</span> <i class="fas fa-chevron-down"></i>
-                </a>
               </button>
 
               <!-- Dropdown menu -->
-              <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 -mt-0.5 bg-hsl-15 rounded-md shadow-xl">
+              <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 mt-5 bg-hsl-15 rounded-md shadow-xl">
                   <a href="/beatmaps" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
                       Beatmap Listing
                   </a>
@@ -61,14 +59,14 @@
               </div>
             </div>
 
-            <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
+            <div x-data="{ open: false }" @click.away="open = false" class="relative">
               <!-- Dropdown toggle button -->
-              <button @mouseover="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium">
+              <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium">
                   <span class="mr-2.5">Information</span> <i class="fas fa-chevron-down"></i>
               </button>
 
               <!-- Dropdown menu -->
-              <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 -mt-0.5 bg-hsl-15 rounded-md shadow-xl">
+              <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 mt-5 bg-hsl-15 rounded-md shadow-xl">
                   <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
                       Rules
                   </a>
@@ -96,16 +94,17 @@
         </button>
 
       {% if 'authenticated' in session %}
-      <div x-data="{ open: false }" @mouseleave="open = false" class="relative">
+      <div x-data="{ open: false }" @click.away="open = false" class="relative">
         <!-- Dropdown toggle button -->
-        <button @mouseover="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto text-sm font-medium text-white">
+        <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto text-sm font-medium text-white">
             <span class="sr-only">Open user menu</span>
-            <img class="h-9 w-9 rounded-full mr-3" src="https://a.seventwentyseven.tk/4" alt="">
-            <span class="mr-2.5">def750</span> <i class="fas fa-chevron-down"></i>
+            <img class="h-9 w-9 rounded-full mr-3" src="https://a.seventwentyseven.tk/{{ session['user_data']['id'] }}" alt=""
+            onerror="this.src='/static/images/avatar_notwork.png';">
+            <span class="mr-2.5">{{ session['user_data']['name'] }}</span> <i class="fas fa-chevron-down"></i>
         </button>
 
         <!-- Dropdown menu -->
-        <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 -mt-0.5 bg-hsl-15 rounded-md shadow-xl">
+        <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 mt-5 bg-hsl-15 rounded-md shadow-xl">
             <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
                 Profile
             </a>

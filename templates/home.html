@@ -43,6 +43,7 @@
 {% endmacro %}
 
 {% block content %}
+<!-- Get users -->
 <script>
     axios.get('https://osu.{{ domain() }}/api/get_player_count')
     .then((response) => {
@@ -52,14 +53,27 @@
       document.getElementById('registered-count').innerHTML = registered;
     });
 </script>
-
+<script>
+    axios.get('https://{{ domain() }}/web_api/get_records')
+    .then((response) => {
+        var records = response.data.records
+    });
+</script>
+<script>
+    console.log(records)
+</script>
 <div class="flex flex-col flex-1 w-full overflow-y-auto overflow-x-hidden mt-3">
     <div class="flex-grow">
         <div class="px-4 pt-4 mx-auto lg:py-4 md:px-8 xl:px-20 sm:max-w-xl md:max-w-full">
+            <!-- Flash -->
+            {% if flash %}
+                {% include 'components/flash.html' %}
+            {% endif %}
+            <!-- Main section -->
             <section id="start">
                 <div class="max-w-screen-xl px-6 py-12 mx-auto overflow-hidden rounded-lg lg:p-12 bg-hsl-35">
                     <div class="z-10 lg:max-w-lg">
-                        <div>
+                        <div class="truncate">
                             <p class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-white uppercase rounded-full te" style="background-color: hsl(263, 15%, 15%);">
                                 <span class="mr-3">
                                     <span class="font-bold text-green-400" id="online-count">0</span> Online Users

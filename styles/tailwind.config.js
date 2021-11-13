@@ -6,6 +6,9 @@ module.exports = {
     darkMode: 'class',
     theme: {
       extend: {
+        borderWidth: {
+            '3': '3px',
+        },
         width: {
           '5.4/12': '45%',
           '5.7/12': '47.5%',
