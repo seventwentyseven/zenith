@@ -27,9 +27,19 @@ from objects import utils
 from objects.utils import flash, time_ago
 from objects.privileges import Privileges
 
+from const import constants as const
+from const import countries
+
 
 
 frontend = Blueprint('frontend', __name__)
+@frontend.route('/static/images/assets/<imgname>')
+async def get_image(imgname:str):
+    # Check if avatar exists
+    path = '.data/images/' f'{imgname}'
+    return await send_file(path)
+
+    return b'{"status":404}'
 
 @frontend.route('/home')
 @frontend.route('/')
@@ -138,3 +148,146 @@ async def logout():
 async def testflash(status:str="error", message:str="Lorem Ipsum"):
     return await flash(status, message, 'home')
 
+@frontend.route('/lb')
+@frontend.route('/leaderboards')
+async def leaderboard():
+    mode = request.args.get('mode', default=0, type=str)
+    mods = request.args.get('mods', default="vn", type=str)
+    page = request.args.get('page', default="1", type=str)
+    country = request.args.get('country', default=None)
+    lb_type = request.args.get('type', default="pp", type=str)
+
+    if int(mode) not in range(0, 4):
+        mode = 0
+
+    if mods.lower() not in ["vn", "rx", "ap"]:
+        mods = "vn"
+    else:
+        mods = mods.lower()
+
+    try:
+        mode = const.mode_to_gulag(int(mode), mods)
+    except:
+        return await flash('error', 'Cannot use rx with mania or ap with modes other than std', 'home')
+
+    users_count = await glob.db.fetch(
+        'SELECT COUNT(s.id) FROM stats s '
+        'LEFT JOIN users u USING (id) '
+        'WHERE s.mode=%s AND s.pp>0 AND u.priv & 1', mode, _dict=False)
+    users_count = users_count[0]
+    maxpage = int((float(users_count) + 25 - 1) // 25)
+
+    if page.isdigit == False:
+        page = 1
+    else:
+        page = int(page)
+
+    offset = (int(page)-1)*25
+    if int(page) > int(maxpage):
+        page = maxpage
+
+    if lb_type.lower() not in ["pp", "score", "plays"]:
+        lb_type = "pp"
+    elif lb_type.lower() == "score":
+        lb_type = "rscore"
+    else:
+        lb_type = lb_type.lower()
+
+    if country == None or country.lower() not in countries.country_codes:
+        country_check = ""
+    else:
+        country_check = f"AND u.country = '{country.upper()}' "
+
+    lb = await glob.db.fetchall(
+        'SELECT u.id as player_id, u.name, u.country, s.tscore, s.rscore, '
+        's.pp, s.plays, s.playtime, s.acc, s.max_combo, '
+        's.xh_count, s.x_count, s.sh_count, s.s_count, s.a_count, '
+        'c.id as clan_id, c.name as clan_name, c.tag as clan_tag '
+        'FROM stats s '
+        'LEFT JOIN users u USING (id) '
+        'LEFT JOIN clans c ON u.clan_id = c.id '
+        f'WHERE s.mode = %s AND u.priv & 1 AND s.{lb_type} > 0 '
+        f'{country_check}'
+        f'ORDER BY s.{lb_type} DESC LIMIT 25 OFFSET %s',
+        [mode, offset]
+    )
+
+    print(mode, country, page, lb_type)
+    if len(lb) == 0:
+        lb = False
+    else:
+        iteration = 0
+        for i in lb:
+            iteration += 1
+            i['rank'] = offset+iteration
+            i['x_count'] = int(i['xh_count']) + int(i['x_count'])
+            i['s_count'] = int(i['sh_count']) + int(i['s_count'])
+            i['typ_e'] = "{:,}".format(i[lb_type])
+            del(i['xh_count'])
+            del(i['sh_count'])
+
+    if int(mode) in range(0, 4):
+        mode_type = "Vanilla"
+    elif int(mode) in range(4, 7):
+        mode_type = "Relax"
+    else:
+        mode_type = "Autopilot"
+
+    if lb_type == "pp":
+        lb_type_visible = "PP"
+    elif lb_type == "plays":
+        lb_type_visible = "Playcount"
+    else:
+        lb_type_visible = lb_type.capitalize()
+
+    mode_name = {"mode": utils.convert_mode_str(const.mode_gulag_rev[int(mode)]), "type": mode_type}
+
+        #Pager
+    page_foot = []
+    if page == 1:
+        page_foot.append([page, "bg-hsl-30"])
+        page_foot.append([page+1, "bg-hsl-15-20 hover:bg-hsl-40"])
+        page_foot.append([page+2, "bg-hsl-15-20 hover:bg-hsl-40"])
+        page_foot.append([page+3, "bg-hsl-15-20 hover:bg-hsl-40"])
+        page_foot.append([page+4, "bg-hsl-15-20 hover:bg-hsl-40"])
+        page_foot.append([page-1, "bg-hsl-15-20 hover:bg-hsl-40 opacity-70"])
+        page_foot.append([page+1, "bg-hsl-15-20 hover:bg-hsl-40"])
+    elif page == 2:
+        page -= 1
+        page_foot.append([page, ""])
+        page_foot.append([page+1, " active"])
+        page_foot.append([page+2, ""])
+        page_foot.append([page+3, ""])
+        page_foot.append([page+4, ""])
+        page_foot.append([page-1, ""])
+        page_foot.append([page+1, ""])
+    elif page == maxpage:
+        page_foot.append([maxpage-4, ""])
+        page_foot.append([maxpage-3, ""])
+        page_foot.append([maxpage-2, ""])
+        page_foot.append([maxpage-1, ""])
+        page_foot.append([maxpage, " active"])
+        page_foot.append([maxpage-1, ""])
+        page_foot.append([maxpage+1, "disabled"])
+    elif page == maxpage-1:
+        page_foot.append([maxpage-4, ""])
+        page_foot.append([maxpage-3, ""])
+        page_foot.append([maxpage-2, ""])
+        page_foot.append([maxpage-1, " active"])
+        page_foot.append([maxpage, ""])
+        page_foot.append([maxpage-1, ""])
+        page_foot.append([maxpage+1, ""])
+    else:
+        page_foot.append([page-2, ""])
+        page_foot.append([page-1, ""])
+        page_foot.append([page, " active"])
+        page_foot.append([page+1, ""])
+        page_foot.append([page+2, ""])
+        page_foot.append([page-1, ""])
+        page_foot.append([page+1, ""])
+
+    return await render_template(
+        'leaderboards.html', mode=int(mode), country=country, page=page, lb_type=lb_type,
+        lb=lb, mode_name=mode_name, lb_type_visible=lb_type_visible, mods=mods,
+        mode_def=const.mode_gulag_rev[mode], max_page=maxpage, page_foot=page_foot
+    )

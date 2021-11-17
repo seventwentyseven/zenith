@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% block title %} Leaderboards {% endblock %}
+{% block header %}
+{% endblock %}
+{% block content %}
+
+{% macro user_entry(u_id="4", rank="1", name="def750", country="PL", pp_score="727", acc="72.7", ss="2", s="1", a="3", playcount="7") %}
+<tr class="truncate bg-hsl-15-20">
+    <td class="pr-2 pl-3 font-bold text-center rounded-l-xl">
+        #{{ rank }}
+    </td>
+    <td class="p-1 text-left">
+        <div class="flex items-center w-full">
+            <img src="https://a.{{ domain() }}/{{ u_id }}" class="object-cover w-10 h-10 rounded-md"
+            onerror="this.src='/static/images/avatar_notwork.png';">
+            <div class="flex gap-2 ml-3 mr-32">
+                <a href="?mode={{ mode_def }}&mods={{ mods }}&type={{ lb_type }}&page={{ page }}&country={{ country }}">
+                    <img class="cursor-pointer player-flag" src="/static/images/flags/{{ country|upper }}.png">
+                </a>
+                <a href="/u/{{ u_id }}" class="font-bold hover:text-hsl-70 transition duration-200">
+                    {{ name }}
+                </a>
+            </div>
+        </div>
+    </td>
+    <td class="py-2 font-bold text-center">
+        {{ pp_score }}{% if lb_type == 'pp' %}pp{% endif %}
+    </td>
+    <td class="py-2 text-center">
+        {{ acc }}%
+    </td>
+    <td class="py-2 text-center">
+        {{ ss }}
+    </td>
+    <td class="py-2 text-center">
+        {{ s }}
+    </td>
+    <td class="py-2 text-center {% if lb_type == 'plays' %}rounded-r-xl{% endif %}">
+        {{ a }}
+    </td>
+    {% if lb_type != 'plays' %}
+    <td class="py-2 text-center rounded-r-xl">
+        {{ playcount }}
+    </td>
+    {% endif %}
+</tr>
+{% endmacro %}
+<script>
+    var btn_mode_0 = "?mode=0&mods={{ mods }}&type={{ lb_type }}&page={{ page }}&country={{ country }}"
+    var btn_mode_1 = "?mode=1&mods={{ mods }}&type={{ lb_type }}&page={{ page }}&country={{ country }}"
+    var btn_mode_2 = "?mode=2&mods={{ mods }}&type={{ lb_type }}&page={{ page }}&country={{ country }}"
+    var btn_mode_3 = "?mode=3&mods={{ mods }}&type={{ lb_type }}&page={{ page }}&country={{ country }}"
+
+    var btn_mods_vn = "?mode={{ mode_def }}&mods=vn&type={{ lb_type }}&page={{ page }}&country={{ country }}"
+    var btn_mods_rx = "?mode={{ mode_def }}&mods=rx&type={{ lb_type }}&page={{ page }}&country={{ country }}"
+    var btn_mods_ap = "?mode={{ mode_def }}&mods=ap&type={{ lb_type }}&page={{ page }}&country={{ country }}"
+
+    var btn_type_pp = "?mode={{ mode_def }}&mods={{ mods }}&type=pp&page={{ page }}&country={{ country }}"
+    var btn_type_score = "?mode={{ mode_def }}&mods={{ mods }}&type=score&page={{ page }}&country={{ country }}"
+    var btn_type_playcount = "?mode={{ mode_def }}&mods={{ mods }}&type=plays&page={{ page }}&country={{ country }}"
+
+    var btn_reset_country = "?mode={{ mode_def }}&mods={{ mods }}&type=plays&page={{ page }}&country=None"
+</script>
+
+<section id="header">
+    <div class="max-w-screen-xl px-12 py-8 mx-auto mt-4 overflow-hidden lg:rounded-lg bg-hsl-30" style="background: linear-gradient(hsl(275, 20%, 20%, 0.7), hsl(275, 20%, 20%, 0.9)), url(/static/images/assets/zenith.jpg); background-position: center; background-size: cover; background-repeat: no-repeat;">
+        <div class="w-full">
+            <div class="grid w-full grid-cols-1 lg:grid-cols-2 h-48 my-3">
+                <div>
+                    <h2 class="flex justify-center font-sans text-xl font-medium tracking-tight text-gray-200 lg:justify-start sm:leading-none">
+                        <span><i class="mode-icon {% if mode_name['mode'] == 'std' %}osu{% else %}{{ mode_name['mode'] }}{% endif %} mr-1"></i> {{ mode_name['type'] }}</span>
+                    </h2>
+                    <h1 class="flex items-center justify-center mb-6 font-sans text-5xl font-light tracking-tight text-center text-gray-200 lg:mb-0 lg:justify-start sm:leading-none">
+                        <div class="break-all flex flex-row content-center items-center">
+                            {% if country != "None" %}<img src="/static/images/flags/{{ country|upper }}.png" class="h-8 w-12 mr-3">{% endif %}
+                            {{ lb_type_visible }} Leaderboard
+                        </div>
+                    </h1>
+                </div>
+                <div class="mt-6 lg:mt-0 flex flex-col justify-center">
+                    <div class="flex justify-center lg:justify-end h-12">
+                        <button
+                          class="{% if mods in ['rx', 'vn', 'ap'] %}bg-opacity-60 hover:bg-hsl-25{% else %}opacity-30 cursor-not-allowed{% endif %} bg-hsl-15 {% if mode in [0, 4, 7] %}bg-hsl-40{% endif %} active:bg-purple-600 px-3 py-2 rounded-l-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          onclick="document.location.href=btn_mode_0;">
+                          <i class="mode-icon osu"></i>
+                        </button>
+                        <button
+                          class="{% if mods in ['rx', 'vn'] %}bg-opacity-60 hover:bg-hsl-25{% else %}opacity-30 cursor-not-allowed{% endif %} bg-hsl-15 {% if mode in [1, 5] %}bg-hsl-40{% endif %} active:bg-purple-600 px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          {% if mods in ['vn', 'rx'] %}onclick="document.location.href=btn_mode_1;"{% endif %}>
+                          <i class="mode-icon taiko"></i>
+                        </button>
+                        <button
+                          class="{% if mods in ['rx', 'vn'] %}bg-opacity-60 hover:bg-hsl-25{% else %}opacity-30 cursor-not-allowed{% endif %} bg-hsl-15 {% if mode in [2, 6] %}bg-hsl-40{% endif %} active:bg-purple-600 px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          {% if mods in ['vn', 'rx'] %}onclick="document.location.href=btn_mode_2;"{% endif %}>
+                          <i class="mode-icon catch"></i>
+                        </button>
+                        <button
+                          class="{% if mods == 'vn' %}bg-opacity-60 hover:bg-hsl-25{% else %}opacity-30 cursor-not-allowed{% endif %} bg-hsl-15 {% if mode in [3] %}bg-hsl-40{% endif %} active:bg-purple-600 px-4 py-2 rounded-r-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          {% if mods == 'vn' %}onclick="document.location.href=btn_mode_3;"{% endif %}>
+                          <i class="mode-icon mania"></i>
+                        </button>
+                    </div>
+                    <div class="flex justify-center lg:justify-end h-12">
+                        <button
+                          class="{% if mode_def in [0, 1, 2, 3] %}bg-opacity-60 hover:bg-hsl-25{% else %}opacity-30 cursor-not-allowed{% endif %} bg-hsl-15 {% if mods == 'vn' %}bg-hsl-40{% endif %} active:bg-purple-600 px-4 py-2 rounded-l-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          {% if mode_def in [0, 1, 2, 3] %}onclick="document.location.href=btn_mods_vn;"{% endif %}>
+                          Vanilla
+                        </button>
+                        <button
+                          class="{% if mode_def in [0, 1, 2] %}bg-opacity-60 hover:bg-hsl-25{% else %}opacity-30 cursor-not-allowed{% endif %} bg-hsl-15 {% if mods == 'rx' %}bg-hsl-40{% endif %} active:bg-purple-600 px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          {% if mode_def in [0, 1, 2] %}onclick="document.location.href=btn_mods_rx;"{% endif %}>
+                          Relax
+                        </button>
+                        <button
+                          class="{% if mode_def == 0 %}bg-opacity-60 hover:bg-hsl-25{% else %}opacity-30 cursor-not-allowed{% endif %} bg-hsl-15 {% if mods == 'ap' %}bg-hsl-40{% endif %} active:bg-purple-600 px-4 py-2 rounded-r-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          {% if mode_def ==0 %}onclick="document.location.href=btn_mods_ap;"{% endif %}>
+                          Autopilot
+                        </button>
+                    </div>
+                    <div class="flex justify-center lg:justify-end h-12">
+                        <button
+                          class="bg-opacity-60 bg-hsl-15 {% if lb_type == 'pp' %}bg-hsl-40{% endif %} hover:bg-hsl-25 active:bg-purple-600 px-4 py-2 rounded-l-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          onclick="document.location.href=btn_type_pp;">
+                          PP
+                        </button>
+                        <button
+                          class="bg-opacity-60 bg-hsl-15 {% if lb_type == 'rscore' %}bg-hsl-40{% endif %} hover:bg-hsl-25 active:bg-purple-600 px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          onclick="document.location.href=btn_type_score;">
+                          Score
+                        </button>
+                        <button
+                          class="bg-opacity-60 bg-hsl-15 {% if lb_type == 'plays' %}bg-hsl-40{% endif %}  hover:bg-hsl-25 active:bg-purple-600 px-4 py-2 rounded-r-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                          type="button"
+                          onclick="document.location.href=btn_type_playcount;">
+                          Playcount
+                        </button>
+                    </div>
+                    <div class="flex justify-center lg:justify-end h-12">
+                        <button
+                            class="bg-opacity-60 bg-hsl-15 {% if lb_type == 'plays' %}bg-hsl-40{% endif %}  hover:bg-hsl-25 active:bg-purple-600 px-4 py-2 rounded-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            onclick="document.location.href=btn_reset_country;">
+                            Reset Country
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="leaderboard">
+    <div class="relative max-w-screen-xl px-12 py-4 mx-auto mt-4 overflow-hidden transition-all lg:rounded-lg bg-hsl-15">
+        <div class="relative overflow-x-auto">
+            {% if lb == False %}
+                <div class="h-24 text-center text-xl flex justify-center content-center items-center">
+                    <span>Well, there's a little problem.<br>A) There are no scores submitted in that mode.<br>B) There's something wrong with arguments (check current page link).</span>
+                </div>
+            {% else %}
+            <table class="relative table w-full overflow-x-auto text-sm text-white table-auto whitespace-nowrap border-separate" style="border-spacing: 0em 0.6em;">
+                <thead class="text-hsl-80 pb-3">
+                    <tr>
+                        <th class="px-2.5 text-center font-normal">Rank</th>
+                        <th class="w-full text-left font-normal pl-12">User</th>
+                        <th class="px-4 text-center">
+                            {% if lb_type == 'pp' %}
+                                PP
+                            {% elif lb_type == 'rscore' %}
+                                Score
+                            {% elif lb_type == 'plays' %}
+                                Playcount
+                            {% endif %}
+                        </th>
+                        <th class="px-4 font-normal text-center">Accuracy</th>
+                        <th class="px-4 font-normal text-center">SS</th>
+                        <th class="px-4 font-normal text-center">S</th>
+                        <th class="px-4 font-normal text-center">A</th>
+                        {% if lb_type != 'plays' %}
+                        <th class="px-4 font-normal text-center">Playcount</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in lb %}
+                        {{ user_entry(u_id=i['player_id'], rank=i['rank'], name=i['name'], country=i['country'], pp_score=i['typ_e'], acc=i['acc'], ss=i['x_count'], s=i['s_count'], a=i['a_count'], playcount=i['plays']) }}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        {% if lb != False %}
+        <section id="pager">
+            <div class="flex flex-col items-center my-4">
+                <div class="flex">
+                    <div class="h-8 w-auto mr-2 flex justify-center items-center rounded-full bg-hsl-15-20 hover:bg-hsl-40 transition duration-200 cursor-pointer px-3">
+                        <a href="?mode={{ mode_def }}&mods={{ mods }}&type={{ lb_type }}&page=1&country={{ country }}">
+                            <i class="fas fa-angle-left"></i><i class="fas fa-angle-left"></i>
+                        </a>
+                    </div>
+                    <div class="h-8 w-auto mr-2 flex justify-center items-center rounded-full bg-hsl-15-20 hover:bg-hsl-40 transition duration-200 cursor-pointer px-3">
+                        <i class="fas fa-angle-left"></i>
+                    </div>
+                    <div class="w-8 mx-0.5 md:flex justify-center items-center hidden  cursor-pointer leading-5 transition duration-200 ease-in  rounded-full bg-hsl-15-20 hover:bg-hsl-40">
+                        <a href="?mode={{ mode_def }}&mods={{ mods }}&type={{ lb_type }}&page={{ page_foot[0][0]}}&country={{ country }}">
+                            {{ page_foot[0][0] }}
+                        </a>
+                    </div>
+                    <div class="w-8 mx-0.5 md:flex justify-center items-center hidden  cursor-pointer leading-5 transition duration-200 ease-in  rounded-full bg-hsl-15-20 hover:bg-hsl-40">
+                        <a href="?mode={{ mode_def }}&mods={{ mods }}&type={{ lb_type }}&page={{ page_foot[1][0]}}&country={{ country }}">
+                            {{ page_foot[1][0] }}
+                        </a>
+                    </div>
+                    <div class="w-8 mx-0.5 md:flex justify-center items-center hidden  cursor-pointer leading-5 transition duration-200 ease-in  rounded-full bg-hsl-15-20 hover:bg-hsl-40">
+                        <a href="?mode={{ mode_def }}&mods={{ mods }}&type={{ lb_type }}&page={{ page_foot[2][0]}}&country={{ country }}">
+                            {{ page_foot[2][0] }}
+                        </a>
+                    </div>
+                    <div class="w-8 mx-0.5 md:flex justify-center items-center hidden  cursor-pointer leading-5 transition duration-200 ease-in  rounded-full bg-hsl-15-20 hover:bg-hsl-40">
+                        <a href="?mode={{ mode_def }}&mods={{ mods }}&type={{ lb_type }}&page={{ page_foot[3][0]}}&country={{ country }}">
+                            {{ page_foot[3][0] }}
+                        </a>
+                    </div>
+                    <div class="w-8 mx-0.5 md:flex justify-center items-center hidden  cursor-pointer leading-5 transition duration-200 ease-in  rounded-full bg-hsl-15-20 hover:bg-hsl-40">
+                        <a href="?mode={{ mode_def }}&mods={{ mods }}&type={{ lb_type }}&page={{ page_foot[4][0]}}&country={{ country }}">
+                            {{ page_foot[4][0] }}
+                        </a>
+                    </div>
+                    <div class="h-8 w-auto ml-2 flex justify-center items-center rounded-full bg-hsl-15-20 hover:bg-hsl-40 transition duration-200 cursor-pointer px-3">
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                    <div class="h-8 w-auto ml-2 flex justify-center items-center rounded-full bg-hsl-15-20 hover:bg-hsl-40 transition duration-200 cursor-pointer px-3">
+                        <a href="?mode={{ mode_def }}&mods={{ mods }}&type={{ lb_type }}&page={{ max_page }}&country={{ country }}">
+                            <i class="fas fa-angle-right"></i><i class="fas fa-angle-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

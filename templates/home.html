@@ -53,15 +53,7 @@
       document.getElementById('registered-count').innerHTML = registered;
     });
 </script>
-<script>
-    axios.get('https://{{ domain() }}/web_api/get_records')
-    .then((response) => {
-        var records = response.data.records
-    });
-</script>
-<script>
-    console.log(records)
-</script>
+<script src="/static/js/home.js"></script>
 <div class="flex flex-col flex-1 w-full overflow-y-auto overflow-x-hidden mt-3">
     <div class="flex-grow">
         <div class="px-4 pt-4 mx-auto lg:py-4 md:px-8 xl:px-20 sm:max-w-xl md:max-w-full">
@@ -102,7 +94,7 @@
                     </div>
                 </div>
             </section>
-            <section id="server">
+            <section id="server" v-bind:class="{ 'load' : data.records.load }">
                 <div class="container relative mx-auto mt-6 lg:max-w-screen-xl">
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
                         <div class="lg:col-span-2" id="records">
