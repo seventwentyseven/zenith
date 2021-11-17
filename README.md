@@ -1,6 +1,6 @@
 # zenith
 
-### What is this thing 
+### What is this thing
 Frontend for gulag, our private one.
 
 ### How to install?

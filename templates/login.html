@@ -7,6 +7,9 @@
 <div class="flex flex-col flex-1 w-full overflow-y-auto" id="app">
     <div class="flex-grow">
         <div class="w-full mx-auto my-6 xl:px-8 xl:w-5/12" style="max-width: 512px;">
+            {% if flash %}
+            {% include 'components/flash.html' %}
+            {% endif %}
             <div class="h-auto bg-hsl-20 w-full rounded-2xl">
                 <div class="h-28 rounded-t-2xl"
                 style="background: linear-gradient(hsl(275, 20%, 20%, 0.5),

@@ -6,12 +6,18 @@ module.exports = {
     darkMode: 'class',
     theme: {
       extend: {
+        fontSize: {
+          '2xs': '10px',
+        },
         borderWidth: {
             '3': '3px',
         },
         width: {
           '5.4/12': '45%',
           '5.7/12': '47.5%',
+        },
+        height: {
+          '34': '136px'
         },
         colors: {
           'hsl': {

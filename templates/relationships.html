@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}{% if type == 'friend' %}Friends{% else %}Blocked Users{% endif %}{% endblock %}
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="w-10/12 h-auto bg-hsl-15 mx-auto mt-8 rounded-t-xl overflow-hidden">
+  <div class="flex flex-col">
+    <div class="bg-hsl-45 text-xl font-semibold rounded-t-xl py-2.5">
+      <div class="flex flex-row content-center justify-between mx-4">
+        <span class="">{{ type|capitalize }}s</span>
+        <a href="/relationships/{% if type == 'friend' %}block{% else %}friend{% endif %}">
+          <span class="text-hsl-80 hover:text-white transform transition hover:scale-105 duration-200 font-normal text-base">See {% if type == 'friend' %}Blocked Users{% else %}Friends{% endif %}</span>
+        </a>
+      </div>
+    </div>
+    {% if res == False %}
+      <span>You have no {% if type == 'friend' %}Friends{% else %}Blocked Users{% endif %} added</span>
+    {% else %}
+      <div class="m-6 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 row-auto gap-4">
+      {% for i in res %}
+        <div class="bg-hsl-15-20 w-full h-40 rounded-2xl col-span-1 row-span-1"
+            style="background: linear-gradient(hsl(275, 20%, 20%, 0.7),
+                  hsl(275, 20%, 20%, 0.7)), url(https://{{ domain() }}/backgrounds/4);
+                    background-position: center; background-size: cover;"> <!--TODO: Change id of background-->
+          <div class="m-3 flex flex-col justify-items-stretch h-34">
+            <div class="flex flex-row h-3/6">
+              <div class="mr-3">
+                <img class="h-16 w-16 rounded-lg" src="https://a.{{ domain() }}/{{ i['user2'] }}" onerror="this.src='/static/images/avatar_notwork.png';">
+              </div>
+              <div class="flex flex-col content-center">
+                <div class="flex flex-row content-center items-center h-8">
+                  <img src="/static/images/flags/{{ i['country']|upper }}.png" class="w-12 h-6">
+                  <a href="/u/{{ i['user2'] }}" class="ml-1.5 text-bold hover:text-hsl-80 transition duration-200 text-xl w-full h-8">
+                    <p class="w-full break-normal">{{ i['name'] }}</p>
+                  </a>
+                </div>
+                <div class="mt-1">
+                  {% for b in i['badges'] %}
+                    <span class="bg-gray-900 bg-opacity-80 rounded-md mr-1 py-1 px-2 text-2xs font-semibold uppercase" style="color: {{ b[1] }}">{{ b[0] }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-row h-3/6 w-full ml-3">
+              <div class="flex content-center justify-center items-center justify-items-center w-16 mr-3">
+                <div class="h-6 w-6 rounded-full border-4" style="border-color: #b3d944;"></div>
+              </div>
+              <div class="flex flex-row content-between w-full">
+                <div class="flex flex-row items-center">
+                  <span>Online</span>
+                  <span>Last seen</span>
+                </div>
+                <div class="flex flex-row items-end content-end">
+                  <button class="p-2 rounded-lg bg-hsl-15 bg-opacity-60 hover:bg-opacity-100 hover:bg-red-600 transition transform duration-200">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

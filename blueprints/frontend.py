@@ -40,6 +40,30 @@ async def get_image(imgname:str):
     return await send_file(path)
 
     return b'{"status":404}'
+# profile customisation
+BANNERS_PATH = Path.cwd() / '.data/banners'
+BACKGROUND_PATH = Path.cwd() / '.data/backgrounds'
+@frontend.route('/banners/<user_id>')
+async def get_profile_banner(user_id: int):
+    # Check if avatar exists
+    for ext in ('jpg', 'jpeg', 'png', 'gif'):
+        path = BANNERS_PATH / f'{user_id}.{ext}'
+        print(path)
+        if path.exists():
+            return await send_file(path)
+
+    return b'{"status":404}'
+
+
+@frontend.route('/backgrounds/<user_id>')
+async def get_profile_background(user_id: int):
+    # Check if avatar exists
+    for ext in ('jpg', 'jpeg', 'png', 'gif'):
+        path = BACKGROUND_PATH / f'{user_id}.{ext}'
+        if path.exists():
+            return await send_file(path)
+
+    return b'{"status":404}'
 
 @frontend.route('/home')
 @frontend.route('/')
@@ -291,3 +315,56 @@ async def leaderboard():
         lb=lb, mode_name=mode_name, lb_type_visible=lb_type_visible, mods=mods,
         mode_def=const.mode_gulag_rev[mode], max_page=maxpage, page_foot=page_foot
     )
+
+@frontend.route('/relationships')
+@frontend.route('/relationships/<r_type>')
+async def relationships(r_type:str="friend"):
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+    else:
+        return await flash('error', 'You must be logged in to access that page', 'login')
+    if r_type.lower() not in ['friend', 'block']:
+        return await flash('error', 'Wrong link, it must be /relationships/<friend/block>', 'home')
+
+    res = await glob.db.fetchall(
+        'SELECT r.user2, r.type, u.name, u.country, u.priv '
+        'FROM relationships r '
+        'LEFT JOIN users u ON r.user2 = u.id '
+        'WHERE r.user1=%s AND r.type=%s',
+        (session['user_data']['id'], r_type.lower())
+    )
+    if len(res) == 0:
+        res == False
+    else:
+        group_list = []
+        for i in res:
+            user_priv = Privileges(i['priv'])
+            if Privileges.Normal not in user_priv:
+                group_list.append(["RESTRICTED", "#FFFFFF"])
+            else:
+                if int(i['user2']) in glob.config.owners:
+                    group_list.append(["OWNER", "#e84118"])
+                if Privileges.Dangerous in user_priv:
+                    group_list.append(["DEV", "#9b59b6"])
+                elif Privileges.Admin in user_priv:
+                    group_list.append(["ADM", "#fbc531"])
+                elif Privileges.Mod in user_priv:
+                    group_list.append(["GMT", "#28a40c"])
+                if Privileges.Nominator in user_priv:
+                    group_list.append(["BN", "#1e90ff"])
+                if Privileges.Alumni in user_priv:
+                    group_list.append(["ALU", "#ea8685"])
+                if Privileges.Supporter in user_priv:
+                    if Privileges.Premium in user_priv:
+                        group_list.append(["❤❤", "#f78fb3"])
+                    else:
+                        group_list.append(["❤", "#f78fb3"])
+                elif Privileges.Premium in user_priv:
+                    group_list.append(["❤❤", "#f78fb3"])
+                if Privileges.Whitelisted in user_priv:
+                    group_list.append(["✓", "#28a40c"])
+                i['badges'] = group_list
+                print(i['badges'])
+                group_list = []
+
+    return await render_template('relationships.html', type=r_type, res=res)
