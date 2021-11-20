@@ -15,6 +15,7 @@ from cmyui.osu import Mods
 from functools import wraps
 from PIL import Image
 from pathlib import Path
+from pandas import to_datetime
 from quart import Blueprint
 from quart import redirect
 from quart import render_template
@@ -54,7 +55,6 @@ async def get_profile_banner(user_id: int):
 
     return b'{"status":404}'
 
-
 @frontend.route('/backgrounds/<user_id>')
 async def get_profile_background(user_id: int):
     # Check if avatar exists
@@ -64,6 +64,18 @@ async def get_profile_background(user_id: int):
             return await send_file(path)
 
     return b'{"status":404}'
+
+@frontend.route('/card_backgrounds/<user_id>')
+async def get_profile_card_background(user_id: int):
+    # Check if avatar exists
+    for ext in ('jpg', 'jpeg', 'png', 'gif'):
+        path = BACKGROUND_PATH / f'{user_id}.{ext}'
+        if path.exists():
+            return await send_file(path)
+
+    return await send_file(BACKGROUND_PATH / 'default_card.jpg')
+
+
 
 @frontend.route('/home')
 @frontend.route('/')
@@ -324,18 +336,20 @@ async def relationships(r_type:str="friend"):
     else:
         return await flash('error', 'You must be logged in to access that page', 'login')
     if r_type.lower() not in ['friend', 'block']:
-        return await flash('error', 'Wrong link, it must be /relationships/<friend/block>', 'home')
+        return redirect('/relationships/friend')
 
     res = await glob.db.fetchall(
-        'SELECT r.user2, r.type, u.name, u.country, u.priv '
+        'SELECT r.user2, r.type, u.name, u.country, u.priv, u.latest_activity '
         'FROM relationships r '
         'LEFT JOIN users u ON r.user2 = u.id '
-        'WHERE r.user1=%s AND r.type=%s',
+        'WHERE r.user1=%s AND r.type=%s '
+        'ORDER BY name ASC',
         (session['user_data']['id'], r_type.lower())
     )
     if len(res) == 0:
         res == False
     else:
+        now = datetime.datetime.utcnow()
         group_list = []
         for i in res:
             user_priv = Privileges(i['priv'])
@@ -364,7 +378,6 @@ async def relationships(r_type:str="friend"):
                 if Privileges.Whitelisted in user_priv:
                     group_list.append(["✓", "#28a40c"])
                 i['badges'] = group_list
-                print(i['badges'])
                 group_list = []
-
+                i['latest_activity'] = time_ago(datetime.datetime.utcnow(), to_datetime(datetime.datetime.fromtimestamp(i['latest_activity']), format="%Y-%m-%d %H:%M:%S"), time_limit=1) + "ago"
     return await render_template('relationships.html', type=r_type, res=res)
