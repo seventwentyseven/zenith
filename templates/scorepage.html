@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ s['name']}} play on {{ s['title'] }} {% endblock %}
+
+{% block header %}
+<!-- Page-specific font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col w-full lg:w-10/12 mx-auto pt-6" style="font-family: 'Comfortaa', cursive;">
+    <div class="h-auto md:h-20 bg-hsl-10-20">
+        <div class="ml-12 flex flex-col h-full justify-center py-2">
+            <!--TODO: Maybe link to beatmap page with creator as a filter? -->
+            <a href="https://{{domain()}}/b/setid" class="hover:text-hsl-80 transition duration-200"><!--!/!\!-->
+                <span class="font-normal text-2xl">{{ s['title'] }} <span class="text-xl">by {{ s['artist'] }}</span></span>
+            </a>
+            <div class="flex items-center text-base -m-1">
+                <span class="box-border">
+                    <div class="beatmap-icon m-1">
+                        <i class="mode-icon mania flex text-xl text-yellow-600"></i>
+                    </div>
+                </span>
+                <!--TODO: Somehow center it -->
+                <span class="bg-hsl-10-15 py-0.5 px-2 rounded-full text-xs flex-none m-1">
+                    <span class="mr-0.5 text-xs">
+                        <span class="fas fa-star"></span>
+                    </span>
+                    {{ s['diff'] }}
+                </span>
+                <span class="m-1 text-base">
+                    <a class="hover:text-hsl-80 tranistion duration-200" href="https://{{ domain() }}/beatmaps/3034609?mode=mania">{{ s['diffname'] }}</a>
+                    <span class="text-sm ">mapped by
+                        <!--TODO: Maybe link to beatmap page with author as a filter? -->
+                        {{ s['creator'] }}
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="h-auto lg:h-72 bg-hsl-20 w-full"
+         style="background: linear-gradient(hsl(275, 20%, 20%, 0.65), hsl(275, 20%, 20%, 0.65)),
+         url(https://assets.ppy.sh/beatmaps/{{ s['set_id'] }}/covers/cover.jpg); background-position: center; background-size: cover;
+         background-repeat: no-repeat;">
+        <div class="flex flex-col lg:flex-row m-auto w-full h-full">
+            <div class="flex content-center items-center justify-center justify-items-center h-full text-8xl w-3/12">
+                <span style="text-shadow: 0px 0px 15px {{ s['grade'][1] }};">{{ s['grade'][0] }}</span>
+            </div>
+            <div class="h-full flex flex-col flex-grow justify-center">
+                <div class="text-6xl mb-3">{{ s['score'] }}</div>
+                <div class="grid grid-cols-2 grid-rows-3 w-auto max-w-xs text-sm">
+                    <div class="col-span-1 row-span-1">Played By</div>
+                    <div class="col-span-1 row-span-1 font-bold">{{ s['name'] }}</div>
+                    <div class="col-span-1 row-span-1">Submitted On</div>
+                    <div class="col-span-1 row-span-1 font-bold">{{ s['play_time'] }}</div>
+                    <div class="col-span-1 row-span-1">With</div>
+                    <div class="col-span-1 row-span-1 font-bold">+HDDT</div>
+                </div>
+                <div class="grid gap-1 grid-cols-1 grid-rows-2 mt-3 w-36">
+                    <span class="row-span-1 bg-hsl-15 bg-opacity-80 font-bold text-2xs rounded-full text-center py-1 px-3 uppercase">Global Rank</span>
+                    <span class="row-span-1 text-center">#2137</span>
+                </div>
+            </div>
+            <div class="flex flex-row items-end h-full mr-8 -mt-7">
+                <button class="h-8 w-8 rounded-full bg-hsl-15 bg-opacity-80 hover:bg-hsl-20 transition duration-200">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <button class="ml-3 h-8 w-auto rounded-full bg-blue-500 bg-opacity-80 hover:bg-blue-700 transition duration-200 px-3 text-sm font-bold">
+                    Download Replay
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="bg-hsl-15">Score Info</div>
+</div>
+{% endblock %}

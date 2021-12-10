@@ -5,6 +5,12 @@
 {% endblock %}
 
 {% block content %}
+<script>
+  function remove_relationship(u2id) {
+    document.getElementById("block-" + u2id).remove()
+    axios.get("https://{{ domain() }}/web_api/remove_relationship?type={{ type }}&target=" + u2id)
+  }
+</script>
 <div class="w-10/12 h-auto bg-hsl-15 mx-auto mt-8 rounded-t-xl overflow-hidden">
   <div class="flex flex-col content-center">
     <div class="bg-hsl-20 text-xl font-semibold rounded-t-xl py-2.5">
@@ -28,7 +34,8 @@
                     background-position: center; background-size: cover;"
             x-data="{ open: false }"
             @mouseover="open = true"
-            @mouseover.away="open = false">
+            @mouseover.away="open = false"
+            id="block-{{ i['user2'] }}">
           <div class="m-3 flex flex-col justify-items-stretch h-34">
             <div class="flex flex-row h-3/6">
               <div class="mr-3">
@@ -74,7 +81,8 @@
           </div>
           <div class="flex justify-end w-full -mt-12 -ml-4" x-show="open">
             <button class="p-2 rounded-lg bg-hsl-15 bg-opacity-60 hover:bg-opacity-100 hover:bg-red-600 transition transform duration-200"
-                    title="Remove {{ type|capitalize}}">
+                    title="Remove {{ type|capitalize}}"
+                    onclick="remove_relationship({{ i['user2']}})">
               <i class="fas fa-user-times"></i>
             </button>
           </div>

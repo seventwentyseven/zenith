@@ -19,6 +19,12 @@ module.exports = {
         height: {
           '34': '136px'
         },
+        fontFamily: {
+          'display': ['Comfortaa'],
+        },
+        maxWidth: {
+          'sxs': '120px'
+        },
         colors: {
           'hsl': {
             '5': 'hsl('+ main +', 5%, 5%)',
@@ -48,6 +54,7 @@ module.exports = {
             '10-30': 'hsl('+ main +', 10%, 30%)',
             '10-25': 'hsl('+ main +', 10%, 25%)',
             '10-20': 'hsl('+ main +', 10%, 20%)',
+            '10-15': 'hsl('+ main +', 10%, 15%)',
           }
         }
       },

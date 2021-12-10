@@ -105,7 +105,7 @@
 
         <!-- Dropdown menu -->
         <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 mt-5 bg-hsl-15 rounded-md shadow-xl">
-            <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+            <a href="/profile/{{ session['user_data']['id'] }}" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
               Profile
             </a>
             <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
@@ -116,7 +116,7 @@
             </a>
             {% if 'authenticated' in session and session['user_data']['is_admin'] == True %}
             <a href="/admin" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-                Admin Panel
+              Admin Panel
             </a>
             {% endif %}
             {% if 'authenticated' in session and session['user_data']['is_bn'] == True %}

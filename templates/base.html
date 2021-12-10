@@ -42,16 +42,17 @@
 <body class="flex flex-col h-screen overflow-y-auto text-white bg-hsl-10">
   <!--! Header-->
   {% include 'components/navbar.html' %}
-
-  <!--! Content -->
-  <div >
-    {% block content %}
-    {% endblock %}
+  <div class="flex flex-col">
+    <div class="min-h-screen">
+      <!--! Content -->
+      {% block content %}
+      {% endblock %}
+    </div>
+    <div class="flex-none">
+      <!--! Footer -->
+      {% include 'components/footer.html' %}
+    </div>
   </div>
-
-  <!--! Footer -->
-  {% include 'components/footer.html' %}
-
   <!-- Main JS script -->
   <script src="/static/js/main.js" crossorigin="anonymous"></script>
 

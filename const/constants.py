@@ -38,3 +38,27 @@ def mode_to_gulag(mode:int, mods:str):
     elif mods == "ap":
         mode = 7
         return mode
+
+grade_colors= {
+    "F": "#ff5959",
+    "D": "#ff5959",
+    "C": "#ff56da",
+    "B": "#3d97ff",
+    "A": "#2bff35",
+    "S": "#ffcc22",
+    "SH": "#cde7e7",
+    "X": "#ffcc22",
+    "XH": "#cde7e7",
+}
+
+grade_coverter = {
+    "F":  "F",
+    "D":  "D",
+    "C":  "C",
+    "B":  "B",
+    "A":  "A",
+    "S":  "S",
+    "SH": "S",
+    "X":  "SS",
+    "XH": "SS",
+}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %} {{ appName()}} - 404 {% endblock %}
+{% block title %} {{ appName()}} - 404! Page not found.. {% endblock %}
 
 {% block header %}
 {% endblock %}
@@ -7,14 +7,18 @@
 {% block content %}
 <div class="flex flex-col flex-1 w-full overflow-y-hidden" id="app">
     <div class="flex-grow">
-        <div class="flex items-center justify-center" style="height: 71vh;">
-            <div class="p-8 mt-4 rounded-lg lg:mt-0 bg-hsl-15">
-                <h1 class="text-6xl font-bold text-center text-white text-opacity-60">404</h1><br>
-                    <p class="mt-2 text-xl font-semibold text-center text-white">We couldn't find page you're looking for.</p>
-                <div>
-                    <a href="/" class="inline-flex items-center justify-center w-full h-12 px-6 mt-4 font-medium tracking-wide text-white transition duration-200 rounded shadow-md bg-hsl-45 hover:bg-hsl-60 focus:shadow-outline focus:outline-none">
-                    Go back home
-                    </a>
+        <div class="h-screen flex items-center justify-center">
+            <div class="flex w-full flex-col md:w-5/12">
+                <div class="text-center flex flex-col lg:flex-row">
+                    <div class="flex items-center h-full">
+                        <h1 class="w-full text-9xl flex justify-center">404</h1>
+                    </div>
+                    <div class="flex flex-col justify-between">
+                        <h2 class="h-4/6 text-2xl flex items-center mb-5 lg:mb-0">We couldn't find the page you're looking for...</h2>
+                        <div class="w-full">
+                            <a href="/" class="h-2/6 bg-hsl-40 hover:bg-hsl-30 transition duration-200 text-lg w-auto px-5 py-2 rounded-full">Take me back</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

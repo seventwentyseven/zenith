@@ -37,3 +37,41 @@ async def get_records():
         )
 
     return {"code": 200, "status": "success", "records": records}
+
+@api.route('/remove_relationship')
+async def remove_relationship():
+    r_type = request.args.get('type', default=None, type=str)
+    target = request.args.get('target', default=None, type=str)
+
+    # Check if logged in
+    if 'authenticated' not in session:
+        return {"code":403, "status":"You must be authenticated to use this route."}
+
+    # Checks for type
+    if r_type == None:
+        return {"code":400, "status":"Must specify type"}
+    elif r_type.lower() not in ["friend", "block"]:
+        return {"code":400, "status":"Wrong type, allowed: friend, block."}
+
+    # Checks for id
+    if target == None:
+        return {"code":400, "status":"Must specify target"}
+    elif not target.isdigit():
+        return {"code":400, "status":"Id must be a digit"}
+
+    # Check if user has specified relationship with target user
+    check1 = await glob.db.fetch(
+        'SELECT * FROM relationships WHERE user1=%s AND user2=%s and type=%s',
+        (session['user_data']['id'], target, r_type)
+    )
+    if not check1 and r_type.lower() == "friend":
+        return {"code":400, "status":f"UID 4 is not friends with UID {target}"}
+    if not check1 and r_type.lower() == "block":
+        return {"code":400, "status":f"UID 4 is not blocking UID {target}"}
+    if not check1:
+        return {"code":400, "status":f"Unknown error occurred"}
+
+    await glob.db.execute('DELETE FROM relationships WHERE user1=%s AND user2=%s AND type=%s',
+                         (session['user_data']['id'], target, r_type))
+
+    return {"code": 200, "status": "success", "msg": f"Successfully deleted {target} from {r_type} list"}

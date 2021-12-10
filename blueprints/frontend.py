@@ -187,6 +187,8 @@ async def testflash(status:str="error", message:str="Lorem Ipsum"):
 @frontend.route('/lb')
 @frontend.route('/leaderboards')
 async def leaderboard():
+    if 'authenticated' in session:
+        await utils.updateSession(session)
     mode = request.args.get('mode', default=0, type=str)
     mods = request.args.get('mods', default="vn", type=str)
     page = request.args.get('page', default="1", type=str)
@@ -381,3 +383,75 @@ async def relationships(r_type:str="friend"):
                 group_list = []
                 i['latest_activity'] = time_ago(datetime.datetime.utcnow(), to_datetime(datetime.datetime.fromtimestamp(i['latest_activity']), format="%Y-%m-%d %H:%M:%S"), time_limit=1) + "ago"
     return await render_template('relationships.html', type=r_type, res=res)
+
+@frontend.route('/scores')
+@frontend.route('/scores/<mods>/<scoreid>')
+@frontend.route('/scores/<scoreid>')
+async def scores(mods:str="vn", scoreid:int="0"):
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+
+    if mods.lower() not in ["vn", "rx", "ap"]:
+        mods = "vn"
+    if mods == None:
+        mods = "vn"
+
+    #Get score
+    s = await glob.db.fetch(
+        'SELECT s.id, s.score, s.pp, s.acc, s.max_combo, s.mods, '
+        's.n300, s.n100, s.n50, s.nmiss, s.nkatu, s.ngeki, s.grade, '
+        's.mode, s.play_time, s.userid, s.perfect, m.artist, m.title, '
+        'm.id AS `map_id`, m.set_id, m.version AS `diffname`, m.creator, '
+        'm.max_combo AS `map_maxcombo`, m.diff, u.country, u.name, u.priv '
+       f'FROM scores_{mods} s '
+        'LEFT JOIN maps m ON s.map_md5 = m.md5 '
+        'LEFT JOIN users u ON s.userid = u.id '
+        'WHERE s.id = %s',
+        [scoreid]
+    )
+    if not s:
+        return await flash('error', 'This score does not exist or for some reason map is not in the database', 'home')
+
+    if Privileges.Normal not in Privileges(int(s['priv'])):
+        if session['user_data']['is_mod'] == False and session['user_data']['is_admin'] == False:
+            return await render_template('errors/404.html')
+
+    # Redefine variables
+    s['score'] = "{:,}".format(s['score'])
+    s['diff'] = round(float(s['diff']), 2)
+
+    ugrade = s['grade']
+    s['grade'] = []
+    s['grade'].append(const.grade_coverter[ugrade])
+    s['grade'].append(const.grade_colors[ugrade])
+    del(ugrade)
+    s['play_time'] = s['play_time'].strftime("%d.%m.%Y %H:%M")
+
+
+    return await render_template('scorepage.html', s=s)
+
+
+#!####################################################!#
+#!##################  PROFILE ZONE  ##################!#
+#!####################################################!#
+@frontend.route('/profile')
+@frontend.route('/profile/<id>')
+@frontend.route('/profile/<id>/<page_type>')
+async def profile(id:str=None, page_type:str='home'):
+    if id == None:
+        return (await render_template('errors/404.html'), 404)
+    user_data = await glob.db.fetch(
+        'SELECT name, safe_name, id, priv, country, clan_id '
+        'FROM users '
+        'WHERE safe_name IN (%s) OR id IN (%s) LIMIT 1',
+        [id, utils.get_safe_name(id)]
+    )
+    # no user
+    if not user_data:
+        return (await render_template('404.html'), 404)
+
+    #Update session
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+
+    return await render_template('profile/home.html', user_data=user_data)
