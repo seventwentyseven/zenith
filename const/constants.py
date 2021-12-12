@@ -1,3 +1,4 @@
+import spectra
 tables = {
     0: "scores_vn",
     1: "scores_vn",
@@ -62,3 +63,6 @@ grade_coverter = {
     "X":  "SS",
     "XH": "SS",
 }
+
+diffColors = spectra.scale([ spectra.html(x).to("lab") for x in (['#4290FB', '#4FC0FF', '#4FFFD5', '#7CFF4F', '#F6F05C', '#FF8068', '#FF4E6F', '#C645B8', '#6563DE', '#18158E', '#000000']) ])
+diffColorsDomain = diffColors.domain([0.1, 1.25, 2, 2.5, 3.3, 4.2, 4.9, 5.8, 6.7, 7.7, 9])

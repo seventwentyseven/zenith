@@ -13,7 +13,7 @@ from quart import session
 from objects import glob
 from objects import utils
 from objects.privileges import Privileges
-
+from const.constants import diffColorsDomain
 if TYPE_CHECKING:
     from PIL import Image
 
@@ -235,3 +235,11 @@ async def updateSession(session, id:int=None):
         session['user_data']['is_owner'] = True
     else:
         session['user_data']['is_owner'] = False
+
+def getDiffColor(value:float=0):
+    if value <= 9:
+        return diffColorsDomain(value).hexcode
+    elif value <= 0.1:
+        return "#AAAAAA"
+    else:
+        return "#000000"

@@ -19,13 +19,13 @@
             <div class="flex items-center text-base -m-1">
                 <span class="box-border">
                     <div class="beatmap-icon m-1">
-                        <i class="mode-icon mania flex text-xl text-yellow-600"></i>
+                        <i class="mode-icon mania flex text-xl" style="color: {{ diffColor }};"></i>
                     </div>
                 </span>
                 <!--TODO: Somehow center it -->
                 <span class="bg-hsl-10-15 py-0.5 px-2 rounded-full text-xs flex-none m-1">
                     <span class="mr-0.5 text-xs">
-                        <span class="fas fa-star"></span>
+                        <span class="fas fa-star" style="color: {{ diffColor }};"></span>
                     </span>
                     {{ s['diff'] }}
                 </span>
@@ -45,9 +45,9 @@
          background-repeat: no-repeat;">
         <div class="flex flex-col lg:flex-row m-auto w-full h-full">
             <div class="flex content-center items-center justify-center justify-items-center h-full text-8xl w-3/12">
-                <span style="text-shadow: 0px 0px 15px {{ s['grade'][1] }};">{{ s['grade'][0] }}</span>
+                <span class="text-center lg:text-left" style="text-shadow: 0px 0px 15px {{ s['grade'][1] }};">{{ s['grade'][0] }}</span>
             </div>
-            <div class="h-full flex flex-col flex-grow justify-center">
+            <div class="h-full flex flex-col flex-grow justify-center items-center lg:items-start">
                 <div class="text-6xl mb-3">{{ s['score'] }}</div>
                 <div class="grid grid-cols-2 grid-rows-3 w-auto max-w-xs text-sm">
                     <div class="col-span-1 row-span-1">Played By</div>

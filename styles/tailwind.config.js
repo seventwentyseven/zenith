@@ -1,6 +1,6 @@
 main = "275"
 module.exports = {
-    purge: [
+    content: [
       "../templates/**/*.html"
     ],
     darkMode: 'class',

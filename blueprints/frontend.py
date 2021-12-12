@@ -25,7 +25,7 @@ from quart import send_file
 
 from objects import glob
 from objects import utils
-from objects.utils import flash, time_ago
+from objects.utils import flash, getDiffColor, time_ago
 from objects.privileges import Privileges
 
 from const import constants as const
@@ -427,8 +427,8 @@ async def scores(mods:str="vn", scoreid:int="0"):
     del(ugrade)
     s['play_time'] = s['play_time'].strftime("%d.%m.%Y %H:%M")
 
-
-    return await render_template('scorepage.html', s=s)
+    diffColor = getDiffColor(float(s['diff']))
+    return await render_template('scorepage.html', s=s, diffColor=diffColor)
 
 
 #!####################################################!#
