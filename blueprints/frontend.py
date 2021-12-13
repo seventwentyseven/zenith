@@ -25,7 +25,7 @@ from quart import send_file
 
 from objects import glob
 from objects import utils
-from objects.utils import flash, getDiffColor, time_ago
+from objects.utils import flash, getDiffColor, parseJudgements, time_ago
 from objects.privileges import Privileges
 
 from const import constants as const
@@ -402,7 +402,7 @@ async def scores(mods:str="vn", scoreid:int="0"):
         's.n300, s.n100, s.n50, s.nmiss, s.nkatu, s.ngeki, s.grade, '
         's.mode, s.play_time, s.userid, s.perfect, m.artist, m.title, '
         'm.id AS `map_id`, m.set_id, m.version AS `diffname`, m.creator, '
-        'm.max_combo AS `map_maxcombo`, m.diff, u.country, u.name, u.priv '
+        'm.max_combo AS `map_maxcombo`, m.diff, u.id AS `uid` '
        f'FROM scores_{mods} s '
         'LEFT JOIN maps m ON s.map_md5 = m.md5 '
         'LEFT JOIN users u ON s.userid = u.id '
@@ -412,7 +412,8 @@ async def scores(mods:str="vn", scoreid:int="0"):
     if not s:
         return await flash('error', 'This score does not exist or for some reason map is not in the database', 'home')
 
-    if Privileges.Normal not in Privileges(int(s['priv'])):
+    user = await glob.db.fetch("SELECT name, country, priv, latest_activity FROM users WHERE id=%s", s['uid'])
+    if Privileges.Normal not in Privileges(int(user['priv'])):
         if session['user_data']['is_mod'] == False and session['user_data']['is_admin'] == False:
             return await render_template('errors/404.html')
 
@@ -427,8 +428,9 @@ async def scores(mods:str="vn", scoreid:int="0"):
     del(ugrade)
     s['play_time'] = s['play_time'].strftime("%d.%m.%Y %H:%M")
 
+    judgements = parseJudgements(s)
     diffColor = getDiffColor(float(s['diff']))
-    return await render_template('scorepage.html', s=s, diffColor=diffColor)
+    return await render_template('scorepage.html', s=s, diffColor=diffColor, user=user, judgements=judgements)
 
 
 #!####################################################!#

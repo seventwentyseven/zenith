@@ -19,7 +19,7 @@
             <div class="flex items-center text-base -m-1">
                 <span class="box-border">
                     <div class="beatmap-icon m-1">
-                        <i class="mode-icon mania flex text-xl" style="color: {{ diffColor }};"></i>
+                        <i class="mode-icon mania flex text-xl" style="color: {{ diffColor }};" id="mode-icon"></i>
                     </div>
                 </span>
                 <!--TODO: Somehow center it -->
@@ -43,18 +43,18 @@
          style="background: linear-gradient(hsl(275, 20%, 20%, 0.65), hsl(275, 20%, 20%, 0.65)),
          url(https://assets.ppy.sh/beatmaps/{{ s['set_id'] }}/covers/cover.jpg); background-position: center; background-size: cover;
          background-repeat: no-repeat;">
-        <div class="flex flex-col lg:flex-row m-auto w-full h-full">
+        <div class="flex flex-col lg:flex-row m-auto w-full h-full items-center mt-3 lg:mt-0">
             <div class="flex content-center items-center justify-center justify-items-center h-full text-8xl w-3/12">
                 <span class="text-center lg:text-left" style="text-shadow: 0px 0px 15px {{ s['grade'][1] }};">{{ s['grade'][0] }}</span>
             </div>
             <div class="h-full flex flex-col flex-grow justify-center items-center lg:items-start">
                 <div class="text-6xl mb-3">{{ s['score'] }}</div>
                 <div class="grid grid-cols-2 grid-rows-3 w-auto max-w-xs text-sm">
-                    <div class="col-span-1 row-span-1">Played By</div>
-                    <div class="col-span-1 row-span-1 font-bold">{{ s['name'] }}</div>
-                    <div class="col-span-1 row-span-1">Submitted On</div>
+                    <div class="col-span-1 row-span-1 mr-2">Played By</div>
+                    <div class="col-span-1 row-span-1 font-bold">{{ user['name'] }}</div>
+                    <div class="col-span-1 row-span-1 mr-2">Submitted On</div>
                     <div class="col-span-1 row-span-1 font-bold">{{ s['play_time'] }}</div>
-                    <div class="col-span-1 row-span-1">With</div>
+                    <div class="col-span-1 row-span-1 mr-2">With</div>
                     <div class="col-span-1 row-span-1 font-bold">+HDDT</div>
                 </div>
                 <div class="grid gap-1 grid-cols-1 grid-rows-2 mt-3 w-36">
@@ -62,7 +62,7 @@
                     <span class="row-span-1 text-center">#2137</span>
                 </div>
             </div>
-            <div class="flex flex-row items-end h-full mr-8 -mt-7">
+            <div class="flex flex-row items-end h-full mr-8 mb-6">
                 <button class="h-8 w-8 rounded-full bg-hsl-15 bg-opacity-80 hover:bg-hsl-20 transition duration-200">
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
@@ -72,6 +72,54 @@
             </div>
         </div>
     </div>
-    <div class="bg-hsl-15">Score Info</div>
+    <div class="bg-hsl-15 w-full h-auto min-h-32">
+        <div class="flex flex-col md:flex-row justify-around content-around w-full">
+            <div class="w-11/12 md:w-5/12 my-4 mx-auto h-36">
+                <div class="w-full h-full bg-hsl-30 rounded-lg"
+                     style="background: linear-gradient(hsl(275, 20%, 20%, 0.7),
+                     hsl(275, 20%, 20%, 0.7)), url(https://{{ domain() }}/card_backgrounds/{{ s['uid'] }});
+                      background-position: center; background-size: cover;">
+
+                </div>
+            </div>
+            <div class="w-11/12 md:w-96 mt-0 md:mt-4 mx-auto h-36">
+                <div class="w-full h-full grid grid-rows-2 grid-cols-1 gap-1">
+                    <div class="col-span-1 row-span-1 w-full">
+                        <div class="grid grid-cols-4 grid-rows-2 gap-1">
+                            <div class="col-span-1 row-span-2">1</div>
+                            <div class="col-span-1 row-span-2">1</div>
+                            <div class="col-span-1 row-span-2">1</div>
+                            <div class="col-span-1 row-span-2">1</div>
+                        </div>
+                    </div>
+                    <div class="col-span-1 row-span-1 w-full">
+                        <div class="grid auto-cols-min grid-rows-2 gap-1">
+                            <div class="col-span-1 row-span-2">1</div>
+                            <div class="col-span-1 row-span-2">2</div>
+                            <div class="col-span-1 row-span-2">3</div>
+                            <div class="col-span-1 row-span-2">4</div>
+                            <div class="col-span-1 row-span-2">5</div>
+                            <div class="col-span-1 row-span-2">6</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+{% block bottom %}
+<script>
+    // Swap mode icon
+    const mode = "{{ s['mode'] }}";
+    if (mode == '0') {
+        document.getElementById('mode-icon').classList.add('osu');
+    } else if (mode == '1') {
+        document.getElementById('mode-icon').classList.add('taiko');
+    } else if (mode == '2') {
+        document.getElementById('mode-icon').classList.add('catch');
+    } else if (mode == '3') {
+        document.getElementById('mode-icon').classList.add('mania');
+    }
+</script>
 {% endblock %}

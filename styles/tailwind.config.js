@@ -1,6 +1,6 @@
 main = "275"
 module.exports = {
-    content: [
+    purge: [
       "../templates/**/*.html"
     ],
     darkMode: 'class',
@@ -15,9 +15,11 @@ module.exports = {
         width: {
           '5.4/12': '45%',
           '5.7/12': '47.5%',
+          '6.4/12': '53.333333333333336%',
         },
         height: {
-          '34': '136px'
+          '34': '136px',
+          '5.7/12': '47.5%',
         },
         fontFamily: {
           'display': ['Comfortaa'],

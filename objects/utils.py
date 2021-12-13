@@ -243,3 +243,38 @@ def getDiffColor(value:float=0):
         return "#AAAAAA"
     else:
         return "#000000"
+
+def parseJudgements(score:dict):
+    """Pass score from db, returns judgements dict."""
+    # Modes sorted by how often they are played
+    if score['mode'] == 0:
+        judges = {
+            '300':       score['n300'],
+            '100':       score['n100'],
+            '50':        score['n50'],
+            'miss':      score['nmiss']
+        }
+    elif score['mode'] == 3:
+        judges = {
+            'MAX':       score['ngeki'],
+            '300':       score['n300'],
+            '200':       score['nkatu'],
+            '100':       score['n100'],
+            '50':        score['n50'],
+            'miss':      score['nmiss']
+        }
+    elif score['mode'] == 1:
+        judges = {
+            '300':       score['n300'],
+            '50':        score['n50'],
+            'miss':      score['nmiss']
+        }
+    elif score['mode'] == 2:
+        judges = {
+            'fruits':    score['n300'],
+            'ticks':     score['n100'],
+            'drip miss': score['n50'],
+            'miss':      score['nmiss']
+        }
+
+    return judges
