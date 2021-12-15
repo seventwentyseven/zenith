@@ -1,5 +1,23 @@
 {% extends 'base.html' %}
-{% block title %}{{ s['name']}} play on {{ s['title'] }} {% endblock %}
+{% block title %}{{ user['name']}}'s play on {{ s['title'] }} {% endblock %}
+
+
+{% macro scorestatel(key, value) %}
+<div class="col-span-1 row-span-1 flex flex-col">
+    <div class="flex items-center justify-center bg-hsl-10 rounded-full w-full h-4">
+        {% if key != "pp" %}
+        <span class="uppercase text-2xs font-bold">{{ key }}</span>
+        {% else %}
+        <span class="text-2xs font-bold">{{ key }}</span>
+        {% endif %}
+    </div>
+    <div class="flex items-center justify-center w-full h-10">
+        <span class="font-medium text-lg">{{ value }}</span>
+    </div>
+</div>
+{% endmacro %}
+
+
 
 {% block header %}
 <!-- Page-specific font -->
@@ -9,17 +27,17 @@
 {% endblock %}
 
 {% block content %}
-<div class="flex flex-col w-full lg:w-10/12 mx-auto pt-6" style="font-family: 'Comfortaa', cursive;">
+<div class="flex flex-col w-full md:w-11/12 lg:w-10/12 mx-auto pt-6" style="font-family: 'Comfortaa', cursive;">
     <div class="h-auto md:h-20 bg-hsl-10-20">
         <div class="ml-12 flex flex-col h-full justify-center py-2">
             <!--TODO: Maybe link to beatmap page with creator as a filter? -->
-            <a href="https://{{domain()}}/b/setid" class="hover:text-hsl-80 transition duration-200"><!--!/!\!-->
+            <a href="https://{{domain()}}/b/{{ s['set_id'] }}" class="hover:text-hsl-80 transition duration-200"><!--!/!\!-->
                 <span class="font-normal text-2xl">{{ s['title'] }} <span class="text-xl">by {{ s['artist'] }}</span></span>
             </a>
             <div class="flex items-center text-base -m-1">
                 <span class="box-border">
                     <div class="beatmap-icon m-1">
-                        <i class="mode-icon mania flex text-xl" style="color: {{ diffColor }};" id="mode-icon"></i>
+                        <i class="mode-icon flex text-xl" style="color: {{ diffColor }};" id="mode-icon"></i>
                     </div>
                 </span>
                 <!--TODO: Somehow center it -->
@@ -55,7 +73,7 @@
                     <div class="col-span-1 row-span-1 mr-2">Submitted On</div>
                     <div class="col-span-1 row-span-1 font-bold">{{ s['play_time'] }}</div>
                     <div class="col-span-1 row-span-1 mr-2">With</div>
-                    <div class="col-span-1 row-span-1 font-bold">+HDDT</div>
+                    <div class="col-span-1 row-span-1 font-bold">{{ s['mods'] }}</div>
                 </div>
                 <div class="grid gap-1 grid-cols-1 grid-rows-2 mt-3 w-36">
                     <span class="row-span-1 bg-hsl-15 bg-opacity-80 font-bold text-2xs rounded-full text-center py-1 px-3 uppercase">Global Rank</span>
@@ -63,43 +81,112 @@
                 </div>
             </div>
             <div class="flex flex-row items-end h-full mr-8 mb-6">
-                <button class="h-8 w-8 rounded-full bg-hsl-15 bg-opacity-80 hover:bg-hsl-20 transition duration-200">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <button class="ml-3 h-8 w-auto rounded-full bg-blue-500 bg-opacity-80 hover:bg-blue-700 transition duration-200 px-3 text-sm font-bold">
+                <div class="relative" x-data="{ open: false }" @click.away="open = false"> <!-- Button with dropdown -->
+                    <button class="h-8 w-8 rounded-full bg-hsl-10 bg-opacity-90 hover:bg-hsl-20 transition duration-200"
+                            @click="open = true">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms
+                         class="absolute right-0 w-48 py-2 mt-5 bg-hsl-10 rounded-md shadow-xl">
+                        <a href="#" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                            <i class="fas fa-exclamation-triangle mr-1"></i><span class="">Report Score</span>
+                        </a>
+                        {% if 'authenticated' in session %}
+                            {% if session['user_data']['is_admin'] == True or session['user_data']['is_dev'] == True %}
+                                <a href="/admin/score/{{ s['id'] }}" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                                    <i class="fas fa-info-circle mr-1"></i><span class="">View score in ZAP</span>
+                                </a>
+                                <a href="/admin/user/{{ s['uid'] }}" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                                    <i class="fas fa-user mr-1"></i><span class="">View user in ZAP</span>
+                                </a>
+                                <a href="/admin/map/{{ s['map_id'] }}" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                                    <i class="fas fa-music mr-1"></i><span class="">View Map in ZAP</span>
+                                </a>
+                            {% elif session['user_data']['is_bn'] == True %}
+                            <a href="/bnp/map/{{ s['map_id'] }}" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                                <i class="fas fa-music mr-1"></i><span class="">View Map in BNP</span>
+                            </a>
+                            {% endif %}
+                            {% if session['user_data']['is_owner'] == True %}
+                                <a href="/admin/map/{{ s['map_id'] }}" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60 text-red-500">
+                                    <i class="fas fa-trash mr-1"></i><span class="">Delete Score</span>
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <button class="ml-3 h-8 w-auto rounded-full bg-blue-500 bg-opacity-80 hover:bg-blue-700 transition duration-200 px-3 text-sm font-bold"
+                        onclick=" window.open('https://osu.{{ domain() }}/api/get_replay?id={{ s['id'] }}','_blank')">
                     Download Replay
                 </button>
             </div>
         </div>
     </div>
-    <div class="bg-hsl-15 w-full h-auto min-h-32">
-        <div class="flex flex-col md:flex-row justify-around content-around w-full">
-            <div class="w-11/12 md:w-5/12 my-4 mx-auto h-36">
-                <div class="w-full h-full bg-hsl-30 rounded-lg"
+    <div class="bg-hsl-15 w-full h-auto mb-10">
+        <div class="flex flex-col lg:flex-row px-4 md:px-6 lg:px-14 my-5 w-full">
+            <div class="w-full lg:w-5/12 mb-8 lg:mb-4 h-32 max-h-36 font-sans">
+                <div class="bg-hsl-15-20 h-36 rounded-2xl"
                      style="background: linear-gradient(hsl(275, 20%, 20%, 0.7),
-                     hsl(275, 20%, 20%, 0.7)), url(https://{{ domain() }}/card_backgrounds/{{ s['uid'] }});
-                      background-position: center; background-size: cover;">
-
-                </div>
-            </div>
-            <div class="w-11/12 md:w-96 mt-0 md:mt-4 mx-auto h-36">
-                <div class="w-full h-full grid grid-rows-2 grid-cols-1 gap-1">
-                    <div class="col-span-1 row-span-1 w-full">
-                        <div class="grid grid-cols-4 grid-rows-2 gap-1">
-                            <div class="col-span-1 row-span-2">1</div>
-                            <div class="col-span-1 row-span-2">1</div>
-                            <div class="col-span-1 row-span-2">1</div>
-                            <div class="col-span-1 row-span-2">1</div>
+                          hsl(275, 20%, 20%, 0.7)), url(https://{{ domain() }}/card_backgrounds/{{ s['uid'] }});
+                            background-position: center; background-size: cover;"
+                     id="block-{{ s['uid'] }}">
+                    <div class="p-3 flex flex-col content-stretch h-36">
+                        <div class="flex flex-row h-3/6">
+                            <div class="mr-3">
+                                <img class="h-16 w-16 rounded-lg" src="https://a.{{ domain() }}/{{ s['uid'] }}"
+                                onerror="this.src='/static/images/avatar_notwork.png';">
+                            </div>
+                            <div class="flex flex-col content-center">
+                                <div class="flex flex-row content-center items-center h-8">
+                                    <img src="/static/images/flags/{{ user['country']|upper }}.png" class="w-12 h-6">
+                                    <a href="/u/{{ s['uid'] }}" class="ml-1.5 text-bold hover:text-hsl-80 transition duration-200 text-lg w-full h-8">
+                                        <p class="w-full break-normal font-semibold">{{ user['name'] }}</p>
+                                    </a>
+                                </div>
+                                <div class="mt-1">
+                                    {% for b in user['badges'] %}
+                                        <span class="bg-gray-900 bg-opacity-80 rounded-md mr-1 py-1 px-2 text-2xs font-bold uppercase" style="color: {{ b[1] }}">{{ b[0] }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row content-center h-3/6">
+                            <div class="flex justify-center content-center w-16 mr-3 items-center">
+                                <div class="h-6 w-6 rounded-full border-4" style="border-color: #000000;" id="status-indicator-{{ s['uid'] }}"></div>
+                            </div>
+                            <div class="flex items-center content-center w-10/12">
+                                <div class="flex items-center">
+                                    <script>
+                                        axios.get("https://osu.{{ domain() }}/api/get_player_status?id={{ s['uid'] }}")
+                                        .then((response) => {
+                                        var status = response.data.player_status.online;
+                                        if (status == true) {
+                                            document.getElementById("status-{{ s['uid'] }}").innerHTML = 'Online';
+                                            document.getElementById("status-indicator-{{ s['uid'] }}").style.borderColor = '#b3d944';
+                                            document.getElementById("last-seen-{{ s['uid'] }}").remove()
+                                        }
+                                        });
+                                    </script>
+                                    <span class="font-semibold w-4/12" id="status-{{ s['uid'] }}">Offline</span>
+                                    <span class="w-64" id="last-seen-{{ s['uid'] }}">Last seen {{ user['latest_activity'] }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-span-1 row-span-1 w-full">
-                        <div class="grid auto-cols-min grid-rows-2 gap-1">
-                            <div class="col-span-1 row-span-2">1</div>
-                            <div class="col-span-1 row-span-2">2</div>
-                            <div class="col-span-1 row-span-2">3</div>
-                            <div class="col-span-1 row-span-2">4</div>
-                            <div class="col-span-1 row-span-2">5</div>
-                            <div class="col-span-1 row-span-2">6</div>
+                </div>
+            </div>
+            <div class="ml-auto w-full lg:w-6/12">
+                <div class="flex flex-col">
+                    <div class="flex flex-col h-32">
+                        <div class="grid auto-cols-fr grid-rows-1 grid-flow-col w-full gap-0.5 h-3/6">
+                            {% for key, value in header_stats.items() %}
+                                {{ scorestatel(key, value) }}
+                            {% endfor %}
+                        </div>
+                        <div class="grid auto-cols-fr grid-rows-1 grid-flow-col w-full gap-0.5 h-3/6">
+                            {% for key, value in judgements.items() %}
+                                {{ scorestatel(key, value) }}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

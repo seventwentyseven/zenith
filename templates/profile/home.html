@@ -5,7 +5,56 @@
 {% endblock %}
 
 {% block content %}
-fdogldfkgjkldfgldfjljk
+<div class="flex flex-col w-full mt-5 lg:mt-0">
+    <!-- Head Block with user info-->
+    <div class="w-11/12 mx-auto rounded-lg bg-hsl-15">
+        <!--
+            ! ------------------------------------------------------------
+            ! Profile banner and avatar
+            ! ------------------------------------------------------------
+            !-->
+        <div class="w-full">
+            <div class="w-full bg-hsl-50 h-48 rounded-t-lg"
+            style="background-image: url(https://{{domain()}}/banners/{{ user_data['id'] }}); background-repeat: no-repeat; background-size: cover; background-position: center;">
+                <span class="text-black">def750</span>
+            </div>
+            <div class="absolute -mt-20 ml-5">
+                <img class="bg-hsl-10 h-36 w-36 rounded-lg shadow-md"
+                     src="https://a.{{ domain() }}/{{ user_data['id'] }}"
+                     onerror="this.src='/static/images/avatar_notwork.png';">
+            </div>
+        </div>
+
+        <!--
+            ! ------------------------------------------------------------
+            ! Profile general information
+            ! ------------------------------------------------------------
+            !-->
+        <div class="bg-primary p-5 pt-20 flex flex-col">
+            <div class="text-sm mt-2 text-gray-200">
+                <div class="flex flex-row ml-auto space-x-2 items-center">
+                    <div class="mb-1 h-5 w-auto mr-1">
+                        <span>Joined </span> <span class="font-bold">April 12 2021</span>
+                    </div>
+                    <div class="mb-1 h-5 w-auto mr-1">
+                        <span>Last Seen </span> <span class="font-bold">Yesterday</span>
+                    </div>
+                </div>
+                <div class="flex flex-row ml-auto space-x-2 items-center break-normal">
+                    <div class="mb-1 h-5 w-auto mr-1">
+                        <i class="fab fa-discord mr-0.5 text-hsl-80"></i><span class="text-hsl-90">def750#2296</span>
+                    </div>
+                    <div class="mb-1 h-5 w-auto mr-1">
+                        <i class="fab fa-twitter mr-0.5 text-hsl-80"></i><a href="https://twitter.com/def750_person" class="text-hsl-90 hover:text-hsl-70 transition duration-200">@def750_person</a>
+                    </div>
+                    <div class="mb-1 h-5 w-auto mr-1">
+                        <i class="fas fa-globe mr-0.5 text-hsl-80"></i><a href="https://seventwentyseven.tk" class="text-hsl-90 hover:text-hsl-70 transition duration-200">seventwentyseven.tk</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block bottom %}

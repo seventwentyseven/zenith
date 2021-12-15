@@ -428,14 +428,68 @@ async def scores(mods:str="vn", scoreid:int="0"):
     del(ugrade)
     s['play_time'] = s['play_time'].strftime("%d.%m.%Y %H:%M")
 
+    #Repr mods
+    if s['mods'] != 0:
+        s['mods'] = f"+{Mods(int(s['mods']))!r}"
+    else:
+        s['mods'] = 'No Mod'
+
     judgements = parseJudgements(s)
     diffColor = getDiffColor(float(s['diff']))
-    return await render_template('scorepage.html', s=s, diffColor=diffColor, user=user, judgements=judgements)
+
+    #Reassign score stats for iteration in stats grid
+    header_stats = {
+        'accuracy': str(round(float(s['acc']), 2)) + "%",
+        'max combo': f"{s['max_combo']}x",
+        'pp': round(float(s['pp']), 2),
+    }
+    if s['mode'] == 3:
+        try:
+            header_stats['ratio'] = f"1 : {round(s['ngeki']/s['n300'],2)}"
+        except ZeroDivisionError:
+            header_stats['ratio'] = "1 : 0.00"
+
+    group_list = []
+    user_priv = Privileges(user['priv'])
+    if Privileges.Normal not in user_priv:
+        group_list.append(["RESTRICTED", "#FFFFFF"])
+    else:
+        if int(s['uid']) in glob.config.owners:
+            group_list.append(["OWNER", "#e84118"])
+        if Privileges.Dangerous in user_priv:
+            group_list.append(["DEV", "#9b59b6"])
+        elif Privileges.Admin in user_priv:
+            group_list.append(["ADM", "#fbc531"])
+        elif Privileges.Mod in user_priv:
+            group_list.append(["GMT", "#28a40c"])
+        if Privileges.Nominator in user_priv:
+            group_list.append(["BN", "#1e90ff"])
+        if Privileges.Alumni in user_priv:
+            group_list.append(["ALU", "#ea8685"])
+        if Privileges.Supporter in user_priv:
+            if Privileges.Premium in user_priv:
+                group_list.append(["❤❤", "#f78fb3"])
+            else:
+                group_list.append(["❤", "#f78fb3"])
+        elif Privileges.Premium in user_priv:
+            group_list.append(["❤❤", "#f78fb3"])
+        if Privileges.Whitelisted in user_priv:
+            group_list.append(["✓", "#28a40c"])
+        user['badges'] = group_list
+        group_list = []
+        user['latest_activity'] = time_ago(datetime.datetime.utcnow(), to_datetime(datetime.datetime.fromtimestamp(user['latest_activity']), format="%Y-%m-%d %H:%M:%S"), time_limit=1) + "ago"
+    return await render_template('scorepage.html', s=s, diffColor=diffColor, user=user, judgements=judgements, header_stats=header_stats)
 
 
 #!####################################################!#
 #!##################  PROFILE ZONE  ##################!#
 #!####################################################!#
+@frontend.route('/u')
+@frontend.route('/u/<id>')
+@frontend.route('/u/<id>/<page_type>')
+@frontend.route('/user')
+@frontend.route('/user/<id>')
+@frontend.route('/user/<id>/<page_type>')
 @frontend.route('/profile')
 @frontend.route('/profile/<id>')
 @frontend.route('/profile/<id>/<page_type>')

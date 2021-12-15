@@ -39,15 +39,15 @@
   {% endblock %}
 </head>
 
-<body class="flex flex-col h-screen overflow-y-auto text-white bg-hsl-10"
-      style="background: url(https://seventwentyseven.tk/banners/4);
-             background-position: center; background-size: cover; background-repeat: no-repeat;">
+<body class="flex flex-col h-screen overflow-y-auto text-white bg-hsl-10">
+  <!--style="background: url(https://seventwentyseven.tk/banners/4);
+             background-position: center; background-size: cover; background-repeat: no-repeat;">-->
   <!--! Header-->
   {% include 'components/navbar.html' %}
   <div class="w-full flex flex-col">
     <div class="flex flex-col lg:flex-row w-full md:w-11/12 mt-5 mx-auto mb-3">
       <!--! Sidebar -->
-      <div class="w-full lg:w-48 h-full bg-hsl-15 rounded-lg">
+      <div class="w-full lg:w-48 bg-hsl-10 max-h-80 bg-opacity-70 rounded-lg">
         <ul class="list-none text-md p-3">
           <a href="">
             <li class="hover:bg-hsl-35 rounded-lg w-full transition duration-200 py-2 mb-0.5" id="sidebar-home">
@@ -91,7 +91,7 @@
         </ul>
       </div>
       <!--! Content -->
-      <div class="min-h-screen ml-2">
+      <div class="min-h-screen ml-0 lg:ml-2 w-full">
         {% block content %}
         {% endblock %}
       </div>

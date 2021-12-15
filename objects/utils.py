@@ -231,7 +231,7 @@ async def updateSession(session, id:int=None):
         session['user_data']['is_dev'] = True
     else:
         session['user_data']['is_dev'] = False
-    if int(session['user_data']['is_dev']) in glob.config.owners:
+    if int(session['user_data']['id']) in glob.config.owners:
         session['user_data']['is_owner'] = True
     else:
         session['user_data']['is_owner'] = False
