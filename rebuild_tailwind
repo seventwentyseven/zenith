@@ -1,2 +1,2 @@
 # export NODE_ENV=production
-cd /opt/zenith/styles/ && npx postcss src/main.scss -o /opt/zenith/static/css/style.css
+cd /opt/zenith/styles/ && npx postcss src/main.css -o /opt/zenith/static/css/style.css

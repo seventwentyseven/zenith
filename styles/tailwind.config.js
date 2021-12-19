@@ -1,7 +1,7 @@
 main = "275"
 module.exports = {
-    purge: [
-      "../templates/**/*.html"
+    content: [
+      "../templates/**/*.html",
     ],
     darkMode: 'class',
     theme: {
@@ -60,10 +60,6 @@ module.exports = {
             '10-15': 'hsl('+ main +', 10%, 15%)',
           }
         }
-      },
-    },
-    variants: {
-      extend: {
       },
     },
     plugins: [

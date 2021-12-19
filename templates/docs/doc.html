@@ -1,12 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'docs/base.html' %}
 {% block header %}
 {% endblock %}
 
 {% block title %}{% endblock %}
 
 {% block content %}
-<div class="flex w-11/12 mx-auto bg-hsl-15 rounded-lg min-h-screen">
-    <div class="prose dark:prose-invert" id="a">
+<div class="flex bg-hsl-15 min-h-screen w-full">
+    <div class="m-4 prose prose-invert">
     {% for line in output %}
     {{ line|safe }}
     {% endfor %}

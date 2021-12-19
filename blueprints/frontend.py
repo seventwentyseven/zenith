@@ -481,6 +481,11 @@ async def scores(mods:str="vn", scoreid:int="0"):
         user['latest_activity'] = time_ago(datetime.datetime.utcnow(), to_datetime(datetime.datetime.fromtimestamp(user['latest_activity']), format="%Y-%m-%d %H:%M:%S"), time_limit=1) + "ago"
     return await render_template('scorepage.html', s=s, diffColor=diffColor, user=user, judgements=judgements, header_stats=header_stats)
 
+
+@frontend.route('/docs')
+@frontend.route('/wiki')
+async def docshome():
+    return await render_template('docs/home.html')
 @frontend.route('/docs/<name>')
 async def docs(name:str=None):
     print('./static/docs/'+name+'.md')
@@ -495,7 +500,7 @@ async def docs(name:str=None):
     for line in lines:
         output.append(markdown.markdown(line))
 
-    return await render_template('doc.html', output=output)
+    return await render_template('docs/doc.html', output=output)
 
 
 
