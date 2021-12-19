@@ -1,64 +1,24 @@
 {% extends 'base.html' %}
-{% block title %} Login {% endblock %}
+{% block title %} Request Beatmap {% endblock %}
 {% block header %}
 {% endblock%}
 
 {% block content %}
-<div class="flex flex-col flex-1 w-full overflow-y-auto" id="app">
-    <div class="flex-grow">
-        <div class="w-full mx-auto my-6 xl:px-8 xl:w-5/12" style="max-width: 512px;">
-            {% if flash %}
-            {% include 'components/flash.html' %}
-            {% endif %}
-            <div class="h-auto bg-hsl-20 w-full rounded-2xl">
-                <div class="h-28 rounded-t-2xl"
-                style="background: linear-gradient(hsl(275, 20%, 20%, 0.5),
-                     hsl(275, 20%, 20%, 0.5)), url(https://i.ytimg.com/vi/y2A3hLMWk6M/maxresdefault.jpg);
-                       background-position: center; background-size: cover;">
-                    <h1 class="h-full w-full text-center text-4xl font-light text-white flex justify-center justify-items-center content-center items-center">Login</h1>
-                </div>
-                <div class="flex flex-col">
-                    <form class="p-8 space-y-6" action="#" method="POST">
-                        <div class="rounded-md shadow-sm">
-                            <div class="mb-1 sm:mb-2">
-                                {% if error and error['type'] == 'name' %}
-                                    <label class="ml-4 text-red-600 italic font-normal text-sm">{{error['msg']}}</label>
-                                {% endif %}
-                                <input placeholder="Username" required="" type="text" class="flex-grow w-full px-4 mb-1 mt-1 font-medium text-white transition duration-200 rounded shadow-sm appearance-none placeholder-hsl-80 text-semibold h-11 bg-hsl-15 focus:outline-none focus:shadow-outline" id="name" name="name">
-                            </div>
-                            <div class="mb-1 sm:mb-2">
-                                {% if error and error['type'] == 'password' %}
-                                    <label class="ml-4 text-red-600 italic font-normal text-sm">{{error['msg']}}</label>
-                                {% endif %}
-                                <input placeholder="Password" required="" type="password" class="flex-grow w-full px-4 mb-2 font-medium text-white transition duration-200 rounded shadow-sm appearance-none placeholder-hsl-80 text-semibold h-11 bg-hsl-15 focus:outline-none focus:shadow-outline mt-1" id="password" name="password">
-                            </div>
-                        </div>
-                        <div>
-                            <button type="submit" class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md bg-hsl-15 group hover:bg-hsl-40 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </span>
-                                    Sign in
-                            </button>
-                        </div>
-                        <div class="flex md:flex-row justify-between flex-col">
-                            <div class="md:w-5.7/12 w-full">
-                                <button type="submit" class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md bg-hsl-15 group hover:bg-hsl-40 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200">
-                                        <span><i class="fas fa-lock mr-1"></i> Forgot Password</span>
-                                </button>
-                            </div>
-                            <div class="md:w-5.7/12 w-full mt-2 md:mt-0">
-                                <button type="submit" class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md bg-hsl-15 group hover:bg-hsl-40 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200">
-                                    <span><i class="fas fa-user mr-1"></i> Forgot Username</span>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<div class="flex flex-col w-full md:w-11/12 lg:w-10/12 mx-auto my-4">
+    {% if flash %}
+    <div class="w-11/12 md:w-full mx-auto mb">
+        {% include 'components/flash.html' %}
+    </div>
+    {% endif %}
+    <div class="flex content-center items-center w-full h-16 bg-hsl-15-20 mx-auto mt-8">
+        <div class="flex content-center items-center text-base font-semibold ml-5 lg:ml-8">
+            <div class="w-8 h-8 mr-3" style="background-position: center; background-size: cover;
+                 background-image: url(https://osu.ppy.sh/assets/images/beatmapsets.d82379a6.svg);"></div>
+            <span>Request Beatmap Ranking</span>
         </div>
+    </div>
+    <div class="h-32 py-2 bg-hsl-15">
+        <span>Want pp? Yeah me too :trolley:</span>
     </div>
 </div>
 {% endblock %}

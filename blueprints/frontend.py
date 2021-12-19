@@ -183,7 +183,7 @@ async def logout():
 @frontend.route('/testflash/<status>/')
 @frontend.route('/testflash/<status>/<message>')
 async def testflash(status:str="error", message:str="Lorem Ipsum"):
-    return await flash(status, message, 'home')
+    return await flash(status, message, 'request')
 
 @frontend.route('/lb')
 @frontend.route('/leaderboards')
@@ -503,7 +503,15 @@ async def docs(name:str=None):
     return await render_template('docs/doc.html', output=output)
 
 
-
+@frontend.route('/request')
+async def beatmap_request():
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+        if Privileges.Normal not in Privileges(int(session['user_data']['priv'])):
+            return (await render_template('errors/404.html'), 404)
+    else:
+        return await flash('error', 'You must be logged in to access that page', 'login')
+    return await render_template('request.html')
 
 #!####################################################!#
 #!##################  PROFILE ZONE  ##################!#
@@ -515,6 +523,8 @@ async def docs(name:str=None):
 @frontend.route('/user/<id>')
 @frontend.route('/user/<id>/<page_type>')
 async def profile(id:str=None, page_type:str='home'):
+    if 'authenticated' in session:
+        await utils.updateSession(session)
     if id == None:
         return (await render_template('errors/404.html'), 404)
     user_data = await glob.db.fetch(
