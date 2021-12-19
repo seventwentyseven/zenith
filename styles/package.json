@@ -6,6 +6,7 @@
 		"postcss-import": "^14.0.2"
 	},
 	"devDependencies": {
+		"@tailwindcss/typography": "^0.4.1",
 		"autoprefixer": "^10.4.0",
 		"postcss": "^8.4.4",
 		"tailwindcss": "^2.2.16"

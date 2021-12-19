@@ -40,14 +40,38 @@
 </head>
 
 <body class="flex flex-col h-screen overflow-y-auto text-white bg-hsl-10">
-  <!--style="background: url(https://seventwentyseven.tk/banners/4);
-             background-position: center; background-size: cover; background-repeat: no-repeat;">-->
+  <style>
+    /* width */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: hsl(275, 10%, 10%);
+      width: 14px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: hsl(275, 50%, 50%);
+      border-radius: 9001px; /* Over 9 thousand */
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: hsl(275, 50%, 30%);
+    }
+  </style>
   <!--! Header-->
   {% include 'components/navbar.html' %}
-  <div class="w-full flex flex-col">
+  <div class="w-full flex flex-col"
+       style="background: linear-gradient(hsla(275, 25%, 25%, 20%), hsl(275, 10%, 10%)),
+       url(https://seventwentyseven.tk/backgrounds/{{ user_data['id']}});
+       background-size: contain; background-repeat: no-repeat; background-color: hsl(275, 10%, 10%);">
     <div class="flex flex-col lg:flex-row w-full md:w-11/12 mt-5 mx-auto mb-3">
       <!--! Sidebar -->
-      <div class="w-full lg:w-48 bg-hsl-10 max-h-80 bg-opacity-70 rounded-lg">
+      <div class="w-11/12 lg:w-48 mx-auto lg:mx-0 bg-hsl-15 lg:bg-hsl-10 max-h-80 bg-opacity-70 rounded-lg">
         <ul class="list-none text-md p-3">
           <a href="">
             <li class="hover:bg-hsl-35 rounded-lg w-full transition duration-200 py-2 mb-0.5" id="sidebar-home">

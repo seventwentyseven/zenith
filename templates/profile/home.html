@@ -7,7 +7,7 @@
 {% block content %}
 <div class="flex flex-col w-full mt-5 lg:mt-0">
     <!-- Head Block with user info-->
-    <div class="w-11/12 mx-auto rounded-lg bg-hsl-15">
+    <div class="w-full lg:ml-7 mx-auto rounded-lg bg-hsl-15 mb-3">
         <!--
             ! ------------------------------------------------------------
             ! Profile banner and avatar
@@ -16,7 +16,14 @@
         <div class="w-full">
             <div class="w-full bg-hsl-50 h-48 rounded-t-lg"
             style="background-image: url(https://{{domain()}}/banners/{{ user_data['id'] }}); background-repeat: no-repeat; background-size: cover; background-position: center;">
-                <span class="text-black">def750</span>
+                <div class="flex ml-44 h-full items-end">
+                    <div class="mb-3">
+                        <div class="flex items-center content-center h-10 bg-hsl-15-10 bg-opacity-50 px-2 rounded-md ">
+                            <img src="/static/images/flags/{{ user_data['country'] }}.png" class="player-flag">
+                            <span class="flex items-center content-center ml-1 text-2xl font-semibold">{% if clan != False %}[{{ clan['tag']|upper }}] {% endif %}def750</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="absolute -mt-20 ml-5">
                 <img class="bg-hsl-10 h-36 w-36 rounded-lg shadow-md"
@@ -54,6 +61,9 @@
             </div>
         </div>
     </div>
+    <div class="w-full lg:ml-7 mx-auto bg-hsl-15 h-20 rounded-lg mb-3"></div>
+
+
 </div>
 {% endblock %}
 

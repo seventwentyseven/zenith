@@ -8,6 +8,7 @@ import os
 import time
 import datetime
 from pandas import to_datetime
+import markdown
 
 from cmyui.logging import Ansi
 from cmyui.logging import log
@@ -480,6 +481,24 @@ async def scores(mods:str="vn", scoreid:int="0"):
         user['latest_activity'] = time_ago(datetime.datetime.utcnow(), to_datetime(datetime.datetime.fromtimestamp(user['latest_activity']), format="%Y-%m-%d %H:%M:%S"), time_limit=1) + "ago"
     return await render_template('scorepage.html', s=s, diffColor=diffColor, user=user, judgements=judgements, header_stats=header_stats)
 
+@frontend.route('/docs/<name>')
+async def docs(name:str=None):
+    print('./static/docs/'+name+'.md')
+    try:
+        with open('./static/docs/'+name+'.md') as f:
+            lines = [line.rstrip() for line in f]
+    except FileNotFoundError:
+        return await flash('error', 'File not found', 'home')
+
+    output = []
+    # Strips the newline character
+    for line in lines:
+        output.append(markdown.markdown(line))
+
+    return await render_template('doc.html', output=output)
+
+
+
 
 #!####################################################!#
 #!##################  PROFILE ZONE  ##################!#
@@ -490,9 +509,6 @@ async def scores(mods:str="vn", scoreid:int="0"):
 @frontend.route('/user')
 @frontend.route('/user/<id>')
 @frontend.route('/user/<id>/<page_type>')
-@frontend.route('/profile')
-@frontend.route('/profile/<id>')
-@frontend.route('/profile/<id>/<page_type>')
 async def profile(id:str=None, page_type:str='home'):
     if id == None:
         return (await render_template('errors/404.html'), 404)
@@ -505,9 +521,14 @@ async def profile(id:str=None, page_type:str='home'):
     # no user
     if not user_data:
         return (await render_template('404.html'), 404)
-
     #Update session
     if 'authenticated' in session:
         await utils.updateSession(session)
 
-    return await render_template('profile/home.html', user_data=user_data)
+
+    if user_data['clan_id'] == 0:
+        clan = False
+    else:
+        clan = await glob.db.fetch('SELECT * FROM clans WHERE id=%s', user_data['clan_id'])
+
+    return await render_template('profile/home.html', user_data=user_data, clan=clan)
