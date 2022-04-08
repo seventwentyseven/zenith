@@ -1,0 +1,48 @@
+{% extends 'profile/base.html' %}
+{% block title %}Profile{% endblock %}
+{% block header %}
+<script>
+    function Capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="bg-hsl-20 rounded-lg flex flex-col">
+    <!-- Header -->
+    <div class="text-xl font-medium pl-5 py-2 bg-hsl-25 rounded-t-lg">
+        <i class="fas fa-heart mr-2 w-auto"></i>Favorite Maps
+    </div>
+    <!-- Content -->
+    <div class="m-3 grid grid-cols-1 lg:grid-cols-2 gap-2" id="most-played">
+        <div class="col-span-1 row-span-1 h-24 bg-hsl-30 rounded-lg"
+             style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.66), hsl(var(--main), 10%, 10%, 0.66)),
+             url(https://assets.ppy.sh/beatmaps/996773/covers/fullsize.jpg);
+             background-size: cover; background-repeat: no-repeat; background-position: center;">
+            <div class="h-full mx-3 flex flex-col justify-center text-hsl-90 whitespace-nowrap">
+                <div class="text-lg">
+                    <span>Papajak Watykaniak</span>
+                    <span class="mx-1">-</span>
+                    <span class="truncate overflow-hidden">Papież Pedał Dzieci Jebał fghasduihfasduihfasdiopufh</span>
+                </div>
+                <div class="">
+                    <p class="">Mapped by <span class="text-hsl-80">Johanes Paul II</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex content-center justify-center w-full pb-5">
+        <button class="px-5 py-2 rounded bg-hsl-15 hover:bg-hsl-40 transform duration-200"
+                onclick="loadFavs(cur_favs)">
+            Load More
+        </button>
+    </div>
+</div>
+{% endblock %}
+{% block bottom %}
+<script>
+    // Display user id, this is not debug
+    console.log("userid: {{ user['id'] }}")
+</script>
+{% endblock %}

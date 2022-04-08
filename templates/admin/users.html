@@ -1,0 +1,72 @@
+{% extends 'admin/base.html' %}
+{% block header %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.33.2/apexcharts.min.js" integrity="sha512-iBEfFld2z1SAXCPmgoA40VQtqGP0cEJw4fy+t3ARW30uEfzf8hyrmm4mc5qdth3wZRPdKTv/auk5WH52klRVDg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endblock %}
+{% block title %}Users{% endblock %}
+{% block pagetitle %}Users{% endblock %}
+{% block content %}
+
+<div class="row row-deck row-cards">
+    <div class="col-12">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-vcenter table-mobile-md card-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Registered</th>
+                            <th>Role</th>
+                            <th class="w-1"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function loadUsers(offset) {
+        axios.get('/wapi/admin/get_user_list')
+        .then((r) => {
+            document.getElementById('user-table').innerHTML = '';
+            for (el of r.data.result) {
+                document.getElementById('user-table').innerHTML += `<tr>
+                    <td data-label="Name">
+                        <div class="d-flex py-1 align-items-center">
+                            <span class="avatar me-2" style="background-image: url(https://a.seven27.tk/${el.id})"></span>
+                            <div class="flex-fill">
+                                <div class="font-weight-medium">${el.name}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td data-label="Registered">
+                        <div>Registered: ${el.creation_time}</div>
+                        <div class="text-muted">Last Seen: ${el.latest_activity} </div>
+                    </td>
+                    <td data-label="Role">
+                        ${el.priv}
+                    </td>
+                    <td>
+                        <div class="btn-list flex-nowrap">
+                            <a href="users/edit/${el.id}" class="btn">
+                                Edit
+                            </a>
+                            <a href="/u/${el.id}" target="_blank" class="btn">
+                                View Profile
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                `
+            }
+        })
+    }
+</script>
+
+
+{% endblock %}
+{% block bottom %}
+<script>
+</script>
+{% endblock %}
