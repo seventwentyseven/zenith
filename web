@@ -1,3 +1,0 @@
-screen -dmS web hypercorn main.py
-sleep 0.1s
-screen -x web
