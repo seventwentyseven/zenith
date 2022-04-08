@@ -647,10 +647,10 @@ async def usersList():
     q = request.args.get('q', default=None, type=str)
     o = request.args.get('o', default=None, type=int)
     params = {}
-
-    if q:
+    console.log(q, o)
+    if q and q != 'null':
         q += "%"
-        query = "WHERE name LIKE :q "
+        query = "WHERE name LIKE :q"
         params['q'] = q
     else:
         query = ""
@@ -681,5 +681,8 @@ async def usersList():
         else:
            el['priv'] = getHighestPriv(el['priv'])
 
-
-    return {'success': True, 'result': res}
+    # Count users
+    count = await app.state.services.database.fetch_val(
+        "SELECT COUNT(id) FROM users"
+    )
+    return {'success': True, 'result': res, 'user_count': count}

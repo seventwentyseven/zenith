@@ -24,11 +24,42 @@
             </div>
         </div>
     </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-footer pagination-flex">
+                <p class="m-0 text-muted">Showing
+                    <span id="from-el"></span> to <span id="to-el"></span> of <span id="total"></span> entries
+                </p>
+                <ul class="pagination rm1" id="pagination"></ul>
+            </div>
+        </div>
+    </div>
 </div>
+<style>
+    @media (min-width: 600px) {
+        .pagination-flex {
+            flex-direction: row !important;
+        }
+        .rm1 {
+            margin: 0px;
+        }
+    }
+    .pagination-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+    }
+    .rm1 {
+        margin: 3px 0px 0px 0px;
+    }
+</style>
 <script>
-    function loadUsers(offset) {
-        axios.get('/wapi/admin/get_user_list')
+    function loadUsers(page=5, query=null) {
+        offset = page*50
+        axios.get(`/wapi/admin/get_user_list?o=${offset}&q=${query}`)
         .then((r) => {
+            // Swap table elements
             document.getElementById('user-table').innerHTML = '';
             for (el of r.data.result) {
                 document.getElementById('user-table').innerHTML += `<tr>
@@ -36,23 +67,23 @@
                         <div class="d-flex py-1 align-items-center">
                             <span class="avatar me-2" style="background-image: url(https://a.seven27.tk/${el.id})"></span>
                             <div class="flex-fill">
-                                <div class="font-weight-medium">${el.name}</div>
+                                <div class="font-weight-medium text-white">${el.name}</div>
                             </div>
                         </div>
                     </td>
                     <td data-label="Registered">
-                        <div>Registered: ${el.creation_time}</div>
+                        <div class="text-white">Registered: ${el.creation_time}</div>
                         <div class="text-muted">Last Seen: ${el.latest_activity} </div>
                     </td>
                     <td data-label="Role">
-                        ${el.priv}
+                        <span class="text-white">${el.priv}</span>
                     </td>
                     <td>
                         <div class="btn-list flex-nowrap">
-                            <a href="users/edit/${el.id}" class="btn">
+                            <a href="users/edit/${el.id}" class="btn text-white">
                                 Edit
                             </a>
-                            <a href="/u/${el.id}" target="_blank" class="btn">
+                            <a href="/u/${el.id}" target="_blank" class="btn text-white">
                                 View Profile
                             </a>
                         </div>
@@ -60,6 +91,79 @@
                 </tr>
                 `
             }
+
+            // Update page data info
+            document.getElementById('total').innerHTML = r.data.user_count
+            document.getElementById('from-el').innerHTML = offset+1
+            to_el_val = offset+50
+            if (to_el_val > r.data.user_count) {
+                to_el_val = r.data.user_count
+            }
+            document.getElementById('to-el').innerHTML = to_el_val
+
+            // Update pagination
+            // First page, previous page, 5 pages, next page, last page
+            // Prevent page numbers below 0 or above max page number
+            // add page numbers to pagination
+            page = offset/50+1
+            document.getElementById('pagination').innerHTML = `
+            <li class="page-item">
+                <a class="page-link" onclick="loadUsers(0)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <polyline points="11 7 6 12 11 17"></polyline>
+                        <polyline points="17 7 12 12 17 17"></polyline>
+                    </svg>
+                </a>
+            </li>`
+
+            // Pagination for 5 pages if page num = 1
+            max_page = Math.ceil(r.data.user_count/50)
+            if (page < 3) {
+                for (i=0; i<5; i++) {
+                    document.getElementById('pagination').innerHTML += `
+                    <li class="page-item" id="pagination-p-${i+1}">
+                        <a class="page-link" onclick="loadUsers(${i})">
+                            ${i+1}
+                        </a>
+                    </li>`
+                }
+                document.getElementById('pagination-p-' + page).classList.add('active')
+            }
+            // Pagination for 5 pages if page < max_page-2, 3rd page is current
+            else if (page < max_page-2) {
+                for (i=0; i<5; i++) {
+                    document.getElementById('pagination').innerHTML += `
+                    <li class="page-item" id="pagination-p-${page+i-2}">
+                        <a class="page-link" onclick="loadUsers(${page+i-3})">
+                            ${page+i-2}
+                        </a>
+                    </li>`
+                }
+                document.getElementById('pagination-p-' + (page)).classList.add('active')
+            } else {
+                for (i=6; i>0; i--) {
+                    document.getElementById('pagination').innerHTML += `
+                    <li class="page-item" id="pagination-p-${max_page-i}">
+                        <a class="page-link" onclick="loadUsers(${max_page-i-1})">
+                            ${max_page-i}
+                        </a>
+                    </li>`
+                }
+                document.getElementById('pagination-p-' + (max_page-1)).classList.add('active')
+            }
+
+            document.getElementById('pagination').innerHTML += `
+            <li class="page-item">
+                <a class="page-link" onclick="loadUsers(${Math.ceil(r.data.user_count/50-1)})">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <polyline points="7 7 12 12 7 17"></polyline>
+                        <polyline points="13 7 18 12 13 17"></polyline>
+                    </svg>
+                </a>
+            </li>
+            `
         })
     }
 </script>
@@ -68,5 +172,6 @@
 {% endblock %}
 {% block bottom %}
 <script>
+    loadUsers(0)
 </script>
 {% endblock %}
