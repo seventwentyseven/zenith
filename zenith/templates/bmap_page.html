@@ -1,0 +1,573 @@
+{% extends 'base.html' %}
+{% block title %}{{ m['creator'] }} - {{ m['title'] }}{% endblock %}
+
+{% block header %}
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+<script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+    
+        //If someone is reading this code, please don't do it to yourself and use timeago lib
+        //also, let me know if you manage to use it because im too dumb and .format
+        //isn't working xD
+        function timeSince(date) {
+
+            var seconds = Math.floor((new Date() - date) / 1000);
+
+            var interval = seconds / 31536000;
+
+            if (interval > 1) {
+                return Math.floor(interval) + " years ago";
+            }
+            interval = seconds / 2592000;
+            if (interval > 1) {
+                return Math.floor(interval) + " months ago";
+            }
+            interval = seconds / 86400;
+            if (interval > 1) {
+                return Math.floor(interval) + " days ago";
+            }
+            interval = seconds / 3600;
+            if (interval > 1) {
+                return Math.floor(interval) + " hours ago";
+            }
+            interval = seconds / 60;
+            if (interval > 1) {
+                return Math.floor(interval) + " minutes ago";
+            }
+            return Math.floor(seconds) + " second ago";
+        }
+
+    //Other stuff
+    const numbermods = [
+        {mod_text: "MR", mod_bit: 1 << 30},
+        {mod_text: "V2", mod_bit: 1 << 29},
+        {mod_text: "2K", mod_bit: 1 << 28},
+        {mod_text: "3K", mod_bit: 1 << 27},
+        {mod_text: "1K", mod_bit: 1 << 26},
+        {mod_text: "KC", mod_bit: 1 << 25},
+        {mod_text: "9K", mod_bit: 1 << 24},
+        {mod_text: "TG", mod_bit: 1 << 23},
+        {mod_text: "CN", mod_bit: 1 << 22},
+        {mod_text: "RD", mod_bit: 1 << 21},
+        {mod_text: "FI", mod_bit: 1 << 20},
+        {mod_text: "8K", mod_bit: 1 << 19},
+        {mod_text: "7K", mod_bit: 1 << 18},
+        {mod_text: "6K", mod_bit: 1 << 17},
+        {mod_text: "5K", mod_bit: 1 << 16},
+        {mod_text: "4K", mod_bit: 1 << 15},
+        {mod_text: "PF", mod_bit: 1 << 14},
+        {mod_text: "AP", mod_bit: 1 << 13},
+        {mod_text: "SO", mod_bit: 1 << 12},
+        {mod_text: "AU", mod_bit: 1 << 11},
+        {mod_text: "FL", mod_bit: 1 << 10},
+        {mod_text: "NC", mod_bit: 1 << 9},
+        {mod_text: "HT", mod_bit: 1 << 8},
+        {mod_text: "RX", mod_bit: 1 << 7},
+        {mod_text: "DT", mod_bit: 1 << 6},
+        {mod_text: "SD", mod_bit: 1 << 5},
+        {mod_text: "HR", mod_bit: 1 << 4},
+        {mod_text: "HD", mod_bit: 1 << 3},
+        {mod_text: "TD", mod_bit: 1 << 2},
+        {mod_text: "EZ", mod_bit: 1 << 1},
+        {mod_text: "NF", mod_bit: 1}
+    ]
+    function mods2str(mod) {
+        let mod_text = '+'
+        let mod_num = 0
+        if (!isNaN(mod)) {
+            mod_num = mod
+            let bit = mod.toString(2)
+            let fullbit = "0000000000000000000000000000000".substr(bit.length) + bit
+            for (let i = 30; i >= 0; i--) {
+                if (fullbit[i] == 1)  {
+                    mod_text += numbermods[i].mod_text
+                }
+            }
+        } else {
+            mod = mod.toUpperCase()
+            if (mod !== 'NM') {
+                for (let i = 0; i < mod.length / 2; i++) {
+                    let find_mod = numbermods.find(m => m.mod_text == mod.substr(i*2, 2))
+                    mod_text += find_mod.mod_text
+                    mod_num |= find_mod.mod_bit
+                }
+            }
+        }
+        if (mod_text.includes('NC') && mod_text.includes('DT')) mod_text = mod_text.replace('DT', '');
+        if (mod_text.includes('PF') && mod_text.includes('SD')) mod_text = mod_text.replace('SD', '');
+        if (mod_num == 0) mod_text = '';
+        return {mod_text: mod_text, mod_num: mod_num}
+    }
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="flex flex-col w-full md:w-10/12 max-w-screen-xl md:mx-auto my-12 font-['Comfortaa']">
+    <div class="py-3 rounded-t-lg"
+        style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.50),
+        hsl(var(--main), 10%, 10%, 0.65)), url(https://assets.ppy.sh/beatmaps/{{ m['set_id'] }}/covers/fullsize.jpg);
+        background-position: center; background-size: cover;">
+        <div class="w-full bg-zinc-900 bg-opacity-70 h-auto lg:h-12 -mt-3 rounded-t-lg">
+            <div class="grid gap-x-1.5 grid-cols-3 grid-rows-3 sm:grid-cols-4 sm:grid-rows-2
+                lg:flex justify-between items-center py-1.5 lg:py-0
+                mx-1 lg:mx-20 text-xs sm:text-sm h-full">
+
+                <div class="col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-plays_text">Plays:</span>
+                    <span class="text-hsl-90" id="map_info-plays_value"></span>
+                </div>
+                <div class="col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-favs_text">Favs:</span>
+                    <span class="text-hsl-90" id="map_info-favs_value">{{ m['favs'] }}</span>
+                </div>
+                <div class="col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-ar_text">AR:</span>
+                    <span class="text-hsl-90" id="map_info-ar_value"></span>
+                </div>
+                <div class="col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-hp_text">HP:</span>
+                    <span class="text-hsl-90" id="map_info-hp_value"></span>
+                </div>
+                <div class="col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-od_text">OD:</span>
+                    <span class="text-hsl-90" id="map_info-od_value"></span>
+                </div>
+                <div class="col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-cs_text">CS:</span>
+                    <span class="text-hsl-90" id="map_info-cs_value"></span>
+                </div>
+                <div class="col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-length_text">Length:</span>
+                    <span class="text-hsl-90" id="map_info-length_value"></span>
+                </div>
+                <div class="col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-bpm_text">BPM:</span>
+                    <span class="text-hsl-90" id="map_info-bpm_value"></span>
+                </div>
+                <div class="col-span-4 lg:col-span-1 row-span-1 flex items-center justify-center h-full mx-1 lg:mx-1.5">
+                    <span class="mr-1" id="map_info-stars_text"><i class="fas fa-star"></i></span>
+                    <span class="text-hsl-90" id="map_info-stars_value"></span>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col mx-8 justify-between">
+            <div class="flex flex-col items-center my-20">
+                <span class="text-3xl sm:text-4xl lg:text-5xl font-light text-center">{{ m['title'] }}</span>
+                <span class="text-2xl sm:text-3xl lg:text-3xl font-light -mt-1.5 lg:-mt-0
+                    text-center">by {{ m['artist'] }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="bg-zinc-900 bg-opacity-90 py-2">
+        <div class="flex flex-col lg:flex-row justify-between text-2xl w-11/12 mx-auto">
+            <div class="flex flex-row text-sm">
+                <span class="font-thin mr-1">Mapped by:</span>
+                <span class="text-hsl-90">{{ m['creator' ] }}</span>
+            </div>
+            <div class="flex flex-row text-sm">
+                <span class="font-thin mr-1">Status:</span>
+                <span class="text-hsl-90" id="map_info-status_value"></span>
+            </div>
+            <div class="flex flex-row text-sm" id="last_update-box">
+                <span class="font-thin mr-1">Last Update:</span>
+                <span class="text-hsl-90" id="map_info-last_update_value"></span>
+            </div>
+        </div>
+        <div class="flex flex-row text-sm w-11/12 mx-auto mt-1.5">
+            <p class="text-hsl-90">
+                <span class="font-thin mr-1 text-white break-all">Difficulty Name:</span>
+                <p id="diffname-value" class="text-hsl-90"></p>
+            </p>
+        </div>
+    </div>
+    <div class="bg-zinc-900 bg-opacity-70">
+        <div class="flex flex-row flex-wrap w-['95%'] mx-2 text-2xl py-1" id="diff-row">
+        </div>
+    </div>
+    <div class="bg-zinc-900 bg-opacity-40 py-2">
+        <!-- Fav then download buttons bg-hsl-50 on hover 60 -->
+        <div class="flex flex-row flex-wrap mt-auto text-sm font-semibold mx-2">
+            <button class="text-white hover:text-hsl-90 flex items-center justify-center
+                mx-0.5 h-8 w-8 bg-hsl-50 hover:bg-hsl-60 transition duration-200 rounded my-0.5 disabled
+                opacity-50">
+                <i class="fas fa-heart text-base"></i>
+            </button>
+            <button class="text-white flex items-center justify-center mx-0.5 h-8 px-2
+                bg-hsl-50 hover:bg-hsl-60 transition duration-200 rounded my-0.5"
+                onclick="window.open('https://osu.ppy.sh/s/{{ set_id }}')">
+                <i class="fas fa-download mr-2 text-base"></i>
+                <span>Bancho</span>
+            </button>
+            <button class="text-white flex items-center justify-center mx-0.5 h-8 px-2
+                bg-hsl-50 hover:bg-hsl-60 transition duration-200 rounded my-0.5"
+                onclick="window.open('https://catboy.best/d/{{ set_id }}')">
+                <i class="fas fa-download mr-2 text-base"></i>
+                <span>Mino</span>
+            </button>
+            <button class="text-white flex items-center justify-center mx-0.5 h-8 px-2
+                bg-hsl-50 hover:bg-hsl-60 transition duration-200 rounded my-0.5"
+                onclick="window.open('https://api.chimu.moe/v1/download/{{ set_id }}')">
+                <i class="fas fa-download mr-2 text-base"></i>
+                <span>Chimu</span>
+            </button>
+            <button class="text-white flex items-center justify-center mx-0.5 h-8 px-2
+                bg-hsl-50 hover:bg-hsl-60 transition duration-200 rounded my-0.5"
+                onclick="window.open('https://kitsu.moe/d/{{ set_id }}')">
+                <i class="fas fa-download mr-2 text-base"></i>
+                <span>Kitsu</span>
+            </button>
+        </div>
+    </div>
+    <div class="flex flex-col bg-hsl-10 rounded-b-lg mt-12 rounded-t-lg">
+        <div class="bg-zinc-700 bg-opacity-50 w-full text-sm rounded-t-lg">
+            <div class="flex flex-row flex-wrap lg:flex-nowrap items-end justify-center h-full w-8/12 mx-auto">
+                <button class="px-3 pb-1 pt-2 whitespace-nowrap transition duration-300
+                    hover:bg-hsl-15 hover:border-b-3 border-hsl-60 hover:-mb-3px lg:rounded-tl-lg"
+                    onclick="get_lb(map_id, 0)" id="mode-button-0">
+                    osu!Std
+                </button>
+                <button class="px-3 pb-1 pt-2 whitespace-nowrap transition duration-300
+                    hover:bg-hsl-15 hover:border-b-3 border-hsl-60 hover:-mb-3px"
+                    onclick="get_lb(map_id, 1)" id="mode-button-1">
+                    osu!Taiko
+                </button>
+                <button class="px-3 pb-1 pt-2 whitespace-nowrap transition duration-300
+                    hover:bg-hsl-15 hover:border-b-3 border-hsl-60 hover:-mb-3px"
+                    onclick="get_lb(map_id, 2)" id="mode-button-2">
+                    osu!Catch
+                </button>
+                <button class="px-3 pb-1 pt-2 whitespace-nowrap transition duration-300
+                    hover:bg-hsl-15 hover:border-b-3 border-hsl-60 hover:-mb-3px"
+                    onclick="get_lb(map_id, 3)" id="mode-button-3">
+                    osu!Mania
+                </button>
+                <button class="px-3 pb-1 pt-2 whitespace-nowrap transition duration-300
+                    hover:bg-hsl-15 hover:border-b-3 border-hsl-60 hover:-mb-3px"
+                    onclick="get_lb(map_id, 4)" id="mode-button-4">
+                    osu!Std + RX
+                </button>
+                <button class="px-3 pb-1 pt-2 whitespace-nowrap transition duration-300
+                    hover:bg-hsl-15 hover:border-b-3 border-hsl-60 hover:-mb-3px"
+                    onclick="get_lb(map_id, 5)" id="mode-button-5">
+                    osu!Taiko + RX
+                </button>
+                <button class="px-3 pb-1 pt-2 whitespace-nowrap transition duration-300
+                    hover:bg-hsl-15 hover:border-b-3 border-hsl-60 hover:-mb-3px"
+                    onclick="get_lb(map_id, 6)" id="mode-button-6">
+                    osu!Catch + RX
+                </button>
+                <button class="px-3 pb-1 pt-2 whitespace-nowrap transition duration-300
+                    hover:bg-hsl-15 hover:border-b-3 border-hsl-60 hover:-mb-3px lg:rounded-tr-lg"
+                    onclick="get_lb(map_id, 8)" id="mode-button-8">
+                    osu!Std + AP
+                </button>
+
+            </div>
+        </div>
+        <div class="relative px-7 py-4 mx-auto overflow-hidden transition-all w-full">
+            <div class="relative overflow-x-auto">
+                <table class="relative table w-full overflow-x-auto text-white table-auto
+                    whitespace-nowrap border-separate text-xs"
+                    style="border-spacing: 0em 0.6em;">
+                    <thead class="text-hsl-90 pb-3">
+                        <tr class="uppercase text-xs">
+                            <th class="px-2.5 text-center"></th>
+                            <th class="px-2.5 text-center">Rank</th>
+                            <th class="w-full text-left min-w-max">Player</th>
+                            <th class="px-4   text-center">Grade</th>
+                            <th class="px-4   text-center">Score</th>
+                            <th class="px-4   text-center lowercase">pp</th>
+                            <th class="px-4   text-center">Acc</th>
+                            <th class="px-4   text-center">Max Combo</th>
+                            <th class="px-4   text-center">Time ago</th>
+                            <th class="px-4   text-center">mods</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard_body" class="text-sm">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom %}
+<style>
+  /* Change Autocomplete styles in Chrome*/
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    box-shadow: 0 0 0px 1000px rgba(0,0,0,0) inset;
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0px 1000px rgba(0,0,0,0) inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+/* clears the ‘X’ from Internet Explorer */
+input[type=search]::-ms-clear { display: none; width : 0; height: 0; }
+input[type=search]::-ms-reveal { display: none; width : 0; height: 0; }
+/* clears the ‘X’ from Chrome */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration { display: none; }
+</style>
+<script>
+    map_id = "{{ m['id'] }}"
+    diffs = {}
+    function loadMaps(set_id) {
+        // Fetch mapset diffs
+        axios.get('/wapi/mapset_diffs?id=' + set_id)
+        .then((r) => {
+            diffs = r.data.result
+            for (let i = 0; i < diffs.length; i++) {
+                let m = diffs[i]
+                document.getElementById('diff-row').innerHTML += `
+                <button class="flex items-center justify-center
+                    transition duration-200 rounded-full h-9 w-9
+                    hover:bg-hsl-20" onclick="swapDiffInfo(${m.id})"
+                    id="diff-row-${m.id}">
+                    <i class="mode-icon ${mode2str(m.mode)}" style="color: ${m.diff_color};"></i>
+                </button>`
+            }
+            swapDiffInfo(Number("{{ map_id }}"))
+        })
+    }
+    function addCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    // axios.get leaderboard data from https://{{ domain() }}/api/leaderboard
+    function get_lb(mapid, mode) {
+        axios.get(`https://api.{{ domain()}}/get_map_scores?id=${mapid}&scope=best&mode=${mode}`)
+        .then((r) => {
+            lb = document.getElementById('leaderboard_body')
+            lb.innerHTML = ``
+            let scores = r.data.scores
+            let rank = 0
+            for (let i = 0; i < scores.length; i++) {
+                s = scores[i]
+                lb.innerHTML += `
+                <tr class="truncate bg-hsl-15 table-el group">
+                    <td class="px-3 bg-hsl-10"></td>
+                    <td class="pr-2 pl-3 font-bold text-center rounded-l-lg">
+                        #${i+1}
+                    </td>
+                    <td class="py-1">
+                        <a href="https://{{ domain() }}/u/${s.userid}"
+                            class="flex items-center group transition duration-200">
+                            <img class="h-8 w-8 mr-2 rounded" src="https://a.{{ domain() }}/${s.userid}"
+                                alt="/static/images/avatar_notwork.png">
+                            <img src="/static/images/flags/${s.country.toUpperCase()}.png" class="w-7 mr-2">
+                            <span class="text-sm group-hover:text-hsl-80 w-32">${s.player_name}</span>
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-lg font-bold
+                            ${rank_colors(s.grade)}">${grade_normal(s.grade)}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-hsl-90">${addCommas(s.score)}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-hsl-90">${Math.round(s.pp * 100) / 100}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-hsl-90">${Math.round(s.acc * 100) / 100}%</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-hsl-90">${s.max_combo}x</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-hsl-90">${timeSince(new Date(s.play_time))}</span>
+                    </td>
+                    <td class="text-center rounded-r-lg">
+                        <span class="text-hsl-90">${mods2str(s.mods).mod_text}</span>
+                    </td>
+                    <td class="bg-hsl-10 text-white text-base lg:invisible group-hover:visible
+                        pl-4 pr-1 h-full hover:cursor-pointer"
+                        onclick="location.href='https://{{ domain() }}/score/${s.scoreid}'">
+                        <i class="fas fa-external-link-alt view-score-link"></i>
+                    </td>
+                </tr>
+                `
+            }
+
+            // Delete style from all mode-button-0 to mode-button-8
+            for (let i = 0; i < 9; i++) {
+                // If i == 7 skip iteration
+                if (i == 7) continue;
+                document.getElementById(`mode-button-${i}`).classList.add(
+                    'hover:bg-hsl-15', 'hover:border-b-3', 'hover:-mb-3px')
+                document.getElementById(`mode-button-${i}`).classList.remove(
+                    'bg-hsl-15', 'border-b-2', '-mb-3px')
+            }
+            // Swap style for mode-button-mode
+            document.getElementById(`mode-button-${mode}`).classList.add(
+                'bg-hsl-15', 'border-b-2', '-mb-3px')
+            document.getElementById(`mode-button-${mode}`).classList.remove(
+                'hover:bg-hsl-15', 'hover:border-b-3', 'hover:-mb-3px')
+        })
+    }
+
+    function mode2str(mapmode) {
+        switch (mapmode) {
+            case 0:
+            case '0':
+                return 'std'
+            case 1:
+            case '1':
+                return 'taiko'
+            case 2:
+            case '2':
+                return 'catch'
+            case 3:
+            case '3':
+                return 'mania'
+        }
+    }
+
+    function status2str(setstatus) {
+        switch (setstatus) {
+            case 0:
+            case '0':
+                return ['unranked', '<i class="fas fa-question text-gray-200 text-xl"></i>']
+            case 2:
+            case '2':
+                return ['ranked',
+                        `<span class="text-sky-400 text-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z"/>
+                                <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                            </svg>
+                        </span>`]
+            case 3:
+            case '3':
+                return ['approved', '<i class="fas fa-check text-green-500 text-xl"></i>']
+            case 4:
+            case '4':
+                return ['qualified', '<i class="fas fa-check text-green-500 text-xl"></i>']
+            case 5:
+            case '5':
+                return ['loved', '<i class="fas fa-heart text-pink-500 text-xl"></i>']
+        }
+    }
+
+    function capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    function mapLength(time) {
+        // convert time in seconds to minutes and seconds
+        let minutes = Math.floor(time / 60)
+        let seconds = time - minutes * 60
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+
+    }
+    // Swapping map info on hover
+    function swapDiffInfo(mapid) {
+        // Get map from diffs by id
+        for (diff of diffs) {
+            if (diff['id'] === mapid) { map = diff; break}
+        }
+        map_id = mapid
+        /*TODO: detect mode and delete stuff from map stats */
+        // Swap map info
+        document.getElementById('map_info-ar_value').innerHTML = diff.ar
+        document.getElementById('map_info-cs_value').innerHTML = diff.cs
+        document.getElementById('map_info-hp_value').innerHTML = diff.hp
+        document.getElementById('map_info-od_value').innerHTML = diff.od
+        document.getElementById('map_info-length_value').innerHTML = mapLength(Number(diff.length))
+        document.getElementById('map_info-bpm_value').innerHTML = diff.bpm
+        document.getElementById('map_info-stars_value').innerHTML = Math.round(diff.diff * 100) / 100
+        document.getElementById('map_info-plays_value').innerHTML = diff.plays
+        document.getElementById('map_info-last_update_value').innerHTML = timeSince(new Date(diff.last_update))
+        document.getElementById('map_info-status_value').innerHTML = capitalize(status2str(diff.status)[0])
+        document.getElementById('diffname-value').innerHTML = diff.diffname
+        // Add tippy
+        tippy('#map_info-last_update_value', {
+            content: diff.last_update + " UTC+0",
+            theme: 'translucent'
+        });
+        // Get lb
+        get_lb(diff.id, diff.mode)
+        // swap url
+        window.history.pushState("", "", `/b/${diff.id}`);
+        // reset all diff-row elements to default state and set current diff-row element to active
+        for (drel of diffs) {
+            console.log(drel.id)
+            document.getElementById(`diff-row-${drel.id}`).classList.remove('bg-hsl-20')
+            document.getElementById(`diff-row-${drel.id}`).classList.add('hover:bg-hsl-20')
+        }
+        document.getElementById(`diff-row-${diff.id}`).classList.remove('hover:bg-hsl-20')
+        document.getElementById(`diff-row-${diff.id}`).classList.add('bg-hsl-20')
+    }
+
+    tippy('.view-score-link', {
+        content: "View score",
+        theme: 'translucent'
+    });
+    tippy('.disabled', {
+        content: "This feature is not available yet",
+        theme: 'translucent'
+    });
+
+    function rank_colors(rank) {
+        switch (rank) {
+            case 'XH':
+                return 'text-gray-300'
+            case 'X':
+                return 'text-yellow-400'
+            case 'SH':
+                return 'text-gray-300'
+            case 'S':
+                return 'text-yellow-400'
+            case 'A':
+                return 'text-green-500'
+            case 'B':
+                return 'text-blue-500'
+            case 'C':
+                return 'text-purple-400'
+            case 'D':
+                return 'text-red-400'
+            case 'F':
+                return 'text-red-400'
+    }}
+    function grade_normal(rank) {
+        switch (rank) {
+            case 'XH':
+                return 'SS'
+            case 'X':
+                return 'SS'
+            case 'SH':
+                return 'S'
+            default:
+                return rank
+    }}
+
+    loadMaps("{{ m['set_id'] }}")
+</script>
+
+<!--! Tippy -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/tippy.js@6/animations/scale.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/tippy.js@6/themes/translucent.css"
+/>
+{% endblock %}

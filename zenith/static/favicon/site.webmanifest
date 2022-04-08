@@ -1,0 +1,19 @@
+{
+    "name": "Seven Twenty Seven",
+    "short_name": "727",
+    "icons": [
+        {
+            "src": "/static/favicon/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/favicon/android-chrome-256x256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#1f4ab8",
+    "background_color": "#2b354f",
+    "display": "standalone"
+}

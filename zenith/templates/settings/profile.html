@@ -1,0 +1,146 @@
+{% extends 'settings/base.html' %}
+{% block title %}Profile Settings{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+
+{% block content %}
+<!-- Account Details -->
+<div class="rounded-lg mx-3 mt-5">
+    <div class="mx-3">
+        <div class="w-full ml-2">
+            <p class="font-medium">Account Details</p>
+            <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+        </div>
+
+        <div class="flex flex-col md:flex-row my-3">
+            <div class="flex flex-col w-6/12">
+                <form class="mx-2 my-2 bg-hsl-25 rounded-lg pointer-events-none cursor-not-allowed opacity-50">
+                    <div class="w-11/12 mx-auto mt-5 mb-6">
+                        <p class="font-thin text-sm">Change Username (Currently Disabled, please contact staff)</p>
+                        <div class="h-1 w-20 bg-hsl-60 rounded-full mt-1"></div>
+                    </div>
+                    <div class="relative z-0 mb-6 w-full group">
+                        <input type="text" name="new_username" id="floating_password"
+                               class="block py-2.5 px-0 w-11/12 text-sm text-white bg-transparent
+                                      border-0 border-b-2 border-gray-300 appearance-none focus:outline-none
+                                      focus:ring-0 focus:border-hsl-60 peer transform duration-300 mx-auto"
+                               placeholder=" " required />
+                        <label for="new_username"
+                            class="absolute text-sm text-hsl-90 duration-300 transform -translate-y-6 scale-75 top-3 -z-10
+                                    origin-[0] peer-focus:left-0 peer-focus:text-white
+                                    peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
+                                    peer-focus:scale-75 peer-focus:-translate-y-6 ml-5">New Username</label>
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="submit"
+                                class="text-white bg-hsl-50 hover:bg-hsl-60
+                                         focus:ring-4 focus:ring-hsl-90 font-medium
+                                         rounded-lg text-sm w-full sm:w-auto px-6 py-2
+                                         text-center mb-5">
+                                <span>Submit</span>
+                        </button>
+                    </div>
+                </form>
+                <!-- Password Change-->
+                <form class="mx-2 my-2 bg-hsl-25 rounded-lg" action="/settings/profile/change_password" method="POST">
+                    <div class="w-11/12 mx-auto mt-5 mb-6">
+                        <p class="font-thin text-sm">Change Password</p>
+                        <div class="h-1 w-14 bg-hsl-60 rounded-full mt-1"></div>
+                    </div>
+                    <div class="relative z-0 mb-6 w-full group">
+                        <input type="password" name="old_password" id="old_password"
+                               class="block py-2.5 px-0 w-11/12 text-sm text-white bg-transparent
+                                      border-0 border-b-2 border-gray-300 appearance-none focus:outline-none
+                                      focus:ring-0 focus:border-hsl-60 peer transform duration-300 mx-auto"
+                               placeholder=" " required />
+                        <label for="old_password"
+                            class="absolute text-sm text-hsl-90 duration-300 transform -translate-y-6 scale-75 top-3 -z-10
+                                    origin-[0] peer-focus:left-0 peer-focus:text-white
+                                    peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
+                                    peer-focus:scale-75 peer-focus:-translate-y-6 ml-5">Old Password</label>
+                    </div>
+                    <div class="relative z-0 mb-6 w-full group">
+                        <input type="password" name="new_password" id="new_password"
+                               class="block py-2.5 px-0 w-11/12 text-sm text-white bg-transparent
+                                      border-0 border-b-2 border-gray-300 appearance-none focus:outline-none
+                                      focus:ring-0 focus:border-hsl-60 peer transform duration-300 mx-auto"
+                               placeholder=" " required />
+                        <label for="new_password"
+                            class="absolute text-sm text-hsl-90 duration-300 transform -translate-y-6 scale-75 top-3 -z-10
+                                    origin-[0] peer-focus:left-0 peer-focus:text-white
+                                    peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
+                                    peer-focus:scale-75 peer-focus:-translate-y-6 ml-5">New Password</label>
+                    </div>
+                    <div class="relative z-0 mb-6 w-full group">
+                        <input type="password" name="new_password_confirm" id="new_password_confirm"
+                               class="block py-2.5 px-0 w-11/12 text-sm text-white bg-transparent
+                                      border-0 border-b-2 border-gray-300 appearance-none focus:outline-none
+                                      focus:ring-0 focus:border-hsl-60 peer transform duration-300 mx-auto"
+                               placeholder=" " required />
+                        <label for="new_password_confirm"
+                            class="absolute text-sm text-hsl-90 duration-300 transform -translate-y-6 scale-75 top-3 -z-10
+                                    origin-[0] peer-focus:left-0 peer-focus:text-white
+                                    peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
+                                    peer-focus:scale-75 peer-focus:-translate-y-6 ml-5">Confirm New Password</label>
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="submit"
+                                class="text-white bg-hsl-50 hover:bg-hsl-60
+                                         focus:ring-4 focus:ring-hsl-90 font-medium
+                                         rounded-lg text-sm w-full sm:w-auto px-6 py-2
+                                         text-center mb-5">
+                                <span>Submit</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="flex flex-col w-6/12">
+                <form class="mx-2 my-2 bg-hsl-25 rounded-lg" action="/settings/profile/change_email" method="POST">
+                    <div class="w-11/12 mx-auto mt-5 mb-6">
+                        <p class="font-thin text-sm">Change Email</p>
+                        <div class="h-1 w-12 bg-hsl-60 rounded-full mt-1"></div>
+                    </div>
+                    <div class="relative z-0 mb-6 w-full group">
+                        <input type="email" name="new_email" id="email_change-new_email-input"
+                               class="block py-2.5 px-0 w-11/12 text-sm text-white bg-transparent
+                                      border-0 border-b-2 border-gray-300 appearance-none focus:outline-none
+                                      focus:ring-0 focus:border-hsl-60 peer transform duration-300 mx-auto"
+                               placeholder=" " required />
+                        <label for="email_change-new_email-input"
+                               class="absolute text-sm text-hsl-90 duration-300 transform -translate-y-6 scale-75 top-3 -z-10
+                                    origin-[0] peer-focus:left-0 peer-focus:text-white
+                                    peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
+                                    peer-focus:scale-75 peer-focus:-translate-y-6 ml-5">Email</label>
+                    </div>
+                    <div class="relative z-0 mb-6 w-full group">
+                        <input type="password" name="new_email-password" id="floating_password"
+                               class="block py-2.5 px-0 w-11/12 text-sm text-white bg-transparent
+                                      border-0 border-b-2 border-gray-300 appearance-none focus:outline-none
+                                      focus:ring-0 focus:border-hsl-60 peer transform duration-300 mx-auto"
+                               placeholder=" " required />
+                        <label for="new_email-password"
+                            class="absolute text-sm text-hsl-90 duration-300 transform -translate-y-6 scale-75 top-3 -z-10
+                                   origin-[0] peer-focus:left-0 peer-focus:text-white
+                                   peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
+                                   peer-focus:scale-75 peer-focus:-translate-y-6 ml-5">Password</label>
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="submit"
+                                class="text-white bg-hsl-50 hover:bg-hsl-60
+                                         focus:ring-4 focus:ring-hsl-90 font-medium
+                                         rounded-lg text-sm w-full sm:w-auto px-6 py-2
+                                         text-center mb-5">
+                                <span>Submit</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom %}
+{% endblock %}
