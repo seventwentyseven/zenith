@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% block title %}Leaderboard{% endblock %}
+
+{% block header %}
+<script>
+    var mode = "{{ mode }}";
+    var mods = "{{ mods }}";
+    var sort = "{{ sort }}";
+    var domain = "{{ domain() }}";
+</script>
+<script src="/static/js/asserts/vue.js"></script>
+<script src="/static/js/asserts/vue-axios.js"></script>
+<script>
+    function Capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+</script>
+{% endblock %}
+
+
+{% block content %}
+<style>
+    .header-bg {
+        background:
+            linear-gradient(
+                hsl(var(--main), 10%, 10%, 0.6),
+                hsl(var(--main), 10%, 10%, 0.6)
+            ),
+            url('/static/images/leaderb.png');
+        background-position: center;
+        background-size: cover;
+    }
+    .disabled {
+        cursor: not-allowed;
+        pointer-events: none;
+        opacity: 0.6;
+        background-color: hsl(var(--main), 7%, 7%);
+    }
+</style>
+<div id="app" :class="(load ? 'load' : '')">
+    <div class="md:mx-16">
+        <div class="w-auto max-w-screen-xl mx-auto my-8 bg-hsl-20 rounded-t-xl sm:rounded-t-2xl
+                    lg:rounded-t-3xl flex flex-col">
+            <div class="w-full h-96 sm:h-80 lg:h-64 rounded-t-xl sm:rounded-t-2xl lg:rounded-t-3xl header-bg">
+                <div class="mx-4 grid grid-cols-1 lg:grid-cols-2 h-48 my-3">
+                    <div class="ml-2 mt-6">
+                        <h2 class="flex justify-center font-sans text-2xl font-thin tracking-tight
+                                text-gray-200 lg:justify-start sm:leading-none">
+                            <p v-if="mode == 'std' || mode == 'taiko' || mode == 'catch' || mode == 'mania'">
+                                <i :class="'mr-1 mode-icon ' + mode"></i>
+                                osu!<% Capitalize(mode) %>
+                                <span v-if="mods == 'rx' || mods == 'ap'"> +<% mods.toUpperCase() %></span>
+                            </p>
+                        </h2>
+                        <h1 class="flex items-center justify-center mb-6 font-sans text-5xl
+                                font-light tracking-tight text-center text-gray-200 lg:mb-0
+                                lg:justify-start sm:leading-none">
+                            <div class="break-all flex flex-row content-center items-center">
+                                <p  v-if="sort == 'pp' || sort == 'rscore'">
+                                    <% (sort=='pp' ? "PP" : "" ) %>
+                                    <% (sort=='rscore' ? "Score" : "" ) %> Leaderboard
+                                </p>
+                            </div>
+                        </h1>
+                    </div>
+                    <div class="mt-6 lg:mt-0 flex flex-col justify-center">
+                        <div class="flex justify-center lg:justify-end h-12">
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-3 py-2 rounded-l-lg
+                                    outline-none focus:outline-none mb-1 ease-linear
+                                    transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard(sort, 'std', mods)"
+                            v-bind:class="{ 'bg-hsl-40': mode === 'std' }">
+                            <i class="mode-icon osu"></i>
+                            </button>
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard(sort, 'taiko', mods)"
+                            v-bind:class="{ 'bg-hsl-40': mode === 'taiko', 'disabled': mods === 'ap' }">
+                            <i class="mode-icon taiko"></i>
+                            </button>
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard(sort, 'catch', mods)"
+                            v-bind:class="{ 'bg-hsl-40': mode === 'catch', 'disabled': mods === 'ap' }">
+                            <i class="mode-icon catch"></i>
+                            </button>
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-4 py-2 rounded-r-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard(sort, 'mania', mods)"
+                            v-bind:class="{ 'bg-hsl-40': mode === 'mania', 'disabled': mods === 'ap' || mods === 'rx' }">
+                            <i class="mode-icon mania"></i>
+                            </button>
+                        </div>
+                        <div class="flex justify-center lg:justify-end h-12">
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-4 py-2 rounded-l-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard(sort, mode, 'vn')"
+                            v-bind:class=" { 'bg-hsl-40': mods === 'vn' }">
+                            Vanilla
+                            </button>
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard(sort, mode, 'rx')"
+                            v-bind:class=" { 'bg-hsl-40': mods === 'rx', 'disabled': mode === 'mania' }">
+                            Relax
+                            </button>
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-4 py-2 rounded-r-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard(sort, mode, 'ap')"
+                            v-bind:class=" { 'bg-hsl-40': mods === 'ap', 'disabled': mode === 'taiko' || mode === 'catch' || mode === 'mania'  }">
+                            Autopilot
+                            </button>
+                        </div>
+                        <div class="flex justify-center lg:justify-end h-12">
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-4 py-2 rounded-l-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard('pp', mode, mods, '')"
+                            v-bind:class="{ 'bg-hsl-40': sort === 'pp' }">
+                            PP
+                            </button>
+                            <button
+                            class="bg-hsl-15 hover:bg-hsl-25 active:bg-hsl-40 px-4 py-2 rounded-r-lg outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            @click="LoadLeaderboard('rscore', mode, mods, '')"
+                            v-bind:class="{ 'bg-hsl-40': sort === 'rscore' }">
+                            Score
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <section id="leaderboard">
+                <div class="relative px-7 py-4 mx-auto overflow-hidden transition-all">
+                    <div class="relative overflow-x-auto">
+                        <table class="relative table w-full overflow-x-auto text-sm text-white table-auto whitespace-nowrap border-separate"
+                            style="border-spacing: 0em 0.6em;">
+                            <thead class="text-hsl-90 pb-3">
+                                <tr>
+                                    <th class="px-2.5 text-center font-normal">Rank</th>
+                                    <th class="w-full text-left font-normal pl-12">User</th>
+                                    <th class="px-4 font-normal text-center">Accuracy</th>
+                                    <th class="px-4 font-normal text-center">Playcount</th>
+                                    <th class="px-4 font-normal text-center">Max Combo</th>
+                                    <th v-if="sort == 'pp' || sort == 'rscore'"
+                                        class="px-4 text-center">
+                                        <% (sort=='pp' ? "PP" : "" ) %>
+                                        <% (sort=='rscore' ? "Score" : "" ) %>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <tr v-for="(user, index) in boards" class="truncate bg-hsl-15">
+                                    <td class="pr-2 pl-3 font-bold text-center rounded-l-lg">
+                                        #<% index + 1 %>
+                                    </td>
+                                    <td class="p-1 text-left">
+                                        <div class="flex items-center w-full">
+                                            <img :src="'https://a.{{ domain() }}/' + user.player_id" class="object-cover w-10 h-10 rounded-md"
+                                                onerror="this.src='/static/images/avatar_notwork.png';">
+                                            <div class="flex gap-2 ml-3 mr-32 items-center justify-items-center">
+                                                <a href="#">
+                                                    <img class="cursor-pointer h-5 w-8"
+                                                    :src="'/static/images/flags/' + user.country.toUpperCase() + '.png'">
+                                                </a>
+                                                <a :href="'/u/'+user.player_id" class="font-bold hover:text-hsl-70 transition duration-200">
+                                                    <% user.name %>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 text-center">
+                                        <% user.acc.toFixed(2) %>%
+                                    </td>
+                                    <td class="py-2 text-center">
+                                        <% addCommas(user.plays) %>
+                                    </td>
+                                    <td class="py-2 text-center">
+                                        <% addCommas(user.max_combo) %>
+                                    </td>
+                                    <td v-if="sort == 'pp' || sort == 'rscore'"
+                                        class="py-2 font-bold text-center rounded-r-lg pr-5">
+                                        <% (sort=='pp' ? user.pp+'pp' : "" ) %>
+                                        <% (sort=='rscore' ? scoreFormat(user.rscore) : "" ) %>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function purgeTable() {
+    document.getElementById("leaderboard-body").innerHTML = ''
+    return console.log('Table Purged')
+}
+</script>
+<script src="/static/js/asserts/vue-flags.js"></script>
+<script src="/static/js/leaderboard.js"></script>
+{% endblock %}

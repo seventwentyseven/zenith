@@ -1,66 +1,64 @@
-main = "275"
+main = "230"
 module.exports = {
     content: [
-      "../templates/**/*.html",
+      "/opt/gulag/zenith/templates/**/*.html"
     ],
     darkMode: 'class',
     theme: {
       extend: {
-        fontSize: {
-          '2xs': '10px',
+        spacing: {
+          '3px': '3px',
         },
-        borderWidth: {
-            '3': '3px',
-        },
-        width: {
-          '5.4/12': '45%',
-          '5.7/12': '47.5%',
-          '6.4/12': '53.333333333333336%',
+        rotate: {
+          'full': '360deg',
         },
         height: {
-          '34': '136px',
-          '5.7/12': '47.5%',
+          '18': '72px',
+          '15': '60px'
         },
-        fontFamily: {
-          'display': ['Comfortaa'],
+        width: {
+          "47%": "47%"
         },
-        maxWidth: {
-          'sxs': '120px'
+        borderWidth: {
+          '3': '3px'
         },
         colors: {
           'hsl': {
-            '5': 'hsl('+ main +', 5%, 5%)',
-            '10': 'hsl('+ main +', 10%, 10%)',
-            '15': 'hsl('+ main +', 15%, 15%)',
-            '20': 'hsl('+ main +', 20%, 20%)',
-            '25': 'hsl('+ main +', 25%, 25%)',
-            '30': 'hsl('+ main +', 30%, 30%)',
-            '35': 'hsl('+ main +', 35%, 35%)',
-            '40': 'hsl('+ main +', 40%, 40%)',
-            '45': 'hsl('+ main +', 45%, 45%)',
-            '50': 'hsl('+ main +', 50%, 50%)',
-            '55': 'hsl('+ main +', 55%, 55%)',
-            '60': 'hsl('+ main +', 60%, 60%)',
-            '65': 'hsl('+ main +', 65%, 65%)',
-            '70': 'hsl('+ main +', 70%, 70%)',
-            '75': 'hsl('+ main +', 75%, 75%)',
-            '80': 'hsl('+ main +', 80%, 80%)',
-            '90': 'hsl('+ main +', 90%, 90%)',
+            '5': 'hsl(var(--main), 5%, 5%)',
+            '10': 'hsl(var(--main), 10%, 10%)',
+            '15': 'hsl(var(--main), 15%, 15%)',
+            '20': 'hsl(var(--main), 20%, 20%)',
+            '25': 'hsl(var(--main), 25%, 25%)',
+            '30': 'hsl(var(--main), 30%, 30%)',
+            '35': 'hsl(var(--main), 35%, 35%)',
+            '40': 'hsl(var(--main), 40%, 40%)',
+            '45': 'hsl(var(--main), 45%, 45%)',
+            '50': 'hsl(var(--main), 50%, 50%)',
+            '55': 'hsl(var(--main), 55%, 55%)',
+            '60': 'hsl(var(--main), 60%, 60%)',
+            '65': 'hsl(var(--main), 65%, 65%)',
+            '70': 'hsl(var(--main), 70%, 70%)',
+            '75': 'hsl(var(--main), 75%, 75%)',
+            '80': 'hsl(var(--main), 80%, 80%)',
+            '90': 'hsl(var(--main), 90%, 90%)',
 
-            '30-15': 'hsl('+ main +', 30%, 15%)',
-            '25-30': 'hsl('+ main +', 25%, 30%)',
-            '25-10': 'hsl('+ main +', 25%, 10%)',
-            '15-25': 'hsl('+ main +', 15%, 25%)',
-            '15-20': 'hsl('+ main +', 15%, 20%)',
-            '15-25': 'hsl('+ main +', 15%, 25%)',
-            '15-10': 'hsl('+ main +', 15%, 10%)',
-            '10-30': 'hsl('+ main +', 10%, 30%)',
-            '10-25': 'hsl('+ main +', 10%, 25%)',
-            '10-20': 'hsl('+ main +', 10%, 20%)',
-            '10-15': 'hsl('+ main +', 10%, 15%)',
+            '30-15': 'hsl(var(--main), 30%, 15%)',
+            '25-30': 'hsl(var(--main), 25%, 30%)',
+            '25-10': 'hsl(var(--main), 25%, 10%)',
+            '15-25': 'hsl(var(--main), 15%, 25%)',
+            '15-20': 'hsl(var(--main), 15%, 20%)',
+            '15-25': 'hsl(var(--main), 15%, 25%)',
+            '15-10': 'hsl(var(--main), 15%, 10%)',
+            '10-30': 'hsl(var(--main), 10%, 30%)',
+            '10-25': 'hsl(var(--main), 10%, 25%)',
+            '10-20': 'hsl(var(--main), 10%, 20%)',
+            '10-15': 'hsl(var(--main), 10%, 15%)',
           }
         }
       },
+    },
+    fontFamily: {
+      'comforta': ['Comfortaa', 'sans-serif'],
     },
     plugins: [
       require('@tailwindcss/typography'),

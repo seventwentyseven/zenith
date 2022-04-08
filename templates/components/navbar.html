@@ -1,155 +1,180 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
-<nav class="bg-hsl-50">
-  <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-    <div class="relative flex items-center justify-between h-16">
-      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-        <!-- Mobile menu button-->
-        <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
-          <span class="sr-only">Open main menu</span>
-          <!--
-            Icon when menu is closed.
-
-            Heroicon name: outline/menu
-
-            Menu open: "hidden", Menu closed: "block"
-          -->
-          <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          <!--
-            Icon when menu is open.
-
-            Heroicon name: outline/x
-
-            Menu open: "block", Menu closed: "hidden"
-          -->
-          <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-        <div class="flex-shrink-0 flex items-center">
-          <a href="/" class="hover:text-gray-300 px-3 py-2 font-medium transform hover:scale-105 transition duration-300">
-            <span class="font-bold">727</span><span class="font-normal">.tk</span>
-          </a>
-        </div>
-        <div class="hidden sm:block sm:ml-6">
-          <div class="flex space-x-4">
-            <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-
-            <a href="/leaderboards" class="hover:text-gray-300 px-3 py-2 font-medium transform hover:scale-105 transition duration-300">Leaderboards</a>
-
-            <a href="/clans" class="hover:text-gray-300 px-3 py-2 font-medium transform hover:scale-105 transition duration-300">Clans</a>
-
-            <div x-data="{ open: false }" @click.away="open = false" class="relative">
-              <!-- Dropdown toggle button -->
-              <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
-                  <span class="mr-2.5">Beatmaps</span> <i class="fas fa-chevron-down"></i>
-              </button>
-
-              <!-- Dropdown menu -->
-              <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 mt-5 bg-hsl-15 rounded-md shadow-xl">
-                  <a href="/beatmaps" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-                      Beatmap Listing
-                  </a>
-                  <a href="/request" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-                      Request Ranking
-                  </a>
-              </div>
+{% if custom == True %}
+<nav class="absolute w-full overflow-x-clip" id="navbar-c">
+{% else %}
+<nav class="absolute w-full overflow-x-clip" id="navbar">
+{% endif %}
+<div class="bg-hsl-50" id="navbar-colourer">
+    <div class="flex flex-row items-center justify-between h-14 mx-6">
+        <div class="flex flex-row items-center font-medium">
+            <div class="mx-2">
+                <a href="/" class="transform transition hover:scale-110 duration-300 text-lg">
+                    <span class="font-semibold">727</span><span class="font-medium text-gray-300">.xyz</span>
+                </a>
             </div>
-
-            <div x-data="{ open: false }" @click.away="open = false" class="relative">
-              <!-- Dropdown toggle button -->
-              <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium">
-                  <span class="mr-2.5">Information</span> <i class="fas fa-chevron-down"></i>
-              </button>
-
-              <!-- Dropdown menu -->
-              <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 mt-5 bg-hsl-15 rounded-md shadow-xl">
-                  <a href="/docs/rules" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-                      Rules
-                  </a>
-                  <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-                      How to connect?
-                  </a>
-                  <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-                      Groups
-                  </a>
-                  <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-                      Statistics
-                  </a>
-                  <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-                      History
-                  </a>
-              </div>
+            <div class="invisible w-0 sm:visible sm:w-auto mx-2 transform transition hover:scale-105 hover:text-gray-300 duration-200">
+                <a href="/leaderboard">Leaderboard</a>
             </div>
-          </div>
+            <div x-data="{ open: false }" @click.away="open = false" class="relative invisible w-0 sm:visible sm:w-auto">
+                <!-- Dropdown toggle button -->
+                <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
+                    <span class="mr-2.5">Clans</span> <i class="fas fa-chevron-down"></i>
+                </button>
+
+                <!-- Dropdown menu -->
+                <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms
+                     class="absolute right-0 w-48 py-2 mt-5 bg-hsl-10 rounded-md shadow-xl">
+                    <a href="/clans/leaderboards" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Clan Leaderboards
+                    </a>
+                    {% if 'authenticated' in session %}
+                    <a href="/clans/" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Your Clan
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div x-data="{ open: false }" @click.away="open = false" class="relative invisible w-0 sm:visible sm:w-auto">
+                <!-- Dropdown toggle button -->
+                <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
+                    <span class="mr-2.5">Beatmaps</span> <i class="fas fa-chevron-down"></i>
+                </button>
+
+                <!-- Dropdown menu -->
+                <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms
+                     class="absolute right-0 w-48 py-2 mt-5 bg-hsl-10 rounded-md shadow-xl">
+                    <a href="/beatmaps" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Beatmap Listing
+                    </a>
+                    <a href="/request" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Request Ranking
+                    </a>
+                </div>
+            </div>
+            <div x-data="{ open: false }" @click.away="open = false" class="relative invisible w-0 sm:visible sm:w-auto">
+                <!-- Dropdown toggle button -->
+                <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
+                    <span class="mr-2.5">Docs</span> <i class="fas fa-chevron-down"></i>
+                </button>
+
+                <!-- Dropdown menu -->
+                <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms
+                     class="absolute right-0 w-48 py-2 mt-5 bg-hsl-10 rounded-md shadow-xl">
+                    <a href="/docs/rules" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Rules
+                    </a>
+                    <a href="/docs" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Wiki
+                    </a>
+                    <a href="/docs/privacy_policy" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Privacy Policy
+                    </a>
+                    <a href="/team" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Team
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-        <button type="button" class="p-1 rounded-full text-gray-400 hover:text-white outline-none-1 ring-1 ring-offset-1 ring-white">
-          <span class="sr-only">Support</span>
-          <i class="text-pink-400 m-0.5 fas fa-heart"></i>
-        </button>
-
-      {% if 'authenticated' in session %}
-      <div x-data="{ open: false }" @click.away="open = false" class="relative">
-        <!-- Dropdown toggle button -->
-        <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto text-sm font-medium text-white">
-            <span class="sr-only">Open user menu</span>
-            <img class="h-9 w-9 rounded-full mr-3" src="https://a.seventwentyseven.tk/{{ session['user_data']['id'] }}" alt=""
-            onerror="this.src='/static/images/avatar_notwork.png';">
-            <span class="mr-2.5">{{ session['user_data']['name'] }}</span> <i class="fas fa-chevron-down"></i>
-        </button>
-
-        <!-- Dropdown menu -->
-        <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms class="absolute right-0 w-48 py-2 mt-5 bg-hsl-15 rounded-md shadow-xl">
-            <a href="/u/{{ session['user_data']['id'] }}" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-              Profile
-            </a>
-            <a href="#" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-              Settings
-            </a>
-            <a href="/relationships" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-              Friends
-            </a>
-            {% if 'authenticated' in session and session['user_data']['is_admin'] == True %}
-            <a href="/admin" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-              Admin Panel
-            </a>
-            {% endif %}
-            {% if 'authenticated' in session and session['user_data']['is_bn'] == True %}
-            <a href="/bnp" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-              BN Panel
-            </a>
-            {% endif %}
-            <a href="/logout" class="block bg-hsl-15 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
-              Sign Out
-            </a>
+        <!-- User Search-->
+        <div class="hidden lg:flex ml-auto mr-4 w-44" id="user-search-box">
+            <input type="text" name="search-bar"
+                   class="bg-hsl-20 rounded-full py-2 px-5 text-hsl-90 font-light text-sm
+                   focus:bg-hsl-25 transition duration-300 outline-none"
+                   placeholder="Search User" onkeyup="searchUsers(this.value)"
+            />
+            <div class="hidden mt-12 bg-hsl-25-10 w-48 py-2 rounded-lg" id="search-results">
+            </div>
         </div>
-      </div>
-      {% else %}
-      <a href="/login" class="hover:text-gray-300 px-6 py-2 font-medium transform hover:scale-105 transition duration-300">Log In</a>
-      <button aria-label="Sign up" title="Sign up" class="inline-flex items-center justify-center h-10 px-6 font-medium tracking-wide transition duration-200 rounded shadow-md focus:shadow-outline focus:outline-none bg-hsl-70 hover:bg-hsl-40"
-              onclick="document.location.href='/register';">
-          Sign Up
-      </button>
-      {% endif %}
+        <div class="invisible w-0 sm:visible sm:w-auto">
+            {% if 'authenticated' in session %}
+            <div x-data="{ open: false }" @click.away="open = false" class="relative invisible w-0 sm:visible sm:w-auto">
+                <!-- Dropdown toggle button -->
+                <button @click="open = true" class="flex items-center rounded-md px-3 py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
+                    <div class="flex flex-row items-center justify-items-center">
+                        <img src="https://a.{{ domain() }}/{{ session['user_data']['id'] }}"
+                             class="h-8 w-8 mr-3 rounded-full"
+                             alt="/static/images/avatar_notwork.png">
+                        <span class="font-medium mr-1">{{ session['user_data']['name'] }}</span><i class="fas fa-chevron-down"></i>
+                    </div>
+                </button>
+
+                <!-- Dropdown menu -->
+                <div x-show="open" x-transition:enter.duration.500ms x-transition:leave.duration.800ms
+                     class="absolute right-0 w-48 py-2 mt-5 bg-hsl-10 rounded-md shadow-xl">
+                    <a href="/u/{{ session['user_data']['id'] }}" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Profile
+                    </a>
+                    <a href="/settings" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Settings
+                    </a>
+                    {% if session['user_data']['is_admin'] %}
+                    <a href="/admin" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Admin Panel
+                    </a>
+                    {% endif %}
+                    <a href="/logout" class="block bg-hsl-10 hover:bg-hsl-20 px-4 py-2 text-sm text-gray-200 hover:text-hsl-70 border-l-2 border-transparent hover:border-hsl-60">
+                        Log out
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <button class="mx-2 bg-hsl-60 hover:bg-hsl-40 text-white font-bold py-2 px-4
+                           rounded transform duration-200 focus:border-3 focus:border-hsl-40
+                           focus:bg-white focus:text-hsl-40 navbar-button-toDelete"
+                           id="navbar-button-reg"
+                           onclick="location.href = '/register';">
+                Sign Up
+            </button>
+
+            <button class="mx-2 bg-white hover:bg-gray-300 text-gray-700 font-bold py-2
+                           px-4 rounded transform duration-200 focus:border-3 focus:border-white
+                           focus:bg-hsl-40 focus:text-white"
+                           id="navbar-button-log"
+                           onclick="location.href = '/login';">
+                Log In
+            </button>
+            {% endif %}
+        </div>
     </div>
-  </div>
-
-  <!-- Mobile menu, show/hide based on menu state. -->
-  <div class="sm:hidden" id="mobile-menu">
-    <div class="px-2 pt-2 pb-3 space-y-1">
-      <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-      <a href="#" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium hover:scale-125" aria-current="page">Home</a>
-
-      <a href="#" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium hover:scale-125">Leaderboards</a>
-
-      <a href="#" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium hover:scale-125">Clans</a>
-
-      <a href="#" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium hover:scale-125">Beatmaps</a>
-    </div>
-  </div>
+</div>
+<!-- Jak to zadziała to ja jestem kurwa bogiem xDDD -->
+<!-- UPDATE: DZIAŁA XDDDDDD -->
+{% if tohome == True %}
+{% include 'components/flashes.html' %}
+{% endif %}
+<script>
+    resbox = document.getElementById('search-results')
+    function searchUsers(querry) {
+        if (querry.length != 0) {
+            axios.get('https://{{ domain() }}/wapi/search_users?q=' + querry)
+            .then(r => {
+                r = r.data.users
+                if (r.length != 0) {
+                    resbox.classList.add('absolute')
+                    resbox.classList.remove('hidden')
+                    resbox.innerHTML = ""
+                    for (el of r) {
+                        resbox.innerHTML +=
+                    `<a href="/u/${el.id}">
+                            <div class="w-full py-0.5 text-sm text-gray-200 hover:bg-hsl-20
+                                transition duration-200 ease-in-out">
+                                <div class="flex items-center mx-2">
+                                    <img src="https://a.{{ domain() }}/${el.id}" class="h-9 w-9 rounded-full mr-2">
+                                    <span>${el.name}</span>
+                                </div>
+                            </div>
+                        </a>`
+                    }
+                } else {
+                    resbox.classList.add('hidden')
+                    resbox.classList.remove('absolute')
+                    resbox.innerHTML = ""
+                }
+            })
+        } else {
+            resbox.innerHTML = ""
+            resbox.classList.add('hidden')
+            resbox.classList.remove('absolute')
+        }
+    }
+</script>
 </nav>

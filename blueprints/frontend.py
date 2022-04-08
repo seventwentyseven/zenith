@@ -2,59 +2,386 @@
 
 __all__ = ()
 
+from curses.ascii import isdigit
 import bcrypt
-import hashlib
-import os
-import time
 import datetime
-from pandas import to_datetime
-import markdown
+import hashlib
+import json
+import os
+from re import S
+import time
 
-from cmyui.logging import Ansi
-from cmyui.logging import log
-from cmyui.osu import Mods
-from functools import wraps
+from cmyui.logging import Ansi, log
+from markdown import markdown as md
 from PIL import Image
 from pathlib import Path
-from pandas import to_datetime
-from quart import Blueprint
-from quart import redirect
-from quart import render_template
-from quart import request
-from quart import session
-from quart import send_file
+from quart import (Blueprint, redirect, render_template, request, send_file, session)
 
-from objects import glob
-from objects import utils
-from objects.utils import flash, getDiffColor, parseJudgements, time_ago
-from objects.privileges import Privileges
+import app.state
+from app.state import website as zglob
+from app.constants import gamemodes
+from app.constants.mods import Mods
+from app.constants.privileges import Privileges
+from app.objects.player import Player
 
-from const import constants as const
-from const import countries
-
-
+from zenith import zconfig
+from zenith.objects import regexes, utils
+from zenith.objects.utils import flash, flash_tohome, validate_password
 
 frontend = Blueprint('frontend', __name__)
-@frontend.route('/static/images/assets/<imgname>')
-async def get_image(imgname:str):
-    # Check if avatar exists
-    path = '.data/images/' f'{imgname}'
-    return await send_file(path)
 
-    return b'{"status":404}'
-# profile customisation
-BANNERS_PATH = Path.cwd() / '.data/banners'
-BACKGROUND_PATH = Path.cwd() / '.data/backgrounds'
+@frontend.route('/')
+async def home():
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+
+    return await render_template('home.html', methods=['GET'])
+
+@frontend.route('/login', methods=['GET'])
+async def login():
+    if 'authenticated' in session:
+        return await utils.flash_tohome('error', "You're already logged in!")
+    return await render_template('login.html')
+
+@frontend.route('/login', methods=['POST'])
+async def login_post():
+    if 'authenticated' in session:
+        return await utils.flash_tohome('error', "You're already logged in!")
+
+
+    form = await request.form
+    username = form.get('username', type=str)
+    passwd_txt = form.get('password', type=str)
+
+    if username is None or passwd_txt is None:
+        return await utils.flash_tohome('error', 'Invalid parameters.')
+
+    # check if account exists
+    user_info = await app.state.services.database.fetch_one(
+        'SELECT id, name, email, priv, '
+        'pw_bcrypt, silence_end '
+        'FROM users '
+        'WHERE safe_name = :sn',
+        {"sn": utils.get_safe_name(username)}
+    )
+    # user doesn't exist; deny post
+    if not user_info:
+        return await render_template('login.html', flash={"msg":"Invalid username or password."})
+
+    # convert to dict because databases
+    user_info = dict(user_info)
+
+    # NOTE: Bot isn't a user.
+    if user_info['id'] == 1:
+        return await render_template('login.html', flash={"msg":"Invalid username or password."})
+
+    # cache and other related password information
+    bcrypt_cache = zglob.cache['bcrypt']
+    pw_bcrypt = user_info['pw_bcrypt'].encode()
+    pw_md5 = hashlib.md5(passwd_txt.encode()).hexdigest().encode()
+
+    # check credentials (password) against db
+    # intentionally slow, will cache to speed up
+    if pw_bcrypt in bcrypt_cache:
+        if pw_md5 != bcrypt_cache[pw_bcrypt]: # ~0.1ms
+            return await render_template('login.html', flash={"msg":"Invalid username or password."})
+    else: # ~200ms
+        if not bcrypt.checkpw(pw_md5, pw_bcrypt):
+            return await render_template('login.html', flash={"msg":"Invalid username or password."})
+
+        # login successful; cache password for next login
+        bcrypt_cache[pw_bcrypt] = pw_md5
+
+    # user not verified; render verify
+    if not user_info['priv'] & Privileges.VERIFIED:
+        return await render_template('verify.html')
+
+
+    # login successful; store session data
+
+    session['authenticated'] = True
+    session['user_data'] = {}
+    #session['color'] = await app.state.services.database.fetch_val("SELECT color FROM customs WHERE userid=:id")
+    await utils.updateSession(session, int(user_info['id']))
+
+    return await utils.flash_tohome('success', f"Welcome back {username}!")
+
+@frontend.route('/logout', methods=['GET'])
+async def logout():
+    if 'authenticated' not in session:
+        return await utils.flash_tohome('error', "You can't log out if you're not logged in.")
+
+    # clear session data
+    session.pop('authenticated', None)
+    session.pop('user_data', None)
+
+    # render login
+    return await utils.flash_tohome('success', "Successfully logged out!")
+
+@frontend.route('/register', methods=['GET'])
+async def register():
+    if 'authenticated' in session:
+        return await utils.flash_tohome('error', "You're already logged in'!")
+
+    return await render_template('register.html', message=None)
+
+@frontend.route('/register', methods=['POST'])
+async def register_post():
+    if 'authenticated' in session:
+        return await utils.flash_tohome('error', "You're already logged in.")
+
+    if not zconfig.registration:
+        return await utils.flash_tohome('error', 'Registrations are currently disabled.')
+
+    form = await request.form
+    username = form.get('username', type=str)
+    email = form.get('email', type=str)
+    passwd_txt = form.get('password', type=str)
+    passwd_txt_repeat = form.get('password-confirm', type=str)
+    if username is None or email is None or passwd_txt is None:
+        return await utils.flash_tohome('error', 'Invalid parameters.')
+    if passwd_txt != passwd_txt_repeat:
+        return await render_template('register.html', message={"password": "Passwords didn't match"})
+
+    if zconfig.hCaptcha_sitekey != 'changeme':
+        captcha_data = form.get('h-captcha-response', type=str)
+        if (
+            captcha_data is None or
+            not await utils.validate_captcha(captcha_data)
+        ):
+            return await render_template('register.html', message={"captcha": 'Captcha Failed'})
+
+    # Usernames must:
+    # - be within 2-15 characters in length
+    # - not contain both ' ' and '_', one is fine
+    # - not be in the config's `disallowed_names` list
+    # - not already be taken by another player
+    # check if username exists
+    if not regexes.username.match(username):
+        return await render_template('register.html', message={"name": 'Invalid Username'})
+
+    if '_' in username and ' ' in username:
+        return await render_template('register.html', message={"name": 'Username may contain "_" or " ", but not both.'})
+
+    if username in zconfig.disallowed_names:
+        return await render_template('register.html', message={"name": 'Disallowed username; pick another'})
+
+    if await app.state.services.database.fetch_one(
+        'SELECT 1 FROM users WHERE name=:name',
+        {"name": username}
+        ):
+            return await render_template('register.html', message={"name": 'Username already taken by another user.'})
+    # Emails must:
+    # - match the regex `^[^@\s]{1,200}@[^@\s\.]{1,30}\.[^@\.\s]{1,24}$`
+    # - not already be taken by another player
+    if not regexes.email.match(email):
+        return await render_template('register.html', message={"email": 'Invalid email syntax.'})
+
+    if await app.state.services.database.fetch_one(
+        'SELECT 1 FROM users WHERE email = :email',
+        {"email": email}
+        ):
+            return await render_template('register.html', message={"email": 'Email already taken by another user.'})
+    # Passwords must:
+    # - be within 8-32 characters in length
+    # - have more than 3 unique characters
+    # - not be in the config's `disallowed_passwords` list
+    if not 8 <= len(passwd_txt) <= 48:
+        return await render_template('register.html', message={"password": 'Password must be 8-48 characters in length'})
+
+    if len(set(passwd_txt)) <= 3:
+        return await render_template('register.html', message={"password": 'Password must have more than 3 unique characters.'})
+
+    if passwd_txt.lower() in zconfig.disallowed_passwords:
+        return await render_template('register.html', message={"password": 'That password was deemed too simple.'})
+
+    # TODO: add correct locking
+    # (start of lock)
+    pw_md5 = hashlib.md5(passwd_txt.encode()).hexdigest().encode()
+    pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
+    bcrypt_cache = zglob.cache['bcrypt']
+    bcrypt_cache[pw_bcrypt] = pw_md5 # cache pw
+
+    safe_name = utils.get_safe_name(username)
+
+    # fetch the users' country
+    if (
+        request.headers and
+        (ip := request.headers.get('X-Real-IP', type=str)) is not None
+    ):
+        country = await utils.fetch_geoloc(ip)
+    else:
+        country = 'xx'
+
+    async with app.state.services.database.connection() as db_cursor:
+        # add to `users` table.
+        await db_cursor.execute(
+            'INSERT INTO users '
+            '(name, safe_name, email, pw_bcrypt, country, creation_time, latest_activity) '
+            'VALUES (:name, :safe_name, :email, :pw_bcrypt, :country, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())',
+            {
+                "name":      username,
+                "safe_name": safe_name,
+                "email":     email,
+                "pw_bcrypt": pw_bcrypt,
+                "country":   country
+            })
+
+        user_id = await db_cursor.fetch_val(
+            'SELECT id FROM users WHERE name = :safe_name',
+            {"safe_name": safe_name})
+
+        #TODO: Use execute_many here, it's faster.
+        # add to `stats` table.
+        for mode in (
+            0,  # vn!std
+            1,  # vn!taiko
+            2,  # vn!catch
+            3,  # vn!mania
+            4,  # rx!std
+            5,  # rx!taiko
+            6,  # rx!catch
+            8,  # ap!std
+        ):
+            await db_cursor.execute(
+                'INSERT INTO stats '
+                '(id, mode) VALUES (:id, :mode)',
+                {"id": user_id, "mode": mode}
+            )
+
+
+    # user has successfully registered
+    log(f"User <{username} ({user_id})> has successfully registered through website.", Ansi.GREEN)
+    return await render_template('verify.html')
+
+@frontend.route('/leaderboard')
+@frontend.route('/lb')
+@frontend.route('/leaderboard/<mode>/<sort>/<mods>')
+@frontend.route('/lb/<mode>/<sort>/<mods>')
+async def leaderboard(mode='std', sort='pp', mods='vn'):
+    return await render_template('leaderboard.html', mode=mode, sort=sort, mods=mods)
+
+#!####################!#
+#!     USER PAGE      !#
+#!####################!#
+@frontend.route('/u/<u>')
+@frontend.route('/u/<u>/home')
+@frontend.route('/u/<u>/<mode>')
+@frontend.route('/u/<u>/<mode>/home')
+async def profile(u:str=None, mode:int=None):
+    #* User not specified
+    if u == None:
+        return await utils.flash_tohome('error', 'You must specify username or id')
+    #* Update privs
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+
+    #* Get user
+    u = await app.state.services.database.fetch_one(
+        "SELECT id, name, priv, country, creation_time, "
+        "latest_activity, preferred_mode, userpage_content, clan_id "
+        "FROM users WHERE id=:u or name=:u",
+        {"u": u}
+    )
+    if not u:
+        return await utils.flash_tohome("error", "User not found") #switch to user specific 404
+    u = dict(u)
+    if u['id'] == 1:
+        return flash_tohome('error', "Due to stuff getting absolute autism, viewing Ż Bot's profile is disabled.")
+    #! Get author priv and check if target is restricted
+    is_staff = 'authenticated' in session and session['user_data']['is_staff']
+    if not (u['priv'] & Privileges.NORMAL or is_staff):
+        return (await render_template('errors/404.html'), 404)
+
+    u['customisation'] = utils.has_profile_customizations(u['id'])
+
+    #* Check if mode, not specified. Set to user preferred (default: 0)
+    if not mode:
+        mode = u['preferred_mode']
+    if int(mode) not in [0,1,2,3,4,5,6,8]:
+        return await utils.flash_tohome("error", "Invalid mode") #switch to user specific 404
+
+    #* Get stats
+    s = await app.state.services.database.fetch_one(
+        "SELECT * FROM stats WHERE id=:uid AND mode=:mode",
+        {"uid": u['id'], "mode": mode}
+    )
+    s = dict(s)
+
+    #* Format stuff
+    s['acc'] = round(s['acc'], 2)
+    s['rscore'] = "{:,}".format(s['rscore'])
+    s['tscore'] = "{:,}".format(s['tscore'])
+    #TODO: Change to "since the beniginging" if userid < 100
+    u['register_dt'] = datetime.datetime.fromtimestamp(float(u['creation_time']))
+    u['latest_activity_dt'] = datetime.datetime.fromtimestamp(float(u['latest_activity']))
+    s['playtime'] = datetime.timedelta(seconds=s['playtime'])
+
+
+    #Convert markdown to html
+    if u['userpage_content'] != None:
+        u['userpage_content'] = md(u['userpage_content'])
+        u['userpage_content'] = u['userpage_content'].replace("\n", "<br>")
+    #Fetch user's customs
+    customs = await app.state.services.database.fetch_one(
+        "SELECT website, discord_tag, interests, location "
+        "FROM customs WHERE userid=:uid",
+        {"uid": u['id']}
+    )
+    return await render_template('profile/home.html', user=u, mode=mode, stats=s, cur_page="home", customs=customs)
+
+
+"""
+@frontend.route('/u/<id>/<mode>/favorites')
+async def profile_favorites(id:int, mode:int):
+        #* User not specified
+    if id == None:
+        return await utils.flash_tohome('error', 'You must specify username or id')
+    #* Update privs
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+
+    #* Get user
+    u = await app.state.services.database.fetch_one(
+        "SELECT id, name, priv, country, creation_time, "
+        "latest_activity, preferred_mode "
+        "FROM users WHERE id=:u or name=:u",
+        {"u": id}
+    )
+    if not u:
+        return await utils.flash_tohome("error", "User not found") #switch to user specific 404
+    u = dict(u)
+    if u['id'] == 1:
+        return flash_tohome('error', "Due to stuff getting absolute autism, viewing Ż Bot's profile is disabled.")
+    #! Get author priv and check if target is restricted
+    is_staff = 'authenticated' in session and session['user_data']['is_staff']
+    if not (u['priv'] & Privileges.NORMAL or is_staff):
+        return (await render_template('errors/404.html'), 404)
+
+    u['customisation'] = utils.has_profile_customizations(u['id'])
+
+    #Fetch user's customs
+    customs = await app.state.services.database.fetch_one(
+        "SELECT website, discord_tag, interests, location "
+        "FROM customs WHERE userid=:uid",
+        {"uid": u['id']}
+    )
+    return await render_template('profile/favorites.html', user=u, cur_page='favorites', customs=customs, mode=mode)
+"""
+
+#! profile customization
+BANNERS_PATH = Path.cwd() / 'zenith/.data/banners'
+BACKGROUND_PATH = Path.cwd() / 'zenith/.data/backgrounds'
 @frontend.route('/banners/<user_id>')
 async def get_profile_banner(user_id: int):
     # Check if avatar exists
     for ext in ('jpg', 'jpeg', 'png', 'gif'):
         path = BANNERS_PATH / f'{user_id}.{ext}'
-        print(path)
         if path.exists():
             return await send_file(path)
 
     return b'{"status":404}'
+
 
 @frontend.route('/backgrounds/<user_id>')
 async def get_profile_background(user_id: int):
@@ -66,484 +393,348 @@ async def get_profile_background(user_id: int):
 
     return b'{"status":404}'
 
-@frontend.route('/card_backgrounds/<user_id>')
-async def get_profile_card_background(user_id: int):
-    # Check if avatar exists
-    for ext in ('jpg', 'jpeg', 'png', 'gif'):
-        path = BACKGROUND_PATH / f'{user_id}.{ext}'
-        if path.exists():
-            return await send_file(path)
-
-    return await send_file(BACKGROUND_PATH / 'default_card.jpg')
-
-
-
-@frontend.route('/home')
-@frontend.route('/')
-async def home():
+@frontend.route('/score/<id>')
+async def score_page(id:int=None):
+    #* Update privs
     if 'authenticated' in session:
         await utils.updateSession(session)
-    return await render_template('home.html')
+    else:
+        return await flash_tohome("error", "You must be logged in to enter this page.")
+    # Get user and check priv
+    s = await app.state.services.database.fetch_one(
+        "SELECT id, map_md5, score, pp, acc, max_combo, mods, n300, n100, n50, "
+        "nmiss, ngeki, nkatu, grade, status, mode,  userid, play_time, online_checksum "
+        "FROM scores WHERE id=:id",
+        {"id": id}
+    )
+    if not s:
+        return await flash_tohome('error', "Score not found.")
+    s = dict(s)
+    u = await app.state.services.database.fetch_one(
+        "SELECT id, name, priv FROM users WHERE id=:id",
+        {"id": s['userid']}
+    )
+    if not u:
+        return await flash_tohome('error', "Database error, user not found, report this to developers.")
+    u = dict(u)
+    if Privileges.NORMAL not in Privileges(u['priv']):
+       if ('authenticated' not in session or not session['user_data']['is_staff']
+           or u['id'] != session['user_data']['id']):
+           return await flash_tohome('error', "Score not found.")
 
-@frontend.route('/login')
-async def login():
+    m = await app.state.services.database.fetch_one(
+        "SELECT id, set_id, artist, title, version, creator, diff "
+        "FROM maps WHERE md5=:md5",
+        {"md5": s['map_md5']}
+    )
+    if not m:
+        return await flash_tohome('error', "Database error, map not found, report this to developers.")
+    m = dict(m)
+
+    #* Format stuff
+    s['score'] = "{:,}".format(s['score'])
+    s['pp'] = round(s['pp'], 2)
+    s['acc'] = round(s['acc'], 2)
+    m['diff'] = round(m['diff'], 2)
+    m['diff_color'] = utils.getDiffColor(m['diff'])
+    if s['mods'] != 0:
+        s['mods'] = f"+{Mods(s['mods'])!r}"
+    else:
+         s['mods'] = "No Mods"
+
+    return await render_template('score.html', user=u, map=m, score=s)
+
+#! Settings
+@frontend.route('/settings')
+async def default_settings_redirect():
+    return redirect('/settings/profile')
+
+@frontend.route('/settings/profile')
+async def settings_profile():
+    #* Update privs
     if 'authenticated' in session:
-        return await flash('error', "You're already logged in!", 'home')
+        await utils.updateSession(session)
+    else:
+        return await flash_tohome("error", "You must be logged in to enter this page.")
+    return await render_template('/settings/profile.html')
 
-    return await render_template('login.html')
-
-@frontend.route('/login', methods=['POST'])
-async def login_post():
+@frontend.route('/settings/profile/change_email', methods=['POST', 'GET'])
+async def settings_profile_change_email():
     if 'authenticated' in session:
-        return await flash('error', "You're already logged in!", 'home')
+        await utils.updateSession(session)
+    else:
+        return await flash_tohome("error", "You must be logged in to enter this page.")
 
-    if glob.config.debug:
-        login_time = time.time_ns()
-
+    # Get code from form
     form = await request.form
-    username = form.get('name', type=str)
-    passwd_txt = form.get('password', type=str)
+    new_email = form.get('new_email', type=str)
+    passwd_txt = form.get('new_email-password', type=str)
 
-    if username is None or passwd_txt is None:
-        return await flash('error', 'Invalid parameters.', 'home')
 
-    # check if account exists
-    user_info = await glob.db.fetch(
-        'SELECT id, name, email, priv, '
-        'pw_bcrypt, silence_end '
-        'FROM users '
-        'WHERE safe_name = %s',
-        [utils.get_safe_name(username)]
+    # Check password
+    if not await validate_password(session['user_data']['id'], passwd_txt):
+        return await flash('error', 'Invalid password, email unchanged.', 'settings/profile')
+
+    # Check email
+    old_email = await app.state.services.database.fetch_val(
+        "SELECT email FROM users WHERE id=:uid",
+        {"uid": session['user_data']['id']}
+    )
+    if new_email == old_email:
+        return await flash('error', 'New email must be diffrent from previous one', 'settings/profile')
+
+    email_used = await app.state.services.database.fetch_val('SELECT 1 FROM users WHERE email=:email', {'email': new_email})
+    if email_used:
+        return await flash('error', 'Email already in use', 'settings/profile')
+    if not regexes.email.match(new_email):
+        return await flash('error', 'Invalid email syntax.', 'settings/profile')
+
+    await app.state.services.database.execute(
+        "UPDATE users SET email=:new_email WHERE id=:uid",
+        {"new_email": new_email, "uid": session['user_data']['id']}
+    )
+    redirect('/settings/profile')
+    return await flash('success', 'Email changed successfully', 'settings/profile')
+
+@frontend.route('/settings/profile/change_password', methods=['POST', 'GET'])
+async def settings_profile_change_password():
+    #* Update privs
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+    else:
+        return await flash_tohome("error", "You must be logged in to enter this page.")
+    form = await request.form
+    old_pwd = form.get('old_password', type=str)
+    new_pwd = form.get('new_password', type=str)
+    new_pwd_c = form.get('new_password_confirm', type=str)
+
+    # Validate old password
+    if not await validate_password(session['user_data']['id'], old_pwd):
+        return await flash('error', 'Invalid password, password unchanged.', 'settings/profile')
+
+    if len(new_pwd) < 8 or len(new_pwd) > 50:
+        return await flash('error', 'New password must be longer than 8 characters and shorter than 50 characters.', 'settings/profile')
+    if new_pwd != new_pwd_c:
+        return await flash('error', 'New confirmed password is not the same as new password.', 'settings/profile')
+    if new_pwd == old_pwd:
+        return await flash('error', "New password must be diffrent from old password.", 'settings/profile')
+    if len(set(new_pwd)) <= 3:
+        return await render_template('register.html', message={"password": 'Password must have more than 3 unique characters.'})
+    if new_pwd.lower() in zconfig.disallowed_passwords:
+        return await render_template('register.html', message={"password": 'That password was deemed too simple.'})
+
+    # Update password.
+    pw_md5 = hashlib.md5(new_pwd.encode()).hexdigest().encode()
+    pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
+    bcrypt_cache = zglob.cache['bcrypt']
+    bcrypt_cache[pw_bcrypt] = pw_md5 # cache pw
+    await app.state.services.database.execute(
+        "UPDATE users SET pw_bcrypt=:new_pw_hashed",
+        {'new_pw_hashed', pw_bcrypt}
     )
 
-    # user doesn't exist; deny post
-    # NOTE: Bot isn't a user.
-    if not user_info or user_info['id'] == 1:
-        if glob.config.debug:
-            log(f"{username}'s login failed - account doesn't exist.", Ansi.LYELLOW)
-        return await render_template('login.html', error={"type": "name", "msg":"Account does not exist"})
-
-    # cache and other related password information
-    bcrypt_cache = glob.cache['bcrypt']
-    pw_bcrypt = user_info['pw_bcrypt'].encode()
-    pw_md5 = hashlib.md5(passwd_txt.encode()).hexdigest().encode()
-
-    # check credentials (password) against db
-    # intentionally slow, will cache to speed up
-    if pw_bcrypt in bcrypt_cache:
-        if pw_md5 != bcrypt_cache[pw_bcrypt]: # ~0.1ms
-            if glob.config.debug:
-                log(f"{username}'s login failed - pw incorrect.", Ansi.LYELLOW)
-            return await render_template('login.html', error={"type": "password", "msg":"Invalid Password"})
-    else: # ~200ms
-        if not bcrypt.checkpw(pw_md5, pw_bcrypt):
-            if glob.config.debug:
-                log(f"{username}'s login failed - pw incorrect.", Ansi.LYELLOW)
-            return await render_template('login.html', error={"type": "password", "msg":"Invalid Password"})
-
-        # login successful; cache password for next login
-        bcrypt_cache[pw_bcrypt] = pw_md5
-
-    # user not verified; render verify
-    if not user_info['priv'] & Privileges.Verified:
-        if glob.config.debug:
-            log(f"{username}'s login failed - not verified.", Ansi.LYELLOW)
-        return await render_template('verify.html')
-
-
-    # login successful; store session data
-    if glob.config.debug:
-        log(f"{username}'s login succeeded.", Ansi.LGREEN)
-
-    session['authenticated'] = True
-    session['user_data'] = {}
-    await utils.updateSession(session, int(user_info['id']))
-
-    if glob.config.debug:
-        login_time = (time.time_ns() - login_time) / 1e6
-        log(f'Login took {login_time:.2f}ms!', Ansi.LYELLOW)
-    return await flash('success', f'Hey, welcome back {username}!', 'home')
-
-@frontend.route('/logout')
-async def logout():
-    if 'authenticated' not in session:
-        return await flash('error', "You can't logout if you aren't logged in!", 'login')
-
-    if glob.config.debug:
-        log(f'{session["user_data"]["name"]} logged out.', Ansi.LGREEN)
-
-    # clear session data
+    # Log user out
     session.pop('authenticated', None)
     session.pop('user_data', None)
 
-    # render login
-    return await flash('success', 'Successfully logged out!', 'home')
+    return await flash_tohome('success', 'Password changed, please log in again.')
 
-@frontend.route('/testflash')
-@frontend.route('/testflash/<status>/')
-@frontend.route('/testflash/<status>/<message>')
-async def testflash(status:str="error", message:str="Lorem Ipsum"):
-    return await flash(status, message, 'request')
-
-@frontend.route('/lb')
-@frontend.route('/leaderboards')
-async def leaderboard():
+@frontend.route('/settings/customization')
+async def settings_customizations():
+    #* Update privs
     if 'authenticated' in session:
         await utils.updateSession(session)
-    mode = request.args.get('mode', default=0, type=str)
-    mods = request.args.get('mods', default="vn", type=str)
-    page = request.args.get('page', default="1", type=str)
-    country = request.args.get('country', default=None)
-    lb_type = request.args.get('type', default="pp", type=str)
-
-    if int(mode) not in range(0, 4):
-        mode = 0
-
-    if mods.lower() not in ["vn", "rx", "ap"]:
-        mods = "vn"
     else:
-        mods = mods.lower()
+        return await flash_tohome("error", "You must be logged in to enter this page.")
+    return await render_template('settings/customization.html')
 
-    try:
-        mode = const.mode_to_gulag(int(mode), mods)
-    except:
-        return await flash('error', 'Cannot use rx with mania or ap with modes other than std', 'home')
-
-    users_count = await glob.db.fetch(
-        'SELECT COUNT(s.id) FROM stats s '
-        'LEFT JOIN users u USING (id) '
-        'WHERE s.mode=%s AND s.pp>0 AND u.priv & 1', mode, _dict=False)
-    users_count = users_count[0]
-    maxpage = int((float(users_count) + 25 - 1) // 25)
-
-    if page.isdigit == False:
-        page = 1
+@frontend.route('/settings/customization/avatar', methods=['POST'])
+async def settings_avatar_post():
+    #* Update privs
+    if 'authenticated' in session:
+        await utils.updateSession(session)
     else:
-        page = int(page)
+        return await flash_tohome("error", "You must be logged in to enter this page.")
+    # constants
 
-    offset = (int(page)-1)*25
-    if int(page) > int(maxpage):
-        page = maxpage
+    if Privileges.BLOCK_AVATAR in Privileges(int(session['user_data']['id'])):
+        return flash('errors', "You don't have privileges to change your avatar", 'settings/customization')
+    AVATARS_PATH = f'{zconfig.path_to_gulag}.data/avatars'
+    ALLOWED_EXTENSIONS = ['.jpeg', '.jpg', '.png']
 
-    if lb_type.lower() not in ["pp", "score", "plays"]:
-        lb_type = "pp"
-    elif lb_type.lower() == "score":
-        lb_type = "rscore"
+    avatar = (await request.files).get('avatar')
+    # no file uploaded; deny post
+    if avatar is None or not avatar.filename:
+        return await flash('error', 'No image was selected!', 'settings/customization')
+
+    filename, file_extension = os.path.splitext(avatar.filename.lower())
+
+    # bad file extension; deny post
+    if not file_extension in ALLOWED_EXTENSIONS:
+        return await flash('error', 'The image you select must be either a .JPG, .JPEG, or .PNG file!', 'settings/customization')
+
+    # remove old avatars
+    for fx in ALLOWED_EXTENSIONS:
+        if os.path.isfile(f'{AVATARS_PATH}/{session["user_data"]["id"]}{fx}'): # Checking file e
+            os.remove(f'{AVATARS_PATH}/{session["user_data"]["id"]}{fx}')
+
+    # avatar cropping to 1:1
+    pilavatar = Image.open(avatar.stream)
+
+    # avatar change success
+    pilavatar = utils.crop_image(pilavatar)
+    pilavatar.save(os.path.join(AVATARS_PATH, f'{session["user_data"]["id"]}{file_extension.lower()}'))
+    return await flash('success', 'Your avatar has been successfully changed!', 'settings/customization')
+
+@frontend.route('/settings/customization/banner_bg', methods=['POST'])
+async def settings_custom_post():
+
+    #* Update privs
+    if 'authenticated' in session:
+        await utils.updateSession(session)
     else:
-        lb_type = lb_type.lower()
+        return await flash_tohome("error", "You must be logged in to enter this page.")
 
-    if country == None or country.lower() not in countries.country_codes:
-        country_check = ""
+    usr_prv = Privileges(int(session['user_data']['priv']))
+    if (Privileges.SUPPORTER not in usr_prv
+        and Privileges.PREMIUM not in usr_prv
+        and not session['user_data']['is_staff']):
+        return await flash('error', f'This is supporter only feature!', 'settings/customization')
+
+    files = await request.files
+    banner = files.get('banner')
+    background = files.get('background')
+    ALLOWED_EXTENSIONS = ['.jpeg', '.jpg', '.png', '.gif']
+    # no file uploaded; deny post
+    if banner is None and background is None:
+        return await flash('error', 'No image was selected!', 'settings/customization')
+
+    if banner is not None and banner.filename:
+        _, file_extension = os.path.splitext(banner.filename.lower())
+        if not file_extension in ALLOWED_EXTENSIONS:
+            return await flash('error', f'The banner you select must be either a .JPG, .JPEG, .PNG or .GIF file!', 'settings/customization')
+
+        banner_file_no_ext = os.path.join(f'zenith/.data/banners', f'{session["user_data"]["id"]}')
+
+        # remove old picture
+        for ext in ALLOWED_EXTENSIONS:
+            banner_file_with_ext = f'{banner_file_no_ext}{ext}'
+            if os.path.isfile(banner_file_with_ext):
+                os.remove(banner_file_with_ext)
+
+        await banner.save(f'{banner_file_no_ext}{file_extension}')
+
+    if background is not None and background.filename:
+        _, file_extension = os.path.splitext(background.filename.lower())
+        if not file_extension in ALLOWED_EXTENSIONS:
+            return await flash('error', f'The background you select must be either a .JPG, .JPEG, .PNG or .GIF file!', 'settings/custom')
+
+        background_file_no_ext = os.path.join(f'zenith/.data/backgrounds', f'{session["user_data"]["id"]}')
+
+        # remove old picture
+        for ext in ALLOWED_EXTENSIONS:
+            background_file_with_ext = f'{background_file_no_ext}{ext}'
+            if os.path.isfile(background_file_with_ext):
+                os.remove(background_file_with_ext)
+
+        await background.save(f'{background_file_no_ext}{file_extension}')
+
+    return await flash('success', 'Your customisation has been successfully changed!', 'settings/customization')
+
+@frontend.route('/settings/about_me', methods=["GET"])
+async def settings_about_me():
+    #* Update privs
+    if 'authenticated' in session:
+        await utils.updateSession(session)
     else:
-        country_check = f"AND u.country = '{country.upper()}' "
+        return await flash_tohome("error", "You must be logged in to enter this page.")
 
-    lb = await glob.db.fetchall(
-        'SELECT u.id as player_id, u.name, u.country, s.tscore, s.rscore, '
-        's.pp, s.plays, s.playtime, s.acc, s.max_combo, '
-        's.xh_count, s.x_count, s.sh_count, s.s_count, s.a_count, '
-        'c.id as clan_id, c.name as clan_name, c.tag as clan_tag '
-        'FROM stats s '
-        'LEFT JOIN users u USING (id) '
-        'LEFT JOIN clans c ON u.clan_id = c.id '
-        f'WHERE s.mode = %s AND u.priv & 1 AND s.{lb_type} > 0 '
-        f'{country_check}'
-        f'ORDER BY s.{lb_type} DESC LIMIT 25 OFFSET %s',
-        [mode, offset]
+    cur_abtme = await app.state.services.database.fetch_val(
+        "SELECT userpage_content FROM users WHERE id=:uid",
+        {"uid": session['user_data']['id']}
     )
+    if not cur_abtme:
+        cur_abtme = ""
+    if Privileges.BLOCK_ABOUT_ME in Privileges(int(session['user_data']['priv'])):
+        return await flash_tohome('error', "You are banned from changing your about me, for more info contact staff.")
 
-    print(mode, country, page, lb_type)
-    if len(lb) == 0:
-        lb = False
-    else:
-        iteration = 0
-        for i in lb:
-            iteration += 1
-            i['rank'] = offset+iteration
-            i['x_count'] = int(i['xh_count']) + int(i['x_count'])
-            i['s_count'] = int(i['sh_count']) + int(i['s_count'])
-            i['typ_e'] = "{:,}".format(i[lb_type])
-            del(i['xh_count'])
-            del(i['sh_count'])
+    return await render_template('settings/about_me.html', cur_abtme=cur_abtme)
 
-    if int(mode) in range(0, 4):
-        mode_type = "Vanilla"
-    elif int(mode) in range(4, 7):
-        mode_type = "Relax"
-    else:
-        mode_type = "Autopilot"
+#! Dedicated docs
+@frontend.route('/docs/privacy_policy')
+async def privacy_policy():
+    return await render_template('privacy_policy.html')
 
-    if lb_type == "pp":
-        lb_type_visible = "PP"
-    elif lb_type == "plays":
-        lb_type_visible = "Playcount"
-    else:
-        lb_type_visible = lb_type.capitalize()
+@frontend.route('/docs/rules')
+async def rules():
+    return await render_template('rules.html')
 
-    mode_name = {"mode": utils.convert_mode_str(const.mode_gulag_rev[int(mode)]), "type": mode_type}
+#! Redirects
+@frontend.route('/discord')
+async def redirect_discord():
+    return redirect(zconfig.discord_server)
 
-        #Pager
-    page_foot = []
-    if page == 1:
-        page_foot.append([page, "bg-hsl-30"])
-        page_foot.append([page+1, "bg-hsl-15-20 hover:bg-hsl-40"])
-        page_foot.append([page+2, "bg-hsl-15-20 hover:bg-hsl-40"])
-        page_foot.append([page+3, "bg-hsl-15-20 hover:bg-hsl-40"])
-        page_foot.append([page+4, "bg-hsl-15-20 hover:bg-hsl-40"])
-        page_foot.append([page-1, "bg-hsl-15-20 hover:bg-hsl-40 opacity-70"])
-        page_foot.append([page+1, "bg-hsl-15-20 hover:bg-hsl-40"])
-    elif page == 2:
-        page -= 1
-        page_foot.append([page, ""])
-        page_foot.append([page+1, " active"])
-        page_foot.append([page+2, ""])
-        page_foot.append([page+3, ""])
-        page_foot.append([page+4, ""])
-        page_foot.append([page-1, ""])
-        page_foot.append([page+1, ""])
-    elif page == maxpage:
-        page_foot.append([maxpage-4, ""])
-        page_foot.append([maxpage-3, ""])
-        page_foot.append([maxpage-2, ""])
-        page_foot.append([maxpage-1, ""])
-        page_foot.append([maxpage, " active"])
-        page_foot.append([maxpage-1, ""])
-        page_foot.append([maxpage+1, "disabled"])
-    elif page == maxpage-1:
-        page_foot.append([maxpage-4, ""])
-        page_foot.append([maxpage-3, ""])
-        page_foot.append([maxpage-2, ""])
-        page_foot.append([maxpage-1, " active"])
-        page_foot.append([maxpage, ""])
-        page_foot.append([maxpage-1, ""])
-        page_foot.append([maxpage+1, ""])
-    else:
-        page_foot.append([page-2, ""])
-        page_foot.append([page-1, ""])
-        page_foot.append([page, " active"])
-        page_foot.append([page+1, ""])
-        page_foot.append([page+2, ""])
-        page_foot.append([page-1, ""])
-        page_foot.append([page+1, ""])
+@frontend.route('/beatmaps')
+async def bmap_search():
+    # Priv update
+    if 'authenticated' in session:
+        await utils.updateSession(session)
 
-    return await render_template(
-        'leaderboards.html', mode=int(mode), country=country, page=page, lb_type=lb_type,
-        lb=lb, mode_name=mode_name, lb_type_visible=lb_type_visible, mods=mods,
-        mode_def=const.mode_gulag_rev[mode], max_page=maxpage, page_foot=page_foot
+    return await render_template('beatmaps.html')
+
+@frontend.route('/s/<set_id>')
+async def beatmap_set_redirect(set_id:int=None):
+    """Redirect to beatmap set page"""
+    # Priv update
+    if 'authenticated' in session:
+        await utils.updateSession(session)
+
+    # Validate set_id
+    if set_id == None:
+        return flash_tohome('error', 'Invalid beatmap set ID!')
+
+    # Fetch map from set
+    map_id = await app.state.services.database.fetch_val(
+        'SELECT id FROM maps WHERE set_id=:set_id',
+        {'set_id': set_id}
     )
+    if map_id == None:
+        return await render_template('errors/404.html')
+    else:
+        return redirect(f'/b/{map_id}')
 
-@frontend.route('/relationships')
-@frontend.route('/relationships/<r_type>')
-async def relationships(r_type:str="friend"):
+
+@frontend.route('/beatmaps/<map_id>')
+async def redirectMap(map_id='map_id'):
+    return redirect(f'/b/{map_id}')
+
+@frontend.route('/b/<map_id>')
+async def beatmap_page(map_id:int=None):
+    """Redirect to beatmap page"""
+    # Priv update
     if 'authenticated' in session:
         await utils.updateSession(session)
-    else:
-        return await flash('error', 'You must be logged in to access that page', 'login')
-    if r_type.lower() not in ['friend', 'block']:
-        return redirect('/relationships/friend')
 
-    res = await glob.db.fetchall(
-        'SELECT r.user2, r.type, u.name, u.country, u.priv, u.latest_activity '
-        'FROM relationships r '
-        'LEFT JOIN users u ON r.user2 = u.id '
-        'WHERE r.user1=%s AND r.type=%s '
-        'ORDER BY name ASC',
-        (session['user_data']['id'], r_type.lower())
+    # Validate map_id
+    if map_id == None:
+        return await render_template('errors/404.html')
+
+    # Get set_id
+    set_id = await app.state.services.database.fetch_val(
+        'SELECT set_id FROM maps WHERE id=:map_id',
+        {'map_id': map_id}
     )
-    if len(res) == 0:
-        res == False
+    if not set_id:
+        return await render_template('errors/404.html')
     else:
-        now = datetime.datetime.utcnow()
-        group_list = []
-        for i in res:
-            user_priv = Privileges(i['priv'])
-            if Privileges.Normal not in user_priv:
-                group_list.append(["RESTRICTED", "#FFFFFF"])
-            else:
-                if int(i['user2']) in glob.config.owners:
-                    group_list.append(["OWNER", "#e84118"])
-                if Privileges.Dangerous in user_priv:
-                    group_list.append(["DEV", "#9b59b6"])
-                elif Privileges.Admin in user_priv:
-                    group_list.append(["ADM", "#fbc531"])
-                elif Privileges.Mod in user_priv:
-                    group_list.append(["GMT", "#28a40c"])
-                if Privileges.Nominator in user_priv:
-                    group_list.append(["BN", "#1e90ff"])
-                if Privileges.Alumni in user_priv:
-                    group_list.append(["ALU", "#ea8685"])
-                if Privileges.Supporter in user_priv:
-                    if Privileges.Premium in user_priv:
-                        group_list.append(["❤❤", "#f78fb3"])
-                    else:
-                        group_list.append(["❤", "#f78fb3"])
-                elif Privileges.Premium in user_priv:
-                    group_list.append(["❤❤", "#f78fb3"])
-                if Privileges.Whitelisted in user_priv:
-                    group_list.append(["✓", "#28a40c"])
-                i['badges'] = group_list
-                group_list = []
-                i['latest_activity'] = time_ago(datetime.datetime.utcnow(), to_datetime(datetime.datetime.fromtimestamp(i['latest_activity']), format="%Y-%m-%d %H:%M:%S"), time_limit=1) + "ago"
-    return await render_template('relationships.html', type=r_type, res=res)
-
-@frontend.route('/scores')
-@frontend.route('/scores/<mods>/<scoreid>')
-@frontend.route('/scores/<scoreid>')
-async def scores(mods:str="vn", scoreid:int="0"):
-    if 'authenticated' in session:
-        await utils.updateSession(session)
-
-    if mods.lower() not in ["vn", "rx", "ap"]:
-        mods = "vn"
-    if mods == None:
-        mods = "vn"
-
-    #Get score
-    s = await glob.db.fetch(
-        'SELECT s.id, s.score, s.pp, s.acc, s.max_combo, s.mods, '
-        's.n300, s.n100, s.n50, s.nmiss, s.nkatu, s.ngeki, s.grade, '
-        's.mode, s.play_time, s.userid, s.perfect, m.artist, m.title, '
-        'm.id AS `map_id`, m.set_id, m.version AS `diffname`, m.creator, '
-        'm.max_combo AS `map_maxcombo`, m.diff, u.id AS `uid` '
-       f'FROM scores_{mods} s '
-        'LEFT JOIN maps m ON s.map_md5 = m.md5 '
-        'LEFT JOIN users u ON s.userid = u.id '
-        'WHERE s.id = %s',
-        [scoreid]
-    )
-    if not s:
-        return await flash('error', 'This score does not exist or for some reason map is not in the database', 'home')
-
-    user = await glob.db.fetch("SELECT name, country, priv, latest_activity FROM users WHERE id=%s", s['uid'])
-    if Privileges.Normal not in Privileges(int(user['priv'])):
-        if session['user_data']['is_mod'] == False and session['user_data']['is_admin'] == False:
-            return await render_template('errors/404.html')
-
-    # Redefine variables
-    s['score'] = "{:,}".format(s['score'])
-    s['diff'] = round(float(s['diff']), 2)
-
-    ugrade = s['grade']
-    s['grade'] = []
-    s['grade'].append(const.grade_coverter[ugrade])
-    s['grade'].append(const.grade_colors[ugrade])
-    del(ugrade)
-    s['play_time'] = s['play_time'].strftime("%d.%m.%Y %H:%M")
-
-    #Repr mods
-    if s['mods'] != 0:
-        s['mods'] = f"+{Mods(int(s['mods']))!r}"
-    else:
-        s['mods'] = 'No Mod'
-
-    judgements = parseJudgements(s)
-    diffColor = getDiffColor(float(s['diff']))
-
-    #Reassign score stats for iteration in stats grid
-    header_stats = {
-        'accuracy': str(round(float(s['acc']), 2)) + "%",
-        'max combo': f"{s['max_combo']}x",
-        'pp': round(float(s['pp']), 2),
-    }
-    if s['mode'] == 3:
-        try:
-            header_stats['ratio'] = f"1 : {round(s['ngeki']/s['n300'],2)}"
-        except ZeroDivisionError:
-            header_stats['ratio'] = "1 : 0.00"
-
-    group_list = []
-    user_priv = Privileges(user['priv'])
-    if Privileges.Normal not in user_priv:
-        group_list.append(["RESTRICTED", "#FFFFFF"])
-    else:
-        if int(s['uid']) in glob.config.owners:
-            group_list.append(["OWNER", "#e84118"])
-        if Privileges.Dangerous in user_priv:
-            group_list.append(["DEV", "#9b59b6"])
-        elif Privileges.Admin in user_priv:
-            group_list.append(["ADM", "#fbc531"])
-        elif Privileges.Mod in user_priv:
-            group_list.append(["GMT", "#28a40c"])
-        if Privileges.Nominator in user_priv:
-            group_list.append(["BN", "#1e90ff"])
-        if Privileges.Alumni in user_priv:
-            group_list.append(["ALU", "#ea8685"])
-        if Privileges.Supporter in user_priv:
-            if Privileges.Premium in user_priv:
-                group_list.append(["❤❤", "#f78fb3"])
-            else:
-                group_list.append(["❤", "#f78fb3"])
-        elif Privileges.Premium in user_priv:
-            group_list.append(["❤❤", "#f78fb3"])
-        if Privileges.Whitelisted in user_priv:
-            group_list.append(["✓", "#28a40c"])
-        user['badges'] = group_list
-        group_list = []
-        user['latest_activity'] = time_ago(datetime.datetime.utcnow(), to_datetime(datetime.datetime.fromtimestamp(user['latest_activity']), format="%Y-%m-%d %H:%M:%S"), time_limit=1) + "ago"
-    return await render_template('scorepage.html', s=s, diffColor=diffColor, user=user, judgements=judgements, header_stats=header_stats)
+        # Get map info from db
+        m = await app.state.services.database.fetch_one(
+            'SELECT m.set_id, m.status, m.artist, m.title, m.creator, COUNT(f.userid) AS `favs` '
+            'FROM maps m LEFT JOIN favourites f ON f.setid=m.set_id '
+            'WHERE m.set_id=:set_id',
+            {"set_id": set_id}
+        )
+        m = dict(m)
 
 
-@frontend.route('/docs')
-@frontend.route('/wiki')
-async def docshome():
-    return await render_template('docs/home.html')
-@frontend.route('/docs/<name>')
-async def docs(name:str=None):
-    print('./static/docs/'+name+'.md')
-    try:
-        with open('./static/docs/'+name+'.md') as f:
-            lines = [line.rstrip() for line in f]
-    except FileNotFoundError:
-        return await flash('error', 'File not found', 'home')
-
-    output = []
-    # Strips the newline character
-    for line in lines:
-        output.append(markdown.markdown(line))
-
-    return await render_template('docs/doc.html', output=output)
-
-
-@frontend.route('/request')
-async def beatmap_request():
-    if 'authenticated' in session:
-        await utils.updateSession(session)
-        if Privileges.Normal not in Privileges(int(session['user_data']['priv'])):
-            return (await render_template('errors/404.html'), 404)
-    else:
-        return await flash('error', 'You must be logged in to access that page', 'login')
-    return await render_template('request.html')
-
-#!####################################################!#
-#!##################  PROFILE ZONE  ##################!#
-#!####################################################!#
-@frontend.route('/u')
-@frontend.route('/u/<id>')
-@frontend.route('/u/<id>/<page_type>')
-@frontend.route('/user')
-@frontend.route('/user/<id>')
-@frontend.route('/user/<id>/<page_type>')
-async def profile(id:str=None, page_type:str='home'):
-    if 'authenticated' in session:
-        await utils.updateSession(session)
-    if id == None:
-        return (await render_template('errors/404.html'), 404)
-    user_data = await glob.db.fetch(
-        'SELECT name, safe_name, id, priv, country, clan_id '
-        'FROM users '
-        'WHERE safe_name IN (%s) OR id IN (%s) LIMIT 1',
-        [id, utils.get_safe_name(id)]
-    )
-    # no user
-    if not user_data:
-        return (await render_template('404.html'), 404)
-    #Update session
-    if 'authenticated' in session:
-        await utils.updateSession(session)
-
-
-    if user_data['clan_id'] == 0:
-        clan = False
-    else:
-        clan = await glob.db.fetch('SELECT * FROM clans WHERE id=%s', user_data['clan_id'])
-
-    return await render_template('profile/home.html', user_data=user_data, clan=clan)
+    return await render_template('bmap_page.html', m=m, set_id=set_id, map_id=map_id)

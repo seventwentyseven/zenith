@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% block title %}{{ user['name'] }}'s score on {{ map['title'] }}{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+
+{% block content %}
+<div class="h-screen my-8 md:w-10/12 md:mx-auto max-w-screen-xl">
+    <!--! Banner -->
+    <div class="md:h-96 w-full bg-hsl-20"
+         style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.66), hsl(var(--main), 10%, 10%, 0.66)),
+                url(https://assets.ppy.sh/beatmaps/{{ map['set_id'] }}/covers/fullsize.jpg);
+                background-size: cover; background-repeat: no-repeat; background-position: center;">
+        <!--! Header -->
+        <div class="h-auto bg-slate-800 bg-opacity-60 flex flex-col px-8 py-1">
+            <a href="/b/{{ map['id'] }}" class="w-auto">
+                <div class="flex items-center">
+                    <span class="text-xl">{{ map['artist'] }}</span>
+                    <span class="mx-2">-</span>
+                    <span class="text-lg font-light truncate">{{ map['title'] }}</span>
+                </div>
+            </a>
+            <div class="flex items-center">
+                {% if score['mode'] in [0,4,8] %}
+                <i class="mode-icon osu" style="color: {{ map['diff_color'] }}"></i>
+                {% elif score['mode'] in [1,6] %}
+                <i class="mode-icon taiko" style="color: {{ map['diff_color'] }}"></i>
+                {% elif score['mode'] in [2,6] %}
+                <i class="mode-icon catch" style="color: {{ map['diff_color'] }}"></i>
+                {% elif score['mode'] == 3 %}
+                <i class="mode-icon mania" style="color: {{ map['diff_color'] }}"></i>
+                {% endif %}
+                <figure class="py-0.5 px-2 bg-hsl-15 text-xs flex flex-row items-center rounded-full mx-2"
+                        style="color: {{ map['diff_color'] }}">
+                    <i class="fas fa-star mr-1"></i>
+                    <span>{{ map['diff'] }}</span>
+                </figure>
+                <a href="/b/{{ map['id'] }}" class="w-auto">
+                    <div class="flex flex-col md:flex-row items-start md:items-end">
+                        <span class="text-lg font-light mr-1 truncate">[{{ map['version'] }}]</span>
+                        <span class="font-light text-hsl-90">mapped by {{ map['creator'] }}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 grid-rows-3 md:grid-cols-5 md:grid-rows-1 gap-2 my-4 md:py-16">
+            <!--! Score Info Block -->
+            <div class="row-start-2 md:row-start-1 col-span-1 md:col-span-2 row-span-1 flex flex-col
+                        justify-center items-center md:items-end md:mr-5">
+                <div class="flex flex-col items-center md:items-start">
+                    <span class="col-span-2 row-span-1 font-light text-5xl mb-2">{{ score['score'] }}</span>
+                    <div class="grid grid-cols-2 grid-rows-3 gap-x-2 gap-y-0.5">
+                        <span class="col-span-1 row-span-1 h-min">Played by</span>
+                        <a class="col-span-1 row-span-1 font-medium h-min
+                                  hover:text-hsl-80 transition duration-200" href="/u/{{ user['id'] }}">
+                           <span>{{ user['name'] }}</span>
+                        </a>
+                        <span class="col-span-1 row-span-1">Submitted on</span>
+                        <span class="col-span-1 row-span-1 font-medium">{{ score['play_time'] }}</span>
+                        <span class="col-span-1 row-span-1">Played with</span>
+                        <span class="col-span-1 row-span-1 font-medium">{{ score['mods'] }}</span>
+                    </div>
+                </div>
+            </div>
+            <!--! Grade -->
+            <div class="row-start-1 md:row-start-1 col-span-1 row-span-1 flex justify-center items-center">
+                <span class="text-9xl font-medium" id="grade"></span>
+            </div>
+            <!--! Stat Block -->
+            <div class="row-start-3 md:row-start-1 col-span-1 md:col-span-2 row-span-1
+                        grid grid-cols-1 grid-rows-2 gap-y-1 mx-2 md:mr-4 my-auto">
+                <div class="col-span-1 row-span-1 grid grid-rows-1 grid-cols-3 gap-x-1" id="stat_block-column-top">
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">PP</div>
+                        <span class="text-xl md:text-2xl text-center">{{ score['pp'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">ACC</div>
+                        <span class="text-xl md:text-2xl text-center">{{ score['acc'] }}%</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium text-clip overflow-hidden whitespace-nowrap">MAX COMBO</div>
+                        <span class="text-xl md:text-2xl text-center">{{ score['max_combo'] }}x</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1" id="ratio-parent">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">RATIO</div>
+                        <span class="text-xl md:text-2xl text-center" id="ratio">1.12:1</span>
+                    </div>
+                </div>
+                {% if score['mode'] in [0,4,8] %}
+                <div class="col-span-1 row-span-1 grid grid-rows-1 gap-x-0.5 md:gap-x-1 grid-cols-4" id="stat_block-column-bottom">
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">300</div>
+                        <span class="text-xl md:text-2xl text-center" id="300">{{ score['n300'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">200</div>
+                        <span class="text-xl md:text-2xl text-center" id="200">70</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">50</div>
+                        <span class="text-xl md:text-2xl text-center" id="50">{{ score['n50'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">MISS</div>
+                        <span class="text-xl md:text-2xl text-center" id="miss">{{ score['nmiss'] }}</span>
+                    </div>
+                </div>
+                {% elif score['mode'] in [1,5] %}
+                <div class="col-span-1 row-span-1 grid grid-rows-1 gap-x-0.5 md:gap-x-1 grid-cols-3" id="stat_block-column-bottom">
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">GREAT</div>
+                        <span class="text-xl md:text-2xl text-center" id="300">{{ score['n300'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">GOOD</div>
+                        <span class="text-xl md:text-2xl text-center" id="50">{{ score['n50'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">MISS</div>
+                        <span class="text-xl md:text-2xl text-center" id="miss">{{ score['nmiss'] }}</span>
+                    </div>
+                </div>
+                {% elif score['mode'] in [2,6] %}
+                <div class="col-span-1 row-span-1 grid grid-rows-1 gap-x-0.5 md:gap-x-1 grid-cols-4" id="stat_block-column-bottom">
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">FRIUTS</div>
+                        <span class="text-xl md:text-2xl text-center" id="200">{{ score['n300'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">TICKS</div>
+                        <span class="text-xl md:text-2xl text-center" id="50">{{ score['n100'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">DRIP MISS</div>
+                        <span class="text-xl md:text-2xl text-center" id="300">{{ score['nkatu'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">MISS</div>
+                        <span class="text-xl md:text-2xl text-center" id="miss">{{ score['nmiss'] }}</span>
+                    </div>
+                </div>
+                {% elif score['mode'] in [3] %}
+                <div class="col-span-1 row-span-1 grid grid-rows-1 gap-x-0.5 md:gap-x-1 grid-cols-6" id="stat_block-column-bottom">
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">MAX</div>
+                        <span class="text-xl md:text-2xl text-center" id="300">{{ score['ngeki'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">300</div>
+                        <span class="text-xl md:text-2xl text-center" id="200">{{ score['n300'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">200</div>
+                        <span class="text-xl md:text-2xl text-center" id="300">{{ score['nkatu'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">100</div>
+                        <span class="text-xl md:text-2xl text-center" id="50">{{ score['n100'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">50</div>
+                        <span class="text-xl md:text-2xl text-center" id="300">{{ score['n50'] }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-1 row-span-1">
+                        <div class="py-0.5 w-full bg-hsl-15 rounded-full text-xs text-center font-medium">MISS</div>
+                        <span class="text-xl md:text-2xl text-center" id="miss">{{ score['nmiss'] }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% if score['grade']|upper != 'F' %}
+        <div class="w-full flex justify-end">
+            <button class="bg-hsl-60 hover:bg-hsl-40 rounded-full transition duration-200 px-4 py-2 -mt-7 mr-3 ease-in"
+                    onclick=" window.open('https://api.{{ domain() }}/get_replay?id={{ score['id'] }}','_blank')">
+                Download Replay
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block bottom %}
+<!--! Grade Conversion -->
+<script>
+    function rank_colors(rank) {
+        switch (rank) {
+            case 'XH':
+                return 'text-gray-300'
+            case 'X':
+                return 'text-yellow-400'
+            case 'SH':
+                return 'text-gray-300'
+            case 'S':
+                return 'text-yellow-400'
+            case 'A':
+                return 'text-green-500'
+            case 'B':
+                return 'text-blue-500'
+            case 'C':
+                return 'text-purple-400'
+            case 'D':
+                return 'text-red-400'
+            case 'F':
+                return 'text-red-400'
+    }}
+    function grade_normal(rank) {
+        switch (rank) {
+            case 'XH':
+                return 'SS'
+            case 'X':
+                return 'SS'
+            case 'SH':
+                return 'S'
+            default:
+                return rank
+    }}
+
+    gradeel = document.getElementById('grade')
+    gradeel.innerHTML = grade_normal('{{ score["grade"] }}')
+    gradeel.classList.add(rank_colors('{{ score["grade"] }}'))
+</script>
+<!--! Ratio (if mania) -->
+<script>
+    // Ratio calculation
+    ratioel = document.getElementById('ratio')
+    if ('{{ score["mode"] }}' == '3') {
+        le_ratio = Number('{{ score["ngeki"] }}')/Number('{{ score["n300"] }}')
+        le_ratio = le_ratio.toFixed(2)
+        ratioel.innerHTML = le_ratio + ':1'
+        document.getElementById('stat_block-column-top').classList.remove('grid-cols-3')
+        document.getElementById('stat_block-column-top').classList.add('grid-cols-4')
+    } else {
+        document.getElementById('ratio-parent').classList.add('hidden')
+    }
+</script>
+{% endblock %}

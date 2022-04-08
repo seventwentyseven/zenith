@@ -1,35 +1,51 @@
-<footer class="bg-hsl-5">
-  <div class="px-4 py-8 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-12 lg:px-14 xl:px-6">
-    <div class="grid grid-cols-1 gap-10 row-gap-6 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-9">
-      <div class="md:col-span-2 lg:col-span-3 xl:col-span-6">
-        <a class="inline-flex items-center">
-          <span class="text-xl font-bold tracking-wide text-gray-200 uppercase">zenith</span>
-        </a>
-        <div class="mt-2 lg:max-w-sm">
-          <p class="text-sm text-gray-200">
-          © 2021 {{ appNameLong() }}.tk
-          </p>
+<footer class="bg-hsl-5 w-full" id="footer">
+    <div class="h-auto lg:h-32 mx-10 flex flex-col lg:flex-row items-center py-4 lg:py-0">
+        <div class="flex flex-col items-center lg:items-start">
+            <span class="text-hsl-90 text-xl font-bold">ZENITH</span>
+            <span class="text-sm">Copyright Seven Twenty Seven 2021-2022</span>
+            <span class="text-sm">Code under MIT license.</span>
         </div>
-      </div>
-      <div class="text-sm">
-        <p class="text-xl font-bold tracking-wide text-center text-gray-300 md:text-right">Dev</p>
-        <div class="flex justify-center md:justify-end">
-          <a class="text-hsl-h1" href="https://trello.com/b/7m6zlKMh">Trello</a>
+        <div class="flex flex-col lg:ml-10 mt-3 lg:mt-0">
+            <!-- This is dumb but it works XD -->
+            <span class="h-0 lg:h-auto lg:invisible text-xl font-bold">⠀</span>
+            <p class="text-sm">
+                Not affiliated with ppy Pty Ltd in any way.<br>
+                "osu!" is a trademark of ppy Pty Ltd.
+            </p>
         </div>
-
-        <div class="flex justify-center md:justify-end">
-          <a class="text-hsl-h1" href="https://github.com/seventwentyseven/">Source Code</a>
+        <div class="mt-5 lg:mt-0 lg:ml-auto flex flex-row content-between text-sm">
+            <div class="flex flex-col">
+                <span class="text-hsl-90 text-lg font-bold ">SOCIALS</span>
+                <a href="/discord" class="hover:text-hsl-80 transition duration-100">
+                    <i class="fab fa-discord"></i>
+                    Discord
+                </a>
+                {% if 'authenticated' not in session %}
+                <a href="https://topg.org/osu-private-servers/server-631600"
+                    class="hover:text-hsl-80 transition duration-100">
+                    <i class="fas fa-gamepad mr-1"></i>
+                    TOPG
+                </a>
+                {% else %}
+                <a href="https://topg.org/osu-private-servers/server-631600-{{ session['user_data']['name'] }}"
+                    class="hover:text-hsl-80 transition duration-100">
+                    <i class="fas fa-gamepad mr-1"></i>
+                    TOPG
+                </a>
+                {% endif %}
+            </div>
+            <div class="ml-10 flex flex-col text-sm">
+                <span class="text-hsl-90 text-lg font-bold">DEV</span>
+                <a href="https://trello.com/b/hpXwszCA/zenith" class="hover:text-hsl-80 transition duration-100">
+                    <i class="fab fa-trello mr-1"></i>
+                    Trello
+                </a>
+                <a href="https://github.com/seventwentyseven/gulag"
+                    class="hover:text-hsl-80 transition duration-100">
+                    <i class="fab fa-github mr-1"></i>
+                    GitHub
+                </a>
+            </div>
         </div>
-      </div>
-      <div class="text-sm">
-        <p class="text-xl font-bold tracking-wide text-center text-gray-300 md:text-right">Socials</p>
-        <div class="flex justify-center md:justify-end">
-          <a class="text-hsl-h1" href="/youtube">YouTube</a>
-        </div>
-        <div class="flex justify-center md:justify-end">
-          <a class="text-hsl-h1" href="/discord">Discord</a>
-        </div>
-      </div>
     </div>
-  </div>
 </footer>
