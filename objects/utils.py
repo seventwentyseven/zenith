@@ -172,13 +172,9 @@ async def fetch_geoloc(ip: str) -> str:
 
     async with zglob.http.get(url) as resp:
         if not resp or resp.status != 200:
-            if zconfig.debug:
-                log('Failed to get geoloc data: request failed.', Ansi.LRED)
             return 'xx'
         status, *lines = (await resp.text()).split('\n')
         if status != 'success':
-            if zconfig.debug:
-                log(f'Failed to get geoloc data: {lines[0]}.', Ansi.LRED)
             return 'xx'
         return lines[1].lower()
 
@@ -222,9 +218,9 @@ def getHighestPriv(value: int) -> str:
         return "Tournament"
     elif value & 128:
         return "Alumni"
-    elif value & 16:
+    elif value & 32:
         return "Supporter+"
-    elif value & 8:
+    elif value & 16:
         return "Supporter"
     elif value & 4:
         return "Whitelisted"
@@ -234,3 +230,7 @@ def getHighestPriv(value: int) -> str:
         return "Unverified"
     else:
         raise ValueError("Invalid privilege value")
+
+async def adminerror(msg:str):
+    """ Return adminerror template with msg value"""
+    return await render_template('admin/admin_error.html', msg=msg)
