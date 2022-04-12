@@ -9,109 +9,118 @@
 
 
 {% block content %}
-<div class="w-full min-h-screen flex -mt-14 overflow-x-clip"
+<div class="w-full -mt-14 h-screen flex items-center justify-center"
      style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.65),
             hsl(var(--main), 10%, 10%, 0.65)), url(/static/images/home-bg-1.jpg);
             background-position: center; background-size: cover;">
-    <div class="w-full absolute">
-    {% with custom=True %}
-        {% include 'components/navbar.html' %}
-    {% endwith %}
-    </div>
-    <div class="w-full sm:ml-auto sm:w-6/12 md:w-5/12 lg:w-4/12 static bg-hsl-10"
-         style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.8),
-                hsl(var(--main), 10%, 10%, 0.8))">
-        <div class="h-full w-full">
-            <div class="flex flex-col h-full w-full mt-8 text-center">
-                <div class="w-full mt-4 text-3xl md:text-4xl font-bold">Hello There!</div>
-                <div class="w-full mt-2 text-2xl md:text-3xl font-thin">Please register.</div>
-                <form class="mt-5 w-10/12 mx-auto" method="POST" autocomplete="off">
-                    {% if message['name'] %}
-                    <span class="text-red-500 font-thin italic">{{ message['name'] }}</span>
-                    {% endif %}
-                    <input id="username" type="text" name="username" placeholder="Username" autocomplete="username"
-                        class="block w-full py-3 px-1 mt-2
-                        text-gray-200 appearance-none
-                        border-b-3 border-hsl-50
-                        focus:text-white focus:outline-none focus:border-hsl-80
-                        bg-transparent
-                        transition duration-500"
-                        required />
-
-                    {% if message['email'] %}
-                    <span class="text-red-500 font-thin italic">{{ message['email'] }}</span>
-                    {% endif %}
-                    <input id="email" type="email" name="email" placeholder="Email" autocomplete="email"
-                        class="block w-full py-3 px-1 mt-4 mb-4
-                        text-gray-200 appearance-none
-                        border-b-3 border-hsl-50
-                        focus:text-white focus:outline-none focus:border-hsl-80
-                        bg-transparent
-                        transition duration-500"
-                        required />
-
-
-                    <!-- Password Input -->
-                    {% if message['password'] %}
-                    <span class="text-red-500 font-thin italic" id="error-password">{{ message['password'] }}</span>
-                    {% endif %}
-                    <span id="message" class="text-left italic text-red-500 text-sm -mb-3"></span>
-                    <div class="flex justify-between mb-3">
-                        <input id="password" type="password" name="password" placeholder="Password" autocomplete="password" onkeyup='check();'
-                            class="block w-47% py-3 px-1 mb-4
-                            text-gray-200 appearance-none
-                            border-b-3 border-hsl-50
-                            focus:text-white focus:outline-none focus:border-hsl-80
-                            bg-transparent
-                            transition duration-500"
-                            required />
-                        <!-- Password Input -->
-                        <input id="password-confirm" type="password" name="password-confirm" placeholder="Confirm Password" autocomplete="password-confirm" onkeyup='check();'
-                            class="block w-47% py-3 px-1 mb-4
-                            text-gray-200 appearance-none
-                            border-b-3 border-hsl-50
-                            focus:text-white focus:outline-none focus:border-hsl-80
-                            bg-transparent
-                            transition duration-500"
-                            required />
-                    </div>
-
-                    {% if not captchaKey() == 'changeme' %}
-                    {% if message['captcha'] %}
-                    <span class="text-red-500 font-thin italic">{{ message['captcha'] }}</span>
-                    {% endif %}
-                    <!-- H captcha -->
-                    <div class="field w-full h-auto">
-                        <div class="h-captcha" data-sitekey="{{ captchaKey() }}" data-theme="dark" style="display: flex; justify-content: center;"></div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Auth Buttton -->
-                    <button type="submit"
-                        class="w-full py-3 mt-8 bg-hsl-50 rounded-md
-                        font-medium text-white uppercase
-                        focus:outline-none hover:bg-hsl-60 hover:shadow-none">
-                        Register
-                    </button>
-
-                    <!-- Bottom Text -->
-                    <div class="sm:flex flex-col sm:flex-wrap mt-6 sm:mb-4 text-sm text-center w-full">
-                        <a href="/login" class="flex-2 mx-auto">
-                            Already have an account?
-                        </a>
-                        <p class="mt-1 text-center">
-                            <span>By registering you accept our </span>
-                            <a href="/docs/privacy_policy" class="flex-2 mx-auto text-hsl-50 hover:text-hsl-60 transform duration-200">
-                                Privacy Policy
-                            </a>
-                            <span> and </span>
-                            <a href="/docs/rules" class="flex-2 mx-auto text-hsl-50 hover:text-hsl-60 transform duration-200">
-                                Rules
-                            </a>
-                        </p>
-                    </div>
-                </form>
+    <div class="w-full md:w-2/3 lg:w-1/3 h-auto bg-zinc-900 backdrop-blur-lg bg-opacity-60 rounded-lg flex flex-col">
+        <div class="bg-zinc-900 bg-opacity-60 flex items-center py-2 rounded-t-lg">
+            <button class="flex text-lg absolute left-4 font-light justify-center"
+                onclick="location.href='https://{{ domain() }}'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-left " width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <line x1="5" y1="12" x2="11" y2="18" />
+                    <line x1="5" y1="12" x2="11" y2="6" />
+                </svg>
+            </button>
+            <div class="mx-12 text-xl text-center" id="header-text">
+                {% if message %}
+                    <span class="text-base font-normal text-red-500 break-all">{{ message }}</span>
+                {% else %}
+                    <span class="mx-auto font-extralight">Hello! Please register!</span>
+                {% endif %}
             </div>
+        </div>
+        <div class="w-full flex flex-col mt-5 mb-4" id="form-container">
+            <form id="regForm" method="POST" class="w-full">
+                <!-- One "tab" for each step in the form: -->
+                <div class="tab mx-4">
+                    <label class="text-sm italic font-extralight text-red-500 hidden ml-1"
+                    id="field-username_label" for="field-username">
+                    </label>
+                    <input placeholder="Username" id="field-username" type="text" name="username"
+                        class="px-4 py-2 w-full mx-auto bg-zinc-900 bg-opacity-50 rounded-lg
+                        border-hsl-50 focus:border-b-2 focus:bg-opacity-20 focus:rounded-none
+                        transition duration-300 outline-none mt-0.5 mb-1"
+                        oninput="this.classList.remove('bg-red-500'); validateUsername(this.value);">
+                    <!-- Email Field -->
+                    <label class="text-sm italic font-extralight text-red-500 hidden ml-1 mt-1"
+                        id="field-email_label" for="field-email">
+                    </label>
+                    <input placeholder="Email" id="field-email" type="email" name="email"
+                        class="px-4 py-2 w-full bg-zinc-900 bg-opacity-50 rounded-lg
+                        border-hsl-50 focus:border-b-2 focus:bg-opacity-20 focus:rounded-none
+                        transition duration-300 outline-none mt-0.5"
+                        oninput="this.classList.remove('bg-red-500'); validateEmail(this.value);">
+                </div>
+                <div class="tab mx-4">
+                    <label class="text-sm italic font-extralight text-red-500 hidden ml-1"
+                    id="field-password_label" for="field-username">
+                    </label>
+                    <input placeholder="Password" id="field-password" type="password" name="password"
+                        class="px-4 py-2 w-full mx-auto bg-zinc-900 bg-opacity-50 rounded-lg
+                        border-hsl-50 focus:border-b-2 focus:bg-opacity-20 focus:rounded-none
+                        transition duration-300 outline-none mt-0.5 mb-1"
+                        oninput="this.classList.remove('bg-red-500'); validatePassword(this.value);">
+                    <!-- Email Field -->
+                    <label class="text-sm italic font-extralight text-red-500 hidden ml-1 mt-1"
+                        id="field-cpassword_label" for="field-cpassword">
+                    </label>
+                    <input placeholder="Confirm Password" id="field-cpassword" type="password" name="cpassword"
+                        class="px-4 py-2 w-full bg-zinc-900 bg-opacity-50 rounded-lg
+                        border-hsl-50 focus:border-b-2 focus:bg-opacity-20 focus:rounded-none
+                        transition duration-300 outline-none mt-0.5"
+                        oninput="this.classList.remove('bg-red-500'); validateCPassword(this.value);">
+                </div>
+                <div class="tab mx-4">
+                    <!--
+                    <label>Invitation code from your friend (Optional)</label>
+                    <input placeholder="Inviter" id="field-inviter" type="text" name="inviter"
+                        class="px-4 py-2 w-full mx-auto bg-zinc-900 bg-opacity-50 rounded-lg
+                        border-hsl-50 focus:border-b-2 focus:bg-opacity-20 focus:rounded-none
+                        transition duration-300 outline-none"
+                        oninput="this.classList.remove('bg-red-500')">
+                    -->
+                    {% if not captchaKey() == 'changeme' %}
+                        <!-- H     nocap tcha -->
+                        <div class="field w-full h-auto mt-5">
+                            <div class="h-captcha" data-sitekey="{{ captchaKey() }}" data-theme="dark" style="display: flex; justify-content: center;"></div>
+                        </div>
+                    {% endif %}
+                    <div class="mt-6">
+                        <div class="form-check">
+                            <p class="text-center">
+                                By registering you accept
+                                <a href="/docs/rules" target="_blank" class="text-hsl-70">Rules</a>,
+                                <a href="/docs/privacy_policy" target="_blank" class="text-hsl-70">Privacy Policy</a>
+                                and Cookies
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="font-light my-4 w-full">
+                    <div class="flex justify-end mr-2">
+                        <button type="button" id="prevBtn" onclick="nextPrev(-1)"
+                            class="py-1.5 px-2.5 rounded-lg hover:bg-opacity-70
+                            hover:bg-zinc-900 transition duration-200">Previous</button>
+                        <button type="button" id="nextBtn" onclick="nextPrev(1)"
+                            class="py-1.5 px-2.5 rounded-lg hover:bg-opacity-70
+                            hover:bg-zinc-900 transition duration-200">Next</button>
+                    </div>
+                </div>
+                <!-- Circles which indicates the steps of the form: -->
+                <div class="text-center mt-auto">
+                    <span class="step"></span>
+                    <span class="step"></span>
+                    <span class="step"></span>
+                </div>
+                <div class="text-center mt-4 text-light">
+                    <a href="/login" class="text-white hover:text-hsl-70 transition duration-200">
+                        <span>Already have an account?</span>
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -134,27 +143,249 @@
     -webkit-box-shadow: 0 0 0px 1000px rgba(0,0,0,0) inset;
     transition: background-color 5000s ease-in-out 0s;
   }
+  /* Hide all steps by default: */
+  .tab {
+    display: none;
+  }
+
+  /* Make circles that indicate the steps of the form: */
+  .step {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #8f8f8f;
+    border: none;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 1;
+  }
+
+  /* Mark the active step: */
+  .step.active {
+    opacity: 1;
+    background-color: white;
+  }
+
+  /* Mark the steps that are finished and valid: */
+  .step.finish {
+    background-color: hsl(var(--main), 60%, 60%);
+  }
 </style>
+<!-- Form data scripts -->
 <script>
-    document.getElementById("navbar").remove()
-    document.getElementById("navbar-button-reg").remove()
-    document.getElementById("navbar-button-log").remove()
-    document.getElementById("user-search-box").remove()
+    var currentTab = 0; // Current tab is set to be the first tab (0)
+    showTab(currentTab); // Display the current tab
 
-    // Delete color from navbar
-    document.getElementById("navbar-colourer").classList.remove("bg-hsl-50");
-    // Move footer 14rem up
-    document.getElementById("footer").classList.add("-mt-14")
+    function validateUsername(string) {
+        // Make regex, username can contain letters and numbers
+        // allow spaces and these symbols _ - []
+        // Space can't be at start of end of string
 
-    // Password confirmation
-    var check = function() {
-        if (document.getElementById('password').value ==
-          document.getElementById('password-confirm').value) {
-          document.getElementById('message').innerHTML = '';
-        } else {
-          document.getElementById('message').innerHTML = "Passwords don't match";
+        // Regex test
+        error = false
+        msg = ""
+        var regex = /^[a-zA-Z0-9_\-\[\]\ ]+$/;
+        if (!regex.test(string)) {
+            // Username must match regex above
+            error = true
+            msg = 'Username can contain letters, numbers, spaces, _ - []'
+        } else if (string.length < 3 || string.length > 15) {
+            // Username must be between 3 and 15 characters
+            error = true
+            msg = 'Username must be between 3 and 15 characters'
+        } else if (string.charAt(0) == " " || string.charAt(string.length - 1) == " ") {
+            // Username can't start or end with space
+            error = true
+            msg = "Username can't start or end with space"
+        } else if (string.includes(' ') && string.includes('_')) {
+            // Check if username contains spaces and underscores at the same time
+            error = true
+            msg = "Username can't contain spaces and underscores at the same time"
         }
-        document.getElementById('error-password').remove()
+
+        if (error == true) {
+            document.getElementById('field-username_label').classList.add('flex')
+            document.getElementById('field-username_label').classList.remove('hidden')
+            document.getElementById('field-username_label').innerHTML = msg
+        } else {
+            error = false
+            document.getElementById('field-username_label').classList.add('hidden')
+            document.getElementById('field-username_label').classList.remove('flex')
+        }
+
+        return error
+
+    }
+
+    function validateEmail(string) {
+        // email regex || Added Later: COPILOT WHAT THE ACTUAL FUCK IS THIS THING!!!??
+        var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!regex.test(string)) {
+            error = true
+            document.getElementById('field-email_label').classList.add('flex')
+            document.getElementById('field-email_label').classList.remove('hidden')
+            document.getElementById('field-email_label').innerHTML = 'Invalid Email'
+        } else {
+            error = false
+            document.getElementById('field-email_label').classList.add('hidden')
+            document.getElementById('field-email_label').classList.remove('flex')
+        }
+        return error
+    }
+
+    function validatePassword(string) {
+        // Regex test
+        error = false
+        msg = ""
+        if (!string.match(/[0-9]/)) {
+            // Password must contain at least one number
+            error = true
+            msg = 'Password must contain at least one number'
+        } else if (!string.match(/[A-Z]/)) {
+            // Password must contain at least one uppercase letter
+            error = true
+            msg = 'Password must contain at least one uppercase letter'
+        } else if (!string.match(/[a-z]/)) {
+            // Password must contain at least one lowercase letter
+            error = true
+            msg = 'Password must contain at least one lowercase letter'
+        } if (string.length < 8 || string.length > 32) {
+            // Password must be between 8-32 characters
+            error = true
+            msg = 'Password must be between 8-32 characters'
+        }
+
+        if (error == true) {
+            document.getElementById('field-password_label').classList.add('flex')
+            document.getElementById('field-password_label').classList.remove('hidden')
+            document.getElementById('field-password_label').innerHTML = msg
+        } else {
+            error = false
+            document.getElementById('field-password_label').classList.add('hidden')
+            document.getElementById('field-password_label').classList.remove('flex')
+        }
+        return error
+    }
+
+    function validateCPassword(string) {
+        if (string != document.getElementById('field-password').value) {
+            error = true
+            document.getElementById('field-cpassword_label').classList.add('flex')
+            document.getElementById('field-cpassword_label').classList.remove('hidden')
+            document.getElementById('field-cpassword_label').innerHTML = 'Passwords do not match'
+        } else {
+            error = false
+            document.getElementById('field-cpassword_label').classList.add('hidden')
+            document.getElementById('field-cpassword_label').classList.remove('flex')
+        }
+
+        return error
+    }
+    function showTab(n) {
+        // This function will display the specified tab of the form ...
+        var x = document.getElementsByClassName("tab");
+        x[n].style.display = "block";
+        // ... and fix the Previous/Next buttons:
+        if (n == 0) {
+            document.getElementById("prevBtn").style.display = "none";
+        } else {
+            document.getElementById("prevBtn").style.display = "inline";
+        }
+        if (n == (x.length - 1)) {
+            document.getElementById("nextBtn").innerHTML = "Submit";
+        } else {
+            document.getElementById("nextBtn").innerHTML = "Next";
+        }
+        // ... and run a function that displays the correct step indicator:
+        fixStepIndicator(n)
+    }
+
+    function nextPrev(n) {
+        // This function will figure out which tab to display
+        var x = document.getElementsByClassName("tab");
+        // Exit the function if any field in the current tab is invalid:
+        if (n == 1 && !validateForm()) return false;
+        // Hide the current tab:
+        x[currentTab].style.display = "none";
+        // Increase or decrease the current tab by 1:
+        currentTab = currentTab + n;
+        // if you have reached the end of the form... :
+        if (currentTab >= x.length) {
+            //...the form gets submitted:
+            document.getElementById("regForm").submit();
+            return false;
+        }
+        // Otherwise, display the correct tab:
+        showTab(currentTab);
+    }
+
+    function validateForm() {
+        // This function deals with validation of the form fields
+        var x, y, i, valid = true;
+        x = document.getElementsByClassName("tab");
+        y = x[currentTab].getElementsByTagName("input");
+        // A loop that checks every input field in the current tab:
+        // Skip for loop if current tab is the last tab
+        if (currentTab != 2) {
+            for (i = 0; i < y.length; i++) {
+                // If a field is empty...
+                if (y[i].value == "") {
+                // add an "invalid" class to the field:
+                y[i].classList.add("bg-red-500")
+                // and set the current valid status to false:
+                valid = false;
+            }
+        }
+
+        // Check validity of username and email
+        if (currentTab == 0) {
+            if (validateUsername(y[0].value) == true) {
+                valid = false
+                y[0].classList.add("bg-red-500")
+            }
+            if (validateEmail(y[1].value) == true) {
+                valid = false
+                y[1].classList.add("bg-red-500")
+            }
+        } else if (currentTab == 1) {
+            if (validatePassword(y[0].value) == true) {
+                valid = false
+                y[0].classList.add("bg-red-500")
+            }
+            if (validateCPassword(y[1].value) == true) {
+                valid = false
+                y[1].classList.add("bg-red-500")
+            }
+        }
+    }
+    // If the valid status is true, mark the step as finished and valid:
+    if (valid) {
+        document.getElementsByClassName("step")[currentTab].className += " finish";
+    }
+    return valid; // return the valid status
+    }
+
+    function fixStepIndicator(n) {
+        // This function removes the "active" class of all steps...
+        var i, x = document.getElementsByClassName("step");
+        for (i = 0; i < x.length; i++) {
+            x[i].className = x[i].className.replace(" active", "");
+        }
+        //... and adds the "active" class to the current step:
+        x[n].className += " active";
     }
 </script>
+<script>
+
+    document.getElementById("footer").classList.add("-mt-14")
+    document.getElementById("navbar-colourer").classList.remove("bg-hsl-50");
+    //center header-text horizontally
+    //window.addEventListener("beforeunload", function (e) {
+    //    var confirmationMessage = 'If you leave now, your changes will be lost.';
+
+    //    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+    //    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+    //});
+</script>
+
 {% endblock %}

@@ -2,13 +2,14 @@
 
 __all__ = ()
 
-from curses.ascii import isdigit
+from email import message
+import re
 import bcrypt
 import datetime
 import hashlib
 import json
 import os
-from re import S
+import random
 import time
 
 from cmyui.logging import Ansi, log
@@ -94,7 +95,7 @@ async def login_post():
 
     # user not verified; render verify
     if not user_info['priv'] & Privileges.VERIFIED:
-        return await render_template('verify.html')
+        return await render_template('verify.html', userid=user_info['id'])
 
 
     # login successful; store session data
@@ -134,125 +135,133 @@ async def register_post():
         return await utils.flash_tohome('error', 'Registrations are currently disabled.')
 
     form = await request.form
+
     username = form.get('username', type=str)
     email = form.get('email', type=str)
-    passwd_txt = form.get('password', type=str)
-    passwd_txt_repeat = form.get('password-confirm', type=str)
-    if username is None or email is None or passwd_txt is None:
-        return await utils.flash_tohome('error', 'Invalid parameters.')
-    if passwd_txt != passwd_txt_repeat:
-        return await render_template('register.html', message={"password": "Passwords didn't match"})
+    pwd = form.get('password', type=str)
+    pwdc = form.get('cpassword', type=str)
+    #inviter = form.get('inviter', type=str)
 
+    #* Verify if required parameters are present
+    if username is None or email is None or pwd is None or pwdc is None:
+        return await flash('error', 'Something is missing', 'home')
+
+    #* Validate captcha
     if zconfig.hCaptcha_sitekey != 'changeme':
         captcha_data = form.get('h-captcha-response', type=str)
         if (
             captcha_data is None or
             not await utils.validate_captcha(captcha_data)
         ):
-            return await render_template('register.html', message={"captcha": 'Captcha Failed'})
+            return await flash('error', 'Captcha failed.', 'register')
 
-    # Usernames must:
-    # - be within 2-15 characters in length
-    # - not contain both ' ' and '_', one is fine
-    # - not be in the config's `disallowed_names` list
-    # - not already be taken by another player
-    # check if username exists
-    if not regexes.username.match(username):
-        return await render_template('register.html', message={"name": 'Invalid Username'})
-
-    if '_' in username and ' ' in username:
-        return await render_template('register.html', message={"name": 'Username may contain "_" or " ", but not both.'})
-
-    if username in zconfig.disallowed_names:
-        return await render_template('register.html', message={"name": 'Disallowed username; pick another'})
-
-    if await app.state.services.database.fetch_one(
-        'SELECT 1 FROM users WHERE name=:name',
-        {"name": username}
-        ):
-            return await render_template('register.html', message={"name": 'Username already taken by another user.'})
-    # Emails must:
-    # - match the regex `^[^@\s]{1,200}@[^@\s\.]{1,30}\.[^@\.\s]{1,24}$`
-    # - not already be taken by another player
-    if not regexes.email.match(email):
-        return await render_template('register.html', message={"email": 'Invalid email syntax.'})
-
-    if await app.state.services.database.fetch_one(
-        'SELECT 1 FROM users WHERE email = :email',
-        {"email": email}
-        ):
-            return await render_template('register.html', message={"email": 'Email already taken by another user.'})
-    # Passwords must:
-    # - be within 8-32 characters in length
-    # - have more than 3 unique characters
-    # - not be in the config's `disallowed_passwords` list
-    if not 8 <= len(passwd_txt) <= 48:
-        return await render_template('register.html', message={"password": 'Password must be 8-48 characters in length'})
-
-    if len(set(passwd_txt)) <= 3:
-        return await render_template('register.html', message={"password": 'Password must have more than 3 unique characters.'})
-
-    if passwd_txt.lower() in zconfig.disallowed_passwords:
-        return await render_template('register.html', message={"password": 'That password was deemed too simple.'})
-
-    # TODO: add correct locking
-    # (start of lock)
-    pw_md5 = hashlib.md5(passwd_txt.encode()).hexdigest().encode()
-    pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
-    bcrypt_cache = zglob.cache['bcrypt']
-    bcrypt_cache[pw_bcrypt] = pw_md5 # cache pw
+    #* Verify username syntax
+    # Username can contain lowercase letters, uppercase letters spaces and following characters []-_
+    if not bool(regexes.username.match(username)):
+        return await render_template('register.html', message="Invalid username syntax")
+    elif len(username) > 15 or len(username) < 3:
+        return await render_template('register.html', message="Username must be between 3 and 32 characters.")
+    elif username.startswith(" ") or username.endswith(" "):
+        return await render_template('register.html', message="Username cannot start or end with a space.")
+    elif "_" in username and " " in username:
+        return await render_template('register.html', message="Username cannot contain spaces and underscores at the same time.")
+    elif username.lower() in zconfig.disallowed_names:
+        return await render_template('register.html', message="That username is not allowed.")
 
     safe_name = utils.get_safe_name(username)
 
-    # fetch the users' country
+    # Check if username already in use
+    if await app.state.services.database.fetch_val(
+        "SELECT 1 FROM users WHERE safe_name = :sn OR name=:name",
+        {"sn": safe_name, "name": username}
+    ):
+        return await render_template('register.html', message="Username already in use.")
+
+    #* Verify email syntax
+    if not bool(regexes.email.match(email)):
+        return await render_template('register.html', message="Invalid email syntax.")
+    # Check if email already in use
+    elif await app.state.services.database.fetch_val(
+        "SELECT 1 FROM users WHERE email = :email",
+        {"email": email}
+    ):
+        return await render_template('register.html', message="Email already in use.")
+
+    #* Verify password syntax
+    if pwd != pwdc:
+        return await render_template('register.html', message="Passwords do not match.")
+    if len(pwd) < 8 or len(pwd) > 32:
+        return await render_template('register.html', message="Password must be between 8 and 32 characters.")
+    # Check if password contains at least one uppercase character
+    elif not any(c.isupper() for c in pwd):
+        return await render_template('register.html', message="Password must contain at least one uppercase character.")
+    # Check if password contains at least one lowercase character
+    elif not any(c.islower() for c in pwd):
+        return await render_template('register.html', message="Password must contain at least one lowercase character.")
+    # Check if password contains at least one number
+    elif not any(c.isdigit() for c in pwd):
+        return await render_template('register.html', message="Password must contain at least one number.")
+    # Check if password contains at least 3 diffrent characters
+    elif len(set(pwd)) < 3:
+        return await render_template('register.html', message="This password was deemed too simple")
+    elif pwd.lower() in zconfig.disallowed_passwords:
+        return await render_template('register.html', message="This password was deemed too simple")
+
+    """
+    #* Verify inviter code
+    if inviter:
+        #Fetch inviter name and code from customs
+        inviter_info = await app.state.services.database.fetch_row(
+            "SELECT userid, code FROM customs WHERE invite_code=:code",
+            {"code": inviter}
+        )
+        if not inviter_info:
+            pass
+        else:
+    """
+
+    #* Get country
     if (
         request.headers and
-        (ip := request.headers.get('X-Real-IP', type=str)) is not None
+        (ip := request.headers.get('CF-Connecting-IP', type=str)) is not None
     ):
         country = await utils.fetch_geoloc(ip)
+        country = country.upper()
     else:
-        country = 'xx'
+        country = 'XX'
 
-    async with app.state.services.database.connection() as db_cursor:
-        # add to `users` table.
-        await db_cursor.execute(
-            'INSERT INTO users '
-            '(name, safe_name, email, pw_bcrypt, country, creation_time, latest_activity) '
-            'VALUES (:name, :safe_name, :email, :pw_bcrypt, :country, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())',
-            {
-                "name":      username,
-                "safe_name": safe_name,
-                "email":     email,
-                "pw_bcrypt": pw_bcrypt,
-                "country":   country
-            })
-
-        user_id = await db_cursor.fetch_val(
-            'SELECT id FROM users WHERE name = :safe_name',
-            {"safe_name": safe_name})
-
-        #TODO: Use execute_many here, it's faster.
-        # add to `stats` table.
-        for mode in (
-            0,  # vn!std
-            1,  # vn!taiko
-            2,  # vn!catch
-            3,  # vn!mania
-            4,  # rx!std
-            5,  # rx!taiko
-            6,  # rx!catch
-            8,  # ap!std
-        ):
-            await db_cursor.execute(
-                'INSERT INTO stats '
-                '(id, mode) VALUES (:id, :mode)',
-                {"id": user_id, "mode": mode}
-            )
-
+    # Hash password
+    pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
+    pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
+    #zglob.cache['bcrypt'][pw_bcrypt] = pw_md5 # cache pw
+    #! Insert into users, and save assigned userid
+    userid = await app.state.services.database.execute(
+        "INSERT INTO users "
+        "(name, safe_name, email, pw_bcrypt, country, creation_time, latest_activity) "
+        "VALUES (:name, :safe_name, :email, :password, :country, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())",
+        {
+            "name": username,
+            "safe_name": safe_name,
+            "email": email,
+            "password": pw_bcrypt,
+            "country": country
+        }
+    )
+    #! Insert into customs
+    await app.state.services.database.execute(
+        "INSERT INTO customs (userid) VALUES (:userid)",
+        {"userid": userid}
+    )
+    #! Insert into stats mode (0-8, userid)
+    for i in (0,1,2,3,4,5,6,8):
+        await app.state.services.database.execute(
+            "INSERT INTO stats (id, mode) VALUES (:id, :mode)",
+            {"id": userid, "mode": i}
+        )
 
     # user has successfully registered
-    log(f"User <{username} ({user_id})> has successfully registered through website.", Ansi.GREEN)
-    return await render_template('verify.html')
+    log(f"User <{username} ({userid})> has successfully registered through website.", Ansi.GREEN)
+    return await render_template('verify.html', userid=userid)
 
 @frontend.route('/leaderboard')
 @frontend.route('/lb')
