@@ -9,6 +9,18 @@
 <div class="row row-deck row-cards">
     <div class="col-12">
         <div class="card">
+            <div class="card-body border-bottom py-3">
+                <div class="pagination-flex">
+                    <div class="text-muted m-0">
+                        Search:
+                        <div class="ms-2 d-inline-block">
+                            <input type="text" class="form-control form-control-sm" aria-label="Search Users"
+                                id="search-input">
+                        </div>
+                    </div>
+                    <ul class="pagination rm1" id="pagination"></ul>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-vcenter table-mobile-md card-table">
                     <thead>
@@ -30,7 +42,7 @@
                 <p class="m-0 text-muted">Showing
                     <span id="from-el"></span> to <span id="to-el"></span> of <span id="total"></span> entries
                 </p>
-                <ul class="pagination rm1" id="pagination"></ul>
+                <ul class="pagination rm1" id="pagination-bottom"></ul>
             </div>
         </div>
     </div>
@@ -41,7 +53,7 @@
             flex-direction: row !important;
         }
         .rm1 {
-            margin: 0px;
+            margin: 0px!important;
         }
     }
     .pagination-flex {
@@ -51,12 +63,13 @@
         flex-direction: column;
     }
     .rm1 {
-        margin: 3px 0px 0px 0px;
+        margin: 9px 0px 0px 0px;
     }
 </style>
 <script>
-    function loadUsers(page=5, query=null) {
+    function loadUsers(page=5) {
         offset = page*50
+        query = document.getElementById('search-input').value
         axios.get(`/wapi/admin/get_user_list?o=${offset}&q=${query}`)
         .then((r) => {
             // Swap table elements
@@ -66,7 +79,9 @@
                     <td data-label="Name">
                         <div class="d-flex py-1 align-items-center">
                             <span class="avatar me-2" style="background-image: url(https://a.seven27.tk/${el.id})"></span>
-                            <div class="flex-fill">
+                            <div class="d-flex align-items-center">
+                                <img src="/static/images/flags/${el.country.toUpperCase()}.png"
+                                    class="flag flag-xs" style="margin-right: 3px;">
                                 <div class="font-weight-medium text-white">${el.name}</div>
                             </div>
                         </div>
@@ -106,16 +121,30 @@
             // Prevent page numbers below 0 or above max page number
             // add page numbers to pagination
             page = offset/50+1
-            document.getElementById('pagination').innerHTML = `
-            <li class="page-item">
-                <a class="page-link" onclick="loadUsers(0)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <polyline points="11 7 6 12 11 17"></polyline>
-                        <polyline points="17 7 12 12 17 17"></polyline>
-                    </svg>
-                </a>
-            </li>`
+
+            if (page == 1) {
+                document.getElementById("pagination").innerHTML = `
+                <li class="page-item disabled">
+                    <a class="page-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <polyline points="11 7 6 12 11 17"></polyline>
+                            <polyline points="17 7 12 12 17 17"></polyline>
+                        </svg>
+                    </a>
+                </li>`
+            } else {
+                document.getElementById('pagination').innerHTML = `
+                <li class="page-item">
+                    <a class="page-link" onclick="loadUsers(0)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <polyline points="11 7 6 12 11 17"></polyline>
+                            <polyline points="17 7 12 12 17 17"></polyline>
+                        </svg>
+                    </a>
+                </li>`
+            }
 
             // Pagination for 5 pages if page num = 1
             max_page = Math.ceil(r.data.user_count/50)
@@ -153,18 +182,50 @@
                 document.getElementById('pagination-p-' + (max_page-1)).classList.add('active')
             }
 
-            document.getElementById('pagination').innerHTML += `
-            <li class="page-item">
-                <a class="page-link" onclick="loadUsers(${Math.ceil(r.data.user_count/50-1)})">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <polyline points="7 7 12 12 7 17"></polyline>
-                        <polyline points="13 7 18 12 13 17"></polyline>
-                    </svg>
-                </a>
-            </li>
-            `
+            // If page == max_page, add disabled to last page button
+            if (page == max_page) {
+                document.getElementById('pagination').innerHTML += `
+                <li class="page-item disabled">
+                    <a class="page-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <polyline points="7 7 12 12 7 17"></polyline>
+                            <polyline points="13 7 18 12 13 17"></polyline>
+                        </svg>
+                    </a>
+                </li>`
+            } else {
+                document.getElementById('pagination').innerHTML += `
+                <li class="page-item">
+                    <a class="page-link" onclick="loadUsers(${Math.ceil(r.data.user_count/50-1)})">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <polyline points="7 7 12 12 7 17"></polyline>
+                            <polyline points="13 7 18 12 13 17"></polyline>
+                        </svg>
+                    </a>
+                </li>`
+            }
+
+            //if there are less than 5 pages, delete pages over max_page limit
+            if (max_page < 5) {
+                for (i=max_page+1; i<6; i++) {
+                    document.getElementById('pagination-p-' + i).remove()
+                }
+            }
+
+            // Copy pagination to pagination-bottom
+            document.getElementById('pagination-bottom').innerHTML = document.getElementById('pagination').innerHTML
         })
+    }
+
+    // Search with 1s of debounce
+    var search_timeout = null;
+    document.getElementById('search-input').onkeyup = function() {
+        clearTimeout(search_timeout);
+        search_timeout = setTimeout(function() {
+            loadUsers(0, document.getElementById('search-input').value)
+        }, 1000);
     }
 </script>
 

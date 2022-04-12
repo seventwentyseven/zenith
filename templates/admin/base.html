@@ -60,7 +60,7 @@
               <span class="avatar avatar-sm" style="background-image: url(https://a.{{ domain() }}/{{ session['user_data']['id'] }})"></span>
               <div class="d-none d-xl-block ps-2">
                 <div>{{ session['user_data']['name'] }}</div>
-                <div class="mt-1 small text-muted">RANK</div>
+                <div class="mt-1 small text-muted rank-text"></div>
               </div>
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -114,7 +114,7 @@
               <span class="avatar avatar-sm" style="background-image: url(https://a.{{ domain() }}/{{ session['user_data']['id'] }})"></span>
               <div class="d-none d-xl-block ps-2">
                 <div>{{ session['user_data']['name'] }}</div>
-                <div class="mt-1 small text-muted">*RANK*</div>
+                <div class="mt-1 small text-muted rank-text"></div>
               </div>
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -184,5 +184,14 @@
 
 </style>
 <!-- Scripts -->
+<script>
+  axios.get("/wapi/get_highest_priv?uid={{ session['user_data']['id'] }}")
+  .then((r) => {
+    // Swap rank-text in every element with that class
+    document.querySelectorAll(".rank-text").forEach((e) => {
+      e.innerHTML = r.data.priv;
+    });
+  })
+</script>
 {% block bottom %}{% endblock %}
 </html>

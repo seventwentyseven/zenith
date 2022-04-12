@@ -536,6 +536,46 @@ async def mapset_diffs():
     # Return data
     return {'success': True, 'result': res}
 
+@api.route('/get_highest_priv')
+async def getHighestRank():
+    user = request.args.get('uid', default=None, type=int)
+    if not user:
+        return {"success": False, "msg": "You must specify 'uid' arg."}
+
+    # Fetch user priv
+    priv = await app.state.services.database.fetch_val(
+        "SELECT priv FROM users WHERE id=:uid",
+        {"uid": user}
+    )
+    if not priv:
+        return {"success": False, "msg": "User not found"}
+
+    if int(user) in zconfig.owners:
+        return {"success": True, "priv": "Owner"}
+    elif not priv & 1:
+        return {"success": True, "priv": "Restricted"}
+    else:
+        priv = getHighestPriv(priv)
+        return {"success": True, "priv": priv}
+
+@api.route('/isverified')
+async def isverified():
+    user = request.args.get('uid', default=None, type=int)
+    if not user:
+        return {"success": False, "msg": "You must specify 'uid' arg."}
+
+    # Fetch user priv
+    priv = await app.state.services.database.fetch_val(
+        "SELECT priv FROM users WHERE id=:uid",
+        {"uid": user}
+    )
+    if not priv:
+        return {"success": False, "msg": "User not found"}
+
+    if priv & 2:
+        return {"success": True, "verified": True}
+    else:
+        return {"success": True, "verified": False}
 
 """                ADMIN ROUTES
     These routes are only accessible by staff
@@ -648,7 +688,7 @@ async def usersList():
     o = request.args.get('o', default=None, type=int)
     params = {}
     console.log(q, o)
-    if q and q != 'null':
+    if q and q not in (None, 'null', ""):
         q += "%"
         query = "WHERE name LIKE :q"
         params['q'] = q
@@ -682,7 +722,9 @@ async def usersList():
            el['priv'] = getHighestPriv(el['priv'])
 
     # Count users
+    del(params['o'])
     count = await app.state.services.database.fetch_val(
-        "SELECT COUNT(id) FROM users"
+        f"SELECT COUNT(id) FROM users {query}",
+        params
     )
     return {'success': True, 'result': res, 'user_count': count}
