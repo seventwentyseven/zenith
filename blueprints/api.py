@@ -465,10 +465,7 @@ async def get_pp_history():
             return{"success": False, 'msg': "Not enough data, graph is available after 2 days from getting at least 1 pp"}
 
         # Convert result into dicts inside array and and convert dt obj to timeago
-        for i in range(len(data)):
-            data[i] = dict(data[i])
-            data[i]['date'] = data[i]['date'].split('-')
-            data[i]['date'] = f"{data[i]['date'][2]}-{data[i]['date'][1]}-{data[i]['date'][0]}"
+        data = [dict(row) for row in data]
 
         #Reverse array
         data = data[::-1]

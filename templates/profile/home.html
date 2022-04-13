@@ -430,7 +430,7 @@
             `
         } else {
             for (el of r.data.data) {
-                days_arr.push(`${el.date}`)
+                days_arr.push(timeSince(new Date(el.date)) + ' ago')
                 pp_arr.push(el.pp)
             }
             // Graph creation
