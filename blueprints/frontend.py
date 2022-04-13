@@ -448,6 +448,8 @@ async def score_page(id:int=None):
     m['diff_color'] = utils.getDiffColor(m['diff'])
     if s['mods'] != 0:
         s['mods'] = f"+{Mods(s['mods'])!r}"
+        if "DT" in s['mods'] and "NC" in s['mods']:
+            s['mods'] = s['mods'].replace("DT", "")
     else:
          s['mods'] = "No Mods"
 
