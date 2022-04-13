@@ -408,8 +408,7 @@ async def score_page(id:int=None):
     #* Update privs
     if 'authenticated' in session:
         await utils.updateSession(session)
-    else:
-        return await flash_tohome("error", "You must be logged in to enter this page.")
+
     # Get user and check priv
     s = await app.state.services.database.fetch_one(
         "SELECT id, map_md5, score, pp, acc, max_combo, mods, n300, n100, n50, "
