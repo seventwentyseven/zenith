@@ -128,6 +128,7 @@ async def register():
 
 @frontend.route('/register', methods=['POST'])
 async def register_post():
+    #TODO: Insert into ingame login, can't do it now due to testing and I'm lazy
     if 'authenticated' in session:
         return await utils.flash_tohome('error', "You're already logged in.")
 
