@@ -161,7 +161,7 @@ async def register_post():
     if not bool(regexes.username.match(username)):
         return await render_template('register.html', message="Invalid username syntax")
     elif len(username) > 15 or len(username) < 3:
-        return await render_template('register.html', message="Username must be between 3 and 32 characters.")
+        return await render_template('register.html', message="Username must be between 3 and 15 characters.")
     elif username.startswith(" ") or username.endswith(" "):
         return await render_template('register.html', message="Username cannot start or end with a space.")
     elif "_" in username and " " in username:
