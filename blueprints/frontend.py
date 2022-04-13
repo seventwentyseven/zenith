@@ -128,6 +128,7 @@ async def register():
 
 @frontend.route('/register', methods=['POST'])
 async def register_post():
+    #TODO: Insert into ingame login, can't do it now due to testing and I'm lazy
     if 'authenticated' in session:
         return await utils.flash_tohome('error', "You're already logged in.")
 
@@ -226,9 +227,9 @@ async def register_post():
         (ip := request.headers.get('CF-Connecting-IP', type=str)) is not None
     ):
         country = await utils.fetch_geoloc(ip)
-        country = country.upper()
+        country = country.lower()
     else:
-        country = 'XX'
+        country = 'xx'
 
     # Hash password
     pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
