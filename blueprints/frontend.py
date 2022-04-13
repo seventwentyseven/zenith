@@ -226,9 +226,9 @@ async def register_post():
         (ip := request.headers.get('CF-Connecting-IP', type=str)) is not None
     ):
         country = await utils.fetch_geoloc(ip)
-        country = country.upper()
+        country = country.lower()
     else:
-        country = 'XX'
+        country = 'xx'
 
     # Hash password
     pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
