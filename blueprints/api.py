@@ -448,7 +448,8 @@ async def get_pp_history():
         return {"success": False, "msg": "User not found"}
     else:
         # Get current time and substract one day to get yesterday midnight +1s
-        now = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime("%Y-%m-%d 00:00:01")
+        #now = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime("%Y-%m-%d 00:00:01")
+        now = datetime.datetime.utcnow().strftime("%Y-%m-%d 00:00:01")
         # Fetch data from db
         data = await app.state.services.database.fetch_all(
             "SELECT pp, DATE_FORMAT(date,'%Y-%m-%d') AS `date` "
@@ -461,13 +462,13 @@ async def get_pp_history():
         #Delete unusued vars
         del(now, userid, mode)
         if len(data) < 2:
-            return{"success": False, 'msg': "Not enough data, graph is available after 3 days from getting at least 1 pp"}
+            return{"success": False, 'msg': "Not enough data, graph is available after 2 days from getting at least 1 pp"}
 
         # Convert result into dicts inside array and and convert dt obj to timeago
-        now = datetime.datetime.utcnow()
         for i in range(len(data)):
             data[i] = dict(data[i])
-            data[i]['date'] = timeago.format(data[i]['date'], now)
+            data[i]['date'] = data[i]['date'].split('-')
+            data[i]['date'] = f"{data[i]['date'][2]}-{data[i]['date'][1]}-{data[i]['date'][0]}"
 
         #Reverse array
         data = data[::-1]
