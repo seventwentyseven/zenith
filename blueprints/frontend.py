@@ -516,32 +516,41 @@ async def settings_profile_change_password():
         return await flash_tohome("error", "You must be logged in to enter this page.")
     form = await request.form
     old_pwd = form.get('old_password', type=str)
-    new_pwd = form.get('new_password', type=str)
-    new_pwd_c = form.get('new_password_confirm', type=str)
+    pwd = form.get('new_password', type=str)
+    pwdc = form.get('new_password_confirm', type=str)
 
     # Validate old password
     if not await validate_password(session['user_data']['id'], old_pwd):
         return await flash('error', 'Invalid password, password unchanged.', 'settings/profile')
 
-    if len(new_pwd) < 8 or len(new_pwd) > 50:
-        return await flash('error', 'New password must be longer than 8 characters and shorter than 50 characters.', 'settings/profile')
-    if new_pwd != new_pwd_c:
-        return await flash('error', 'New confirmed password is not the same as new password.', 'settings/profile')
-    if new_pwd == old_pwd:
-        return await flash('error', "New password must be diffrent from old password.", 'settings/profile')
-    if len(set(new_pwd)) <= 3:
-        return await render_template('register.html', message={"password": 'Password must have more than 3 unique characters.'})
-    if new_pwd.lower() in zconfig.disallowed_passwords:
-        return await render_template('register.html', message={"password": 'That password was deemed too simple.'})
+     #* Verify password syntax
+    if pwd != pwdc:
+        return await flash('error', 'Passwords do not match.', 'settings/profile')
+    elif len(pwd) < 8 or len(pwd) > 32:
+        return await flash('error', 'Password must be between 8 and 32 characters.', 'settings/profile')
+    # Check if password contains at least one uppercase character
+    elif not any(c.isupper() for c in pwd):
+        return await flash('error', 'Password must contain at least one uppercase character.', 'settings/profile')
+    # Check if password contains at least one lowercase character
+    elif not any(c.islower() for c in pwd):
+        return await flash('error', 'Password must contain at least one lowercase character.', 'settings/profile')
+    # Check if password contains at least one number
+    elif not any(c.isdigit() for c in pwd):
+        return await flash('error', 'Password must contain at least one number.', 'settings/profile')
+    # Check if password contains at least 3 diffrent characters
+    elif len(set(pwd)) < 3:
+        return await flash('error', 'This password was deemed too simple.', 'settings/profile')
+    elif pwd.lower() in zconfig.disallowed_passwords:
+        return await flash('error', 'Password is too common.', 'settings/profile')
 
     # Update password.
-    pw_md5 = hashlib.md5(new_pwd.encode()).hexdigest().encode()
+    pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
     pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
-    bcrypt_cache = zglob.cache['bcrypt']
-    bcrypt_cache[pw_bcrypt] = pw_md5 # cache pw
+    #bcrypt_cache = zglob.cache['bcrypt']
+    #bcrypt_cache[pw_bcrypt] = pw_md5 # cache pw
     await app.state.services.database.execute(
-        "UPDATE users SET pw_bcrypt=:new_pw_hashed",
-        {'new_pw_hashed', pw_bcrypt}
+        "UPDATE users SET pw_bcrypt=:pw WHERE id=:uid",
+        {'pw': pw_bcrypt, 'uid': session['user_data']['id']}
     )
 
     # Log user out
