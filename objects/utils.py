@@ -1,15 +1,16 @@
 import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
-
 import hashlib
 import app.state.services
 import app.state.sessions
 import bcrypt
+
 import zenith.zconfig as zconfig
 from app.constants.privileges import Privileges
 from app.state import website as zglob
 from cmyui.logging import Ansi, log
+from mailjet_rest import Client
 from quart import render_template, session
 import spectra
 
@@ -234,3 +235,51 @@ def getHighestPriv(value: int) -> str:
 async def adminerror(msg:str):
     """ Return adminerror template with msg value"""
     return await render_template('admin/admin_error.html', msg=msg)
+
+
+#! Mailing
+mailing = Client(auth=(zconfig.mailjet_key, zconfig.mailjet_secret), version='v3.1')
+
+def send_password_reset(to: str, reset_token:str):
+    data = {
+        'Messages': [{
+            "From": {
+                "Email": "no-reply@seventwentyseven.xyz",
+                "Name": "Seven Twenty Seven"
+            },
+            "To": [
+                {
+                    "Email": "def75023@gmail.com",
+                    "Name": "def750"
+                }
+            ],
+            "Subject": "727.xyz - Password Reset",
+            "HTMLPart": f"<h1>Password reset request</h1><br>Someone requested password reset for your account. If you did not request this, please ignore this email.<br><br>Click <a href='https://{ zconfig.domain }/forgot-password/{reset_token}'>here</a> to reset your password.<br><br>If you have any questions, please contact us at <a href='mailto:727xyz.osu@gmail.com'>this email</a>"
+        }]
+    }
+    result = mailing.send.create(data=data)
+    return "Sent"
+
+def checkPwdSyntax(pwd:str, pwdc:str):
+    # Password must contain:
+    # - At least 8 characters
+    # - At least one lowercase letter
+    # - At least one uppercase letter
+    # - At least one number
+    # - Must have at least 3 diffrent characters
+    if pwd == None or pwdc == None:
+        return {'error': True, 'message': 'Please enter a password!'}
+    elif pwd != pwdc:
+        return {'error': True, 'message': 'Passwords do not match!'}
+    elif len(pwd) < 8 or len(pwd) > 32:
+        return {'error': True, 'message': 'Password must be between 8 and 32 characters!'}
+    elif (
+        not any(c.isupper() for c in pwd) or
+        not any(c.islower() for c in pwd) or
+        not any(c.isdigit() for c in pwd)
+    ):
+        return {'error': True, 'message': 'Password must contain at least one uppercase and lowercase character, and at least one number!'}
+    elif len(set(pwd)) < 3 or pwd.lower() in zconfig.disallowed_passwords:
+        return {'error': True, 'message': 'This password was deemed too simple!'}
+
+    return {'error': False, 'message': 'Password is valid!'}

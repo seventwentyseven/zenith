@@ -5,11 +5,15 @@ app_name_short = '727.xyz'
 app_name_long = 'SevenTwentySeven'
 
 # secret key
-secret_key = 'EL2MGqyhSNpekyVxCu75qjqj2M6qjDWQmU9RSkyQ2V9u5ZVjxbmXsdyRQcEU3BJw8KyzLtpDwYUqTuwvaZwgNuwPEeCeXMgAjeeL5BbQ52yUFwYtzrgGYWNEvucuyJQn'
+secret_key = 'T=o:R-[I4RKt5db]Y4Cgte{y*`ijvN^i"_r!E8.k?+F/$Nc@TUg-eJ}EW+:G6O+X-MvXG/6KF=1nVphJUL7>:iA`("7&:MX,l:vp7Sk&}_zkop2su$N6.I!i<tu[H"o@'
 
 #hCaptcha settings:
 hCaptcha_sitekey = '41082a34-2db2-4399-947b-06b7bcb84a2a'
 hCaptcha_secret = '0xcdF6343d4cff0fBd03b57ee772f0896B62b23c57'
+
+# mailjet api key
+mailjet_key = '62bf24b0bc57ca555c774d04b9e711fb'
+mailjet_secret = 'e2c287462ef92f582de746713a94baa0'
 
 # domain (used for api, avatar, etc)
 domain = mainconf.DOMAIN
