@@ -6,11 +6,10 @@ import bcrypt
 import datetime
 import hashlib
 import os
-
 from cmyui.logging import Ansi, log
-from markdown import markdown as md
 from PIL import Image
 from pathlib import Path
+from markdown import markdown as md
 from quart import (Blueprint, redirect, render_template, request, send_file, session)
 from secrets import token_urlsafe
 
