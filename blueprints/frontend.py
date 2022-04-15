@@ -2,32 +2,27 @@
 
 __all__ = ()
 
-from email import message
-import re
 import bcrypt
 import datetime
 import hashlib
-import json
 import os
-import random
-import time
 
 from cmyui.logging import Ansi, log
 from markdown import markdown as md
 from PIL import Image
 from pathlib import Path
 from quart import (Blueprint, redirect, render_template, request, send_file, session)
+from secrets import token_urlsafe
 
 import app.state
 from app.state import website as zglob
-from app.constants import gamemodes
 from app.constants.mods import Mods
 from app.constants.privileges import Privileges
 from app.objects.player import Player
 
 from zenith import zconfig
 from zenith.objects import regexes, utils
-from zenith.objects.utils import flash, flash_tohome, validate_password
+from zenith.objects.utils import flash, flash_tohome, validate_password, send_password_reset
 
 frontend = Blueprint('frontend', __name__)
 
@@ -189,24 +184,9 @@ async def register_post():
         return await render_template('register.html', message="Email already in use.")
 
     #* Verify password syntax
-    if pwd != pwdc:
-        return await render_template('register.html', message="Passwords do not match.")
-    if len(pwd) < 8 or len(pwd) > 32:
-        return await render_template('register.html', message="Password must be between 8 and 32 characters.")
-    # Check if password contains at least one uppercase character
-    elif not any(c.isupper() for c in pwd):
-        return await render_template('register.html', message="Password must contain at least one uppercase character.")
-    # Check if password contains at least one lowercase character
-    elif not any(c.islower() for c in pwd):
-        return await render_template('register.html', message="Password must contain at least one lowercase character.")
-    # Check if password contains at least one number
-    elif not any(c.isdigit() for c in pwd):
-        return await render_template('register.html', message="Password must contain at least one number.")
-    # Check if password contains at least 3 diffrent characters
-    elif len(set(pwd)) < 3:
-        return await render_template('register.html', message="This password was deemed too simple")
-    elif pwd.lower() in zconfig.disallowed_passwords:
-        return await render_template('register.html', message="This password was deemed too simple")
+    password_valid = utils.checkPwdSyntax(pwd, pwdc)
+    if password_valid['error'] == True:
+        return await render_template('register.html', message=password_valid['message'])
 
     """
     #* Verify inviter code
@@ -523,25 +503,10 @@ async def settings_profile_change_password():
     if not await validate_password(session['user_data']['id'], old_pwd):
         return await flash('error', 'Invalid password, password unchanged.', 'settings/profile')
 
-     #* Verify password syntax
-    if pwd != pwdc:
-        return await flash('error', 'Passwords do not match.', 'settings/profile')
-    elif len(pwd) < 8 or len(pwd) > 32:
-        return await flash('error', 'Password must be between 8 and 32 characters.', 'settings/profile')
-    # Check if password contains at least one uppercase character
-    elif not any(c.isupper() for c in pwd):
-        return await flash('error', 'Password must contain at least one uppercase character.', 'settings/profile')
-    # Check if password contains at least one lowercase character
-    elif not any(c.islower() for c in pwd):
-        return await flash('error', 'Password must contain at least one lowercase character.', 'settings/profile')
-    # Check if password contains at least one number
-    elif not any(c.isdigit() for c in pwd):
-        return await flash('error', 'Password must contain at least one number.', 'settings/profile')
-    # Check if password contains at least 3 diffrent characters
-    elif len(set(pwd)) < 3:
-        return await flash('error', 'This password was deemed too simple.', 'settings/profile')
-    elif pwd.lower() in zconfig.disallowed_passwords:
-        return await flash('error', 'Password is too common.', 'settings/profile')
+    #* Verify password syntax
+    pwd_valid = utils.checkPwdSyntax(pwd, pwdc)
+    if pwd_valid['error'] == True:
+        return await flash('error', pwd_valid['message'], 'settings/profile')
 
     # Update password.
     pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
@@ -557,7 +522,7 @@ async def settings_profile_change_password():
     session.pop('authenticated', None)
     session.pop('user_data', None)
 
-    return await flash_tohome('success', 'Password changed, please log in again.')
+    return await flash_tohome('success', 'Password changed, please login again.')
 
 @frontend.route('/settings/customization')
 async def settings_customizations():
@@ -758,3 +723,110 @@ async def beatmap_page(map_id:int=None):
 
 
     return await render_template('bmap_page.html', m=m, set_id=set_id, map_id=map_id)
+
+@frontend.route('/forgot-password', methods=['GET'])
+async def forgot_password():
+    if 'authenticated' in session:
+        utils.updateSession(session)
+        return await flash_tohome('error', 'You are already logged in!')
+
+    return await render_template('forgot_password.html', type=0)
+
+@frontend.route('/forgot-password', methods=['POST'])
+async def forgot_password_post():
+    if 'authenticated' in session:
+        utils.updateSession(session)
+        return await flash_tohome('error', 'You are already logged in!')
+
+    # Get form
+    form = await request.form
+    email = form.get('email', type=str)
+
+    if email == None:
+        return await render_template('forgot_password.html',
+            after_post=0, message='Please enter your email address!')
+
+    user = await app.state.services.database.fetch_one(
+        "SELECT id, name, email FROM users WHERE email=:email",
+        {"email": email}
+    )
+    if not user:
+        return await render_template('forgot_password.html',
+            type=0, message='No user with that email address exists!')
+    else:
+        user = dict(user)
+
+    token = token_urlsafe(32)
+    await app.state.services.database.execute(
+        "INSERT INTO email_confirms "
+        "(userid, token, type, exp_date) "
+        "VALUES (:userid, :token, 'pwd_reset', :exp_date)",
+        {
+            "userid": user['id'],
+            "token": token,
+            "exp_date": (datetime.datetime.now() + datetime.timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S")
+        }
+    )
+    send_password_reset(user['email'], token)
+    return await render_template('forgot_password.html', type=1)
+
+@frontend.route('/forgot-password/<token>', methods=['GET'])
+async def forgot_password_token(token:str=None):
+    if 'authenticated' in session:
+        utils.updateSession(session)
+        return await flash_tohome('error', 'You are already logged in!')
+
+    if token == None:
+        return await flash_tohome('error', 'Invalid or expired token!')
+
+    user = await app.state.services.database.fetch_val(
+        "SELECT 1 FROM email_confirms "
+        "WHERE token=:token AND exp_date > NOW() AND type='pwd_reset'",
+        {"token": token}
+    )
+    if not user:
+        return await flash_tohome('error', 'Invalid or expired token!')
+
+    return await render_template('forgot_password.html',
+        type=2, token=token)
+
+@frontend.route('/forgot-password/<token>', methods=['POST'])
+async def forgot_password_token_post(token:str=None):
+    if 'authenticated' in session:
+        utils.updateSession(session)
+        return await flash_tohome('error', 'You are already logged in!')
+
+    if token == None:
+        return await flash_tohome('error', 'Invalid or expired token!')
+
+    user = await app.state.services.database.fetch_val(
+        "SELECT userid FROM email_confirms "
+        "WHERE token=:token AND exp_date > NOW() AND type='pwd_reset'",
+        {"token": token}
+    )
+    if not user:
+        return await flash_tohome('error', 'Invalid or expired token!')
+
+    form = await request.form
+    pwd = form.get('password', type=str)
+    pwdc = form.get('cpassword', type=str)
+
+    pwd_valid = utils.checkPwdSyntax(pwd, pwdc)
+    if pwd_valid['error'] == True:
+        return await render_template('forgot_password.html', type=2, token=token, message=pwd_valid['message'])
+
+    # Hash password
+    pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
+    pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
+
+    # Update password
+    await app.state.services.database.execute(
+        "UPDATE users SET pw_bcrypt=:pw WHERE id=:userid",
+        {"pw": pw_bcrypt, "userid": user}
+    )
+    await app.state.services.database.execute(
+        "DELETE FROM email_confirms WHERE token=:token",
+        {"token": token}
+    )
+
+    return await flash_tohome('success', 'Password updated successfully! Login with new password!')
