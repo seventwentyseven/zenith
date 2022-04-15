@@ -828,3 +828,11 @@ async def forgot_password_token_post(token:str=None):
     )
 
     return await flash_tohome('success', 'Password updated successfully! Login with new password!')
+
+@frontend.route('/relationships')
+@frontend.route('/relationships/<type>')
+async def relationships(type:str=None):
+    if not 'authenticated' in session:
+        return await flash_tohome('error', 'You must be logged in to access this page.')
+
+    return await render_template('relationships.html')
