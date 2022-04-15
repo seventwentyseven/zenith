@@ -62,11 +62,10 @@ async def login_post():
     # user doesn't exist; deny post
     if not user_info:
         return await render_template('login.html', flash={"msg":"Invalid username or password."})
+    else:
+        user_info = dict(user_info)
 
-    # convert to dict because databases
-    user_info = dict(user_info)
-
-    # NOTE: Bot isn't a user.
+    # Bot isn't a user.
     if user_info['id'] == 1:
         return await render_template('login.html', flash={"msg":"Invalid username or password."})
 
@@ -299,8 +298,8 @@ async def profile(u:str=None, mode:int=None):
 
     #* Format stuff
     s['acc'] = round(s['acc'], 2)
-    s['rscore'] = "{:,}".format(s['rscore'])
-    s['tscore'] = "{:,}".format(s['tscore'])
+    s['rscore'] = f"{s['rscore']:,}"
+    s['tscore'] = f"{s['rscore']:,}"
     #TODO: Change to "since the beniginging" if userid < 100
     u['register_dt'] = datetime.datetime.fromtimestamp(float(u['creation_time']))
     u['latest_activity_dt'] = datetime.datetime.fromtimestamp(float(u['latest_activity']))
@@ -420,7 +419,7 @@ async def score_page(id:int=None):
     m = dict(m)
 
     #* Format stuff
-    s['score'] = "{:,}".format(s['score'])
+    s['score'] = f"{s['score']:,}"
     s['pp'] = round(s['pp'], 2)
     s['acc'] = round(s['acc'], 2)
     m['diff'] = round(m['diff'], 2)
