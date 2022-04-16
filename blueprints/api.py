@@ -770,7 +770,7 @@ async def userGraph():
 
 @api.route('/admin/get_user_list')
 async def usersList():
-    # Authorize user with quart
+    # Authorize user with quart :D
     if 'authenticated' not in session:
         return {"success": False, "msg": "You are not logged in."}
     else:
