@@ -104,7 +104,9 @@
                                 <div class="h-6/12 flex items-center">
                                     <img class="w-8 h-5 mr-2"
                                         src="/static/images/flags/${el.country.toUpperCase()}.png">
-                                    <span class="text-lg font-medium">${el.name}</span>
+                                        <a href="/u/${el.id}" class="text-lg font-medium hover:text-hsl-80 transition duration-150">
+                                            <span>${el.name}</span>
+                                        </a>
                                 </div>
                                 <!-- Group badges -->
                                 <div class="h-5/12 flex text-xs">
