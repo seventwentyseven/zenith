@@ -757,7 +757,7 @@ async def userGraph():
     # Select usercount from users for last 90 days
     users = []
     now = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    for d in range(90):
+    for d in range(120):
         date = now - datetime.timedelta(days=d)
         t = int(datetime.datetime.timestamp(date))
         users.append([await app.state.services.database.fetch_val(
