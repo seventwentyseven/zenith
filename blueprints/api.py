@@ -765,7 +765,7 @@ async def userGraph():
             "FROM users WHERE creation_time < :days",
             {"days": t})-1, date.strftime("%Y-%m-%d")])
     users.reverse()
-    # Return data
+    # Return data :D
     return {'success': True, 'result': users}
 
 @api.route('/admin/get_user_list')
