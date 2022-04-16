@@ -73,7 +73,7 @@ async def login_post():
     bcrypt_cache = zglob.cache['bcrypt']
     pw_bcrypt = user_info['pw_bcrypt'].encode()
     pw_md5 = hashlib.md5(passwd_txt.encode()).hexdigest().encode()
-
+    del(passwd_txt)
     # check credentials (password) against db
     # intentionally slow, will cache to speed up
     if pw_bcrypt in bcrypt_cache:
@@ -212,6 +212,7 @@ async def register_post():
     # Hash password
     pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
     pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
+    del(pwd, pwdc)
     #zglob.cache['bcrypt'][pw_bcrypt] = pw_md5 # cache pw
     #! Insert into users, and save assigned userid
     userid = await app.state.services.database.execute(
@@ -299,7 +300,7 @@ async def profile(u:str=None, mode:int=None):
     #* Format stuff
     s['acc'] = round(s['acc'], 2)
     s['rscore'] = f"{s['rscore']:,}"
-    s['tscore'] = f"{s['rscore']:,}"
+    s['tscore'] = f"{s['tscore']:,}"
     #TODO: Change to "since the beniginging" if userid < 100
     u['register_dt'] = datetime.datetime.fromtimestamp(float(u['creation_time']))
     u['latest_activity_dt'] = datetime.datetime.fromtimestamp(float(u['latest_activity']))
@@ -404,9 +405,9 @@ async def score_page(id:int=None):
     if not u:
         return await flash_tohome('error', "Database error, user not found, report this to developers.")
     u = dict(u)
-    if Privileges.NORMAL not in Privileges(u['priv']):
-       if ('authenticated' not in session or not session['user_data']['is_staff']
-           or u['id'] != session['user_data']['id']):
+    if not u['priv'] & 1:
+       if ('authenticated' not in session and not session['user_data']['is_staff']
+           and u['id'] != session['user_data']['id']):
            return await flash_tohome('error', "Score not found.")
 
     m = await app.state.services.database.fetch_one(
@@ -509,6 +510,7 @@ async def settings_profile_change_password():
     # Update password.
     pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
     pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
+    del(pwd, pwdc)
     #bcrypt_cache = zglob.cache['bcrypt']
     #bcrypt_cache[pw_bcrypt] = pw_md5 # cache pw
     await app.state.services.database.execute(
@@ -816,6 +818,7 @@ async def forgot_password_token_post(token:str=None):
     # Hash password
     pw_md5 = hashlib.md5(pwd.encode()).hexdigest().encode()
     pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
+    del(pwd, pwdc)
 
     # Update password
     await app.state.services.database.execute(
@@ -830,9 +833,14 @@ async def forgot_password_token_post(token:str=None):
     return await flash_tohome('success', 'Password updated successfully! Login with new password!')
 
 @frontend.route('/relationships')
-@frontend.route('/relationships/<type>')
 async def relationships(type:str=None):
     if not 'authenticated' in session:
         return await flash_tohome('error', 'You must be logged in to access this page.')
 
-    return await render_template('relationships.html')
+    uprv = session['user_data']['priv']
+    if uprv & 16 or uprv & 32 or uprv >= 2048:
+        is_supporter = True
+    else:
+        is_supporter = False
+
+    return await render_template('relationships.html', supporer=is_supporter)

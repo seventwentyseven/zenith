@@ -9,7 +9,7 @@ import databases
 import service_identity
 import timeago
 
-import app.state.services
+import app.state
 from app.constants.privileges import Privileges
 from pandas import to_datetime
 
@@ -575,9 +575,107 @@ async def isverified():
     else:
         return {"success": True, "verified": False}
 
-"""                ADMIN ROUTES
-    These routes are only accessible by staff
-"""
+@api.route('/get_friends')
+async def get_friends():
+    if 'authenticated' not in session:
+        return {"success": False, "msg": "You must be logged in to use this route."}
+
+    t = request.args.get('t', default='friend', type=str)
+    o = request.args.get('o', default=0, type=int)
+    priv = session['user_data']['priv']
+    print(t, o)
+    #* Check inputs
+    if t not in ['friend', 'block', 'followers']:
+        return {"success": False, "msg": "Invalid 't' arg, allowed: (friend, block, followers)."}
+
+    #* Fetch users
+    if t == 'friend' or t == 'block':
+        users = await app.state.services.database.fetch_all(
+            "SELECT r.user2 AS `id`, u.name, u.country, u.priv, u.latest_activity "
+            "FROM relationships r LEFT JOIN users u ON r.user2=u.id "
+            "WHERE r.user1=:uid AND r.user2!=1 AND r.type=:t "
+            "ORDER BY u.latest_activity DESC LIMIT 24 OFFSET :o",
+            {'uid': session['user_data']['id'], 't': t, 'o': o}
+        )
+    elif t == 'followers':
+        if not priv & 16 and not priv & 32 and not priv >= 2048:
+            return {"success": False, "msg": "You don't have privileges to use this route."}
+        else:
+            users = await app.state.services.database.fetch_all(
+                "SELECT r.user1 AS `id`, u.name, u.country, u.priv, u.latest_activity "
+                "FROM relationships r LEFT JOIN users u ON r.user1=u.id "
+                "WHERE r.user2=:uid AND r.user1!=1 AND r.type='friend' "
+                "ORDER BY u.latest_activity DESC LIMIT 24 OFFSET :o",
+                {'uid': session['user_data']['id'], 'o': o}
+            )
+
+    if not users:
+        return {"success": True, "result": []}
+    else:
+        users = [dict(row) for row in users]
+        for el in users:
+            uprv = Privileges(el['priv'])
+            badges = []
+            if el['id'] in zconfig.owners:
+                badges.append(("OWNER", "text-red-500"))
+            if Privileges.DEVELOPER in uprv:
+                badges.append(("DEV", "text-purple-500"))
+            if Privileges.ADMINISTRATOR in uprv:
+                badges.append(("ADMIN", "text-yellow-500"))
+            if Privileges.MODERATOR in uprv and Privileges.ADMINISTRATOR not in uprv:
+                badges.append(("GMT", "text-green-500"))
+            if Privileges.NOMINATOR in uprv:
+                badges.append(("BN", "text-blue-500"))
+            if Privileges.ALUMNI in uprv:
+                badges.append(("ALUMNI", "text-red-600"))
+            if Privileges.WHITELISTED in uprv:
+                badges.append(("✔", "text-green-500"))
+            if Privileges.SUPPORTER in uprv:
+                if Privileges.PREMIUM in uprv:
+                    badges.append(["❤❤", "text-pink-500"])
+                else:
+                    badges.append(["❤", "text-pink-500"])
+            elif Privileges.PREMIUM in uprv:
+                badges.append(["❤❤", "text-pink-500"])
+            if Privileges.NORMAL not in uprv:
+                badges.append(("RESTRICTED", "text-white"))
+            el['priv'] = badges
+
+            if el['id'] in app.state.sessions.players.ids:
+                el['online'] = True
+            else:
+                el['online'] = False
+
+    return {"success": True, "result": users}
+
+@api.route('/remove_friend', methods=['DELETE'])
+async def remove_friend():
+    if 'authenticated' not in session:
+        return {"success": False, "msg": "You must be logged in to use this route."}
+
+    uid = request.args.get('uid', default=None, type=int)
+    t = request.args.get('t', default='friend', type=str)
+
+    if not uid:
+        return {"success": False, "msg": "You must specify 'uid' arg."}
+    elif t not in ['friend', 'block']:
+        return {"success": False, "msg": "Invalid 't' arg, allowed: (friend, block)."}
+    """
+    if t == 'friend':
+        await app.state.services.database.execute(
+            "DELETE FROM relationships WHERE user1=:uid AND user2=:uid2 AND type=:t",
+            {'uid': session['user_data']['id'], 'uid2': uid, 't': t}
+        )
+    elif t == 'block':
+        await app.state.services.database.execute(
+            "DELETE FROM relationships WHERE user1=:uid AND user2=:uid2 AND type=:t",
+            {'uid': session['user_data']['id'], 'uid2': uid, 't': t}
+        )
+    """
+    return {"success": True}
+
+#!                 ADMIN ROUTES
+#!    These routes are only accessible by staff
 
 @api.route('/admin/get_dashboard_stats', methods=['GET'])
 async def getDashboardStats():
