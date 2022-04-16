@@ -203,6 +203,7 @@ async def validate_password(user_id:int, password_text:str):
 
         # login successful; cache password for next login
         bcrypt_cache[pw_bcrypt] = pw_md5
+    del(password_text)
     return True
 
 def getHighestPriv(value: int) -> str:
@@ -281,5 +282,5 @@ def checkPwdSyntax(pwd:str, pwdc:str):
         return {'error': True, 'message': 'Password must contain at least one uppercase and lowercase character, and at least one number!'}
     elif len(set(pwd)) < 3 or pwd.lower() in zconfig.disallowed_passwords:
         return {'error': True, 'message': 'This password was deemed too simple!'}
-
+    del(pwd, pwdc)
     return {'error': False, 'message': 'Password is valid!'}
