@@ -22,7 +22,7 @@ from app.objects.player import Player
 from zenith import zconfig
 from zenith.objects import regexes, utils
 from zenith.objects.utils import flash, flash_tohome, validate_password, send_password_reset
-
+from zenith.objects.constants import country2long
 frontend = Blueprint('frontend', __name__)
 
 @frontend.route('/')
@@ -305,7 +305,7 @@ async def profile(u:str=None, mode:int=None):
     u['register_dt'] = datetime.datetime.fromtimestamp(float(u['creation_time']))
     u['latest_activity_dt'] = datetime.datetime.fromtimestamp(float(u['latest_activity']))
     s['playtime'] = datetime.timedelta(seconds=s['playtime'])
-
+    u['clong'] = country2long[u['country'].upper()]
 
     #Convert markdown to html
     if u['userpage_content'] != None:

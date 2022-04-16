@@ -2,6 +2,10 @@
 {% block title %}Home{% endblock %}
 
 {% block header%}
+<meta content="{{ appName() }} - Home Page" property="og:title" />
+<meta content="Join {{ domain() }} now!" property="og:description" />
+<meta content="https://{{ domain() }}" property="og:url" />
+<meta content="#4055bf" data-react-helmet="true" name="theme-color" />
 {% endblock %}
 
 {% block content %}

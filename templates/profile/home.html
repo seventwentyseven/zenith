@@ -1,6 +1,12 @@
 {% extends 'profile/base.html' %}
 {% block title %}Profile{% endblock %}
 {% block header %}
+<!-- Discord Embed Support -->
+<meta content="{{ appName() }} - {{ user['name'] }}'s Profile" property="og:title" />
+<meta content="{{ user['name'] }} is player from {{ user['clong'] }} with {{ stats['pp'] }}pp" property="og:description" />
+<meta content="https://{{ domain() }}/u/{{ user['id'] }}" property="og:url" />
+<meta content="#4055bf" data-react-helmet="true" name="theme-color" />
+
 <script>
     function Capitalize(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
