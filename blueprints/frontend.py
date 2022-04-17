@@ -890,9 +890,10 @@ async def discord_callback():
 
             # Replace to customs
             await app.state.services.database.execute(
-                "UPDATE customs SET discord_id=:discord_id WHERE userid=:uid",
-                {"discord_id": r2['id'], "uid": session['user_data']['id']}
+                "UPDATE users SET discord_id=:did WHERE id=:uid",
+                {"did": r2['id'], "uid": session['user_data']['id']}
             )
+
     # Delete potentialy sensitive data
     del(r1, r2, at, code, post_data)
 
