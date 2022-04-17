@@ -13,7 +13,6 @@
             <p class="font-medium">Account Details</p>
             <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
         </div>
-
         <div class="flex flex-col md:flex-row my-3">
             <div class="flex flex-col w-6/12">
                 <form class="mx-2 my-2 bg-hsl-25 rounded-lg pointer-events-none cursor-not-allowed opacity-50">
@@ -136,6 +135,25 @@
                         </button>
                     </div>
                 </form>
+                <div class="mx-2 my-2 bg-hsl-25 rounded-lg">
+                    <div class="w-11/12 mx-auto mt-5 mb-6">
+                        <p class="font-thin text-sm">Connect discord</p>
+                        <div class="h-1 w-12 bg-hsl-60 rounded-full mt-1"></div>
+                    </div>
+                    <div class="flex flex-col justify-center mx-3">
+                        <p class="text-sm text-hsl-90 mb-2">
+                            After clicking you'll be redirected to discord page, where you'll be asked to connect your account.
+                            We require this because some of discord bot privileges depend on userid.
+                        </p>
+                        <a href="https://discord.com/api/oauth2/authorize?client_id=965181086437085195&redirect_uri=https%3A%2F%2Fseventwentyseven.xyz%2Fdiscord_callback&response_type=code&scope=identify"
+                            target="_blank" class="text-white bg-hsl-50
+                            focus:ring-4 focus:ring-hsl-90 font-medium
+                            rounded-lg text-sm w-full sm:w-auto px-6 py-2
+                            text-center mb-5 hover:bg-hsl-60">
+                                <span>Click here to connect</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

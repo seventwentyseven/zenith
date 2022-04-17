@@ -844,3 +844,56 @@ async def relationships(type:str=None):
         is_supporter = False
 
     return await render_template('relationships.html', supporer=is_supporter)
+
+@frontend.route('/discord_callback')
+async def discord_callback():
+    # Logged in?
+    if not 'authenticated' in session:
+        return await flash_tohome('error', 'You must be logged in to access this page.')
+
+    code = request.args.get('code', type=str, default=None)
+    # Askdickord.com
+    if code == None:
+        return await flash_tohome('error', 'Invalid callback code!')
+
+    post_data = {
+        'client_id': zconfig.CLIENT_ID,
+        'client_secret': zconfig.CLIENT_SECRET,
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': f'https://{zconfig.domain}/discord_callback'
+    }
+    # Make post request to discord
+    async with app.state.services.http.post(
+        'https://discordapp.com/api/oauth2/token',
+        data=post_data,
+        headers={'Content-Type': 'application/x-www-form-urlencoded'}
+    ) as r:
+        # Get response
+        r1 = await r.json()
+        # If error occured
+        if 'error' in r1:
+            log(f"Error occured on discord callback: {r1['error']}", Ansi.RED)
+            return await flash_tohome('error', f"Invalid request!\nError:  {r1['error']} Message: {r1['error_description']}")
+
+        # Else assign token to r1 and make get request to get user ID
+        at = r1['access_token']
+        async with app.state.services.http.get(
+            'https://discordapp.com/api/users/@me',
+            headers={'Authorization': f'Bearer {at}'}
+        ) as r2:
+            # If error occured
+            if r2.status != 200:
+                log(f"Error occured on discord callback: {r2}", Ansi.RED)
+                return await flash_tohome('error', f'Request error! Result from API: {r2}!')
+            r2 = await r2.json()
+
+            # Replace to customs
+            await app.state.services.database.execute(
+                "UPDATE customs SET discord_id=:discord_id WHERE userid=:uid",
+                {"discord_id": r2['id'], "uid": session['user_data']['id']}
+            )
+    # Delete potentialy sensitive data
+    del(r1, r2, at, code, post_data)
+
+    return await flash_tohome('success', 'Discord callback success!')
