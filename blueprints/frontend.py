@@ -21,8 +21,8 @@ from app.objects.player import Player
 
 from zenith import zconfig
 from zenith.objects import regexes, utils
-from zenith.objects.utils import flash, flash_tohome, validate_password, send_password_reset
-from zenith.objects.constants import country2long
+from zenith.objects.utils import flash, flash_tohome, updateSession, validate_password, send_password_reset
+from zenith.objects.constants import country2long, mode2str
 frontend = Blueprint('frontend', __name__)
 
 @frontend.route('/')
@@ -243,12 +243,25 @@ async def register_post():
     log(f"User <{username} ({userid})> has successfully registered through website.", Ansi.GREEN)
     return await render_template('verify.html', userid=userid)
 
-@frontend.route('/leaderboard')
 @frontend.route('/lb')
-@frontend.route('/leaderboard/<mode>/<sort>/<mods>')
-@frontend.route('/lb/<mode>/<sort>/<mods>')
-async def leaderboard(mode='std', sort='pp', mods='vn'):
-    return await render_template('leaderboard.html', mode=mode, sort=sort, mods=mods)
+@frontend.route('/leaderboard')
+async def leaderboard_redirect():
+    if 'authenticated' in session:
+        await updateSession(session)
+        mode = await app.state.services.database.fetch_val(
+            "SELECT preferred_mode FROM users WHERE id=:id",
+            {"id": session['user_data']['id']}
+        )
+        print(f'/leaderboard/{mode}/pp/1')
+        return redirect(f'/leaderboard/{mode}/pp/1')
+    else:
+        return redirect('/leaderboard/0/pp/1')
+
+@frontend.route('/leaderboard/<mode>/<sort>')
+@frontend.route('/leaderboard/<mode>/<sort>/<page>')
+@frontend.route('/leaderboard/<mode>/<sort>/<page>/<country>')
+async def leaderboard(mode='std', sort='pp', page=1, country=None):
+    return await render_template('leaderboard.html', mode=mode, sort=sort, page=page, country=country)
 
 #!####################!#
 #!     USER PAGE      !#
