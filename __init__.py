@@ -4,4 +4,4 @@ from . import config
 from . import const
 from . import routes
 from . import utils
-from . import jinjaext
+from . import jinjaextend
