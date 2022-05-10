@@ -5,3 +5,4 @@ from . import settings
 from . import auth
 from . import profile
 from . import admin
+from . import api
