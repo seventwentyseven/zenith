@@ -16,9 +16,6 @@ module.exports = {
           '18': '72px',
           '15': '60px'
         },
-        width: {
-          "47%": "47%"
-        },
         borderWidth: {
           '3': '3px'
         },
@@ -40,7 +37,9 @@ module.exports = {
             '70': 'hsl(var(--main), 70%, 70%)',
             '75': 'hsl(var(--main), 75%, 75%)',
             '80': 'hsl(var(--main), 80%, 80%)',
+            '85': 'hsl(var(--main), 85%, 85%)',
             '90': 'hsl(var(--main), 90%, 90%)',
+            '95': 'hsl(var(--main), 95%, 95%)',
 
             '30-15': 'hsl(var(--main), 30%, 15%)',
             '25-30': 'hsl(var(--main), 25%, 30%)',
