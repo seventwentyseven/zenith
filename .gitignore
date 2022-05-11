@@ -1,7 +1,7 @@
 zconfig.py
 .data
 .env.save
-static/css/style.css
+public/css/style.css
 __pycache__
 node_modules
 .DS_Store

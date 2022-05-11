@@ -1,0 +1,55 @@
+<footer class="bg-hsl-5 w-full" id="footer">
+    <div class="h-auto lg:h-32 mx-10 flex flex-col lg:flex-row items-center py-4 lg:py-0">
+        <div class="flex flex-col items-center lg:items-start">
+            <span class="text-hsl-90 text-xl font-bold">ZENITH</span>
+            <span class="text-sm">Copyright Seven Twenty Seven 2021-2022</span>
+        </div>
+        <div class="flex flex-col lg:ml-10 mt-3 lg:mt-0">
+            <!-- This is dumb but it works XD -->
+            <span class="h-0 lg:h-auto lg:invisible text-xl font-bold">⠀</span>
+            <p class="text-sm">
+                Not affiliated with ppy Pty Ltd in any way.<br>
+                "osu!" is a trademark of ppy Pty Ltd.
+            </p>
+        </div>
+        <div class="mt-5 lg:mt-0 lg:ml-auto flex flex-row content-between text-sm">
+            <div class="flex flex-col">
+                <span class="text-hsl-90 text-lg font-bold ">SOCIALS</span>
+                <a href="/discord" class="hover:text-hsl-80 transition duration-100">
+                    <i class="fa-brands fa-discord"></i>
+                    Discord
+                </a>
+                {% if 'authenticated' not in session %}
+                <a href="https://topg.org/osu-private-servers/server-631600"
+                    class="hover:text-hsl-80 transition duration-100">
+                    <i class="fa-solid fa-gamepad mr-1"></i>
+                    TOPG
+                </a>
+                {% else %}
+                <a href="https://topg.org/osu-private-servers/server-631600-{{ session['user_data']['name'] }}"
+                    class="hover:text-hsl-80 transition duration-100">
+                    <i class="fa-solid fa-gamepad mr-1"></i>
+                    TOPG
+                </a>
+                {% endif %}
+                <a href="https://status.seventwentyseven.xyz"
+                class="hover:text-hsl-80 transition duration-100">
+                    <i class="fa-solid fa-signal"></i>
+                    Status
+                </a>
+            </div>
+            <div class="ml-10 flex flex-col text-sm">
+                <span class="text-hsl-90 text-lg font-bold">DEV</span>
+                <a href="https://trello.com/b/hpXwszCA/zenith" class="hover:text-hsl-80 transition duration-100">
+                    <i class="fa-brands fa-trello mr-1"></i>
+                    Trello
+                </a>
+                <a href="https://github.com/seventwentyseven/gulag"
+                    class="hover:text-hsl-80 transition duration-100">
+                    <i class="fa-brands fa-github mr-1"></i>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
