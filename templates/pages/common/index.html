@@ -1,10 +1,333 @@
 {% extends 'base.html' %}
 {% block title %}Home{% endblock %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.33.2/apexcharts.min.js" integrity="sha512-iBEfFld2z1SAXCPmgoA40VQtqGP0cEJw4fy+t3ARW30uEfzf8hyrmm4mc5qdth3wZRPdKTv/auk5WH52klRVDg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endblock %}
 {% block content %}
-<div class="w-11/12 ">
+<div class="flex flex-col max-w-screen-xl">
+    <div class="w-full flex flex-col lg:flex-row h-auto lg:h-56">
+        <!-- Welcome block -->
+        <div class="flex flex-col w-full lg:w-2/5 bg-hsl-20 rounded-lg h-full"
+            style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)),
+            url(https://seventwentyseven.xyz/banners/4) !important; background-repeat: no-repeat !important; background-size: cover !important;">
+            <div class="p-5 h-auto lg:h-full flex flex-col text-center lg:text-left">
+                <div class="flex flex-col">
+                    <h3 class="text-2xl font-bold text-white flex items-center justify-center">Welcome back,</h3>
+                    <h4 class="text-3xl font-bold text-hsl-90 flex items-center justify-center">{{ user.name }}!</h4>
+                </div>
+                <div class="lg:mt-auto w-full flex flex-col items-between lg:flex-row lg:justify-between mt-2">
+                    <div class="flex flex-row justify-around w-full lg:w-4/5">
+                        <div class="flex flex-col">
+                            <span class="text-base font-medium text-pink-500 whitespace-nowrap">registered</span>
+                            <span class="text-2xl font-bold text-hsl-90 -mt-1">1945</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-base font-medium text-green-500 whitespace-nowrap">online</span>
+                            <span class="text-2xl font-bold text-hsl-90 -mt-1">28</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row justify-between w-full lg:w-4/5">
+                        <div class="flex flex-col lg:mr-5">
+                            <span class="text-base font-medium text-cyan-400 whitespace-nowrap">ranked beatmaps</span>
+                            <span class="text-2xl font-bold text-hsl-90 -mt-1">117,850</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-base font-medium text-purple-500 whitespace-nowrap">scores submitted</span>
+                            <span class="text-2xl font-bold text-hsl-90 -mt-1">190,231</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Second block -->
+        <div class="hidden lg:flex w-full lg:w-3/5 bg-hsl-20 rounded-lg h-full ml-4">
+            <div class="p-4 flex flex-col h-full w-full">
+                <div class="mt-2 grid grid-cols-2 grid-rows-2 gap-3 w-full h-full text-xl font-semibold text-hsl-85">
+                    <div class="row-span-1 col-span-1 bg-hsl-25 hover:text-white hover:bg-pink-600 transition duration-200 rounded-lg flex items-center justify-center cursor-pointer select-none"><i class="fa-solid fa-signal mr-2"></i>Server Status</div>
+                    <div class="row-span-1 col-span-1 bg-hsl-25 hover:text-white hover:bg-green-500 transition duration-200 rounded-lg flex items-center justify-center cursor-pointer select-none"><i class="fas fa-gear mr-2"></i>Settings</div>
+                    <div class="row-span-1 col-span-1 bg-hsl-25 hover:text-white hover:bg-sky-600 transition duration-200 rounded-lg flex items-center justify-center cursor-pointer select-none"><i class="fa-solid fa-chart-area mr-2"></i>Statistics</div>
+                    <div class="row-span-1 col-span-1 bg-hsl-25 hover:text-white hover:bg-purple-600 transition duration-200 rounded-lg flex items-center justify-center cursor-pointer select-none">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>
+                        <span>Logout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 flex flex-col md:flex-row h-fit">
+        <div class="w-full md:w-8/12 h-full flex flex-col">
+            <div class="bg-hsl-20 rounded-lg w-full h-auto flex flex-col mb-4">
+                <!-- Article Header -->
+                <a class="flex items-center pt-3 px-3" href="/u/4">
+                    <img src="https://a.seventwentyseven.xyz/4" class="h-12 w-12 rounded-full mr-3">
+                    <div class="flex flex-col text-gray-300">
+                        <p>by <span class="text-hsl-90 font-medium hover:text-hsl-80 transition duration-200">def750</span></p>
+                        <p>7 days ago</p>
+                    </div>
+                    <div class="ml-auto flex text-lg text-hsl-90">
+                        <i class="fab fa-twitter mx-1"></i>
+                        <i class="fab fa-reddit mx-1"></i>
+                        <i class="fab fa-facebook mx-1"></i>
+                    </div>
+                </a>
+                <a href="#" class="flex flex-col">
+                    <img class="my-4" src="https://cdn-images-1.medium.com/fit/t/800/240/1*O8kFu0TjM9BFdvZjGdzycw.jpeg">
+                    <h1 class="text-2xl font-semibold mb-3 mx-4">2000 Users Registered!</h1>
+                    <p class="text-gray-300 mb-4 mx-4">
+                        Today is a big day for Seven Twenty Seven, we've reached 2000 registered users.
+                        Ok fuck this this is test article We don't give a slightest f*** about what's written here.
+                        Blah blah blah giveaway soon and stuff like that<br>
+                        <span class="text-hsl-90 hover:text-hsl-80 transition duration-200">Read More...</span>
+                    </p>
+                </a>
+            </div>
+            <div class="bg-hsl-20 rounded-lg w-full h-auto flex flex-col mb-4">
+                <!-- Article Header -->
+                <a class="flex items-center pt-3 px-3" href="/u/4">
+                    <img src="https://a.seventwentyseven.xyz/4" class="h-12 w-12 rounded-full mr-3">
+                    <div class="flex flex-col text-gray-300">
+                        <p>by <span class="text-hsl-90 font-medium hover:text-hsl-80 transition duration-200">def750</span></p>
+                        <p>7 days ago</p>
+                    </div>
+                    <div class="ml-auto flex text-lg text-hsl-90">
+                        <i class="fab fa-twitter mx-1"></i>
+                        <i class="fab fa-reddit mx-1"></i>
+                        <i class="fab fa-facebook mx-1"></i>
+                    </div>
+                </a>
+                <a href="#" class="flex flex-col">
+                    <img class="my-4" src="https://cdn-images-1.medium.com/fit/t/800/240/1*O8kFu0TjM9BFdvZjGdzycw.jpeg">
+                    <h1 class="text-2xl font-semibold mb-3 mx-4">2000 Users Registered!</h1>
+                    <p class="text-gray-300 mb-4 mx-4">
+                        Today is a big day for Seven Twenty Seven, we've reached 2000 registered users.
+                        Ok fuck this this is test article We don't give a slightest f*** about what's written here.
+                        Blah blah blah giveaway soon and stuff like that<br>
+                        <span class="text-hsl-90 hover:text-hsl-80 transition duration-200">Read More...</span>
+                    </p>
+                </a>
+            </div>
+            <div class="bg-hsl-20 rounded-lg w-full h-auto flex flex-col mb-4">
+                <!-- Article Header -->
+                <a class="flex items-center pt-3 px-3" href="/u/4">
+                    <img src="https://a.seventwentyseven.xyz/4" class="h-12 w-12 rounded-full mr-3">
+                    <div class="flex flex-col text-gray-300">
+                        <p>by <span class="text-hsl-90 font-medium hover:text-hsl-80 transition duration-200">def750</span></p>
+                        <p>7 days ago</p>
+                    </div>
+                    <div class="ml-auto flex text-lg text-hsl-90">
+                        <i class="fab fa-twitter mx-1"></i>
+                        <i class="fab fa-reddit mx-1"></i>
+                        <i class="fab fa-facebook mx-1"></i>
+                    </div>
+                </a>
+                <a href="#" class="flex flex-col">
+                    <img class="my-4" src="https://cdn-images-1.medium.com/fit/t/800/240/1*O8kFu0TjM9BFdvZjGdzycw.jpeg">
+                    <h1 class="text-2xl font-semibold mb-3 mx-4">2000 Users Registered!</h1>
+                    <p class="text-gray-300 mb-4 mx-4">
+                        Today is a big day for Seven Twenty Seven, we've reached 2000 registered users.
+                        Ok fuck this this is test article We don't give a slightest f*** about what's written here.
+                        Blah blah blah giveaway soon and stuff like that<br>
+                        <span class="text-hsl-90 hover:text-hsl-80 transition duration-200">Read More...</span>
+                    </p>
+                </a>
+            </div>
+            <div class="bg-hsl-20 rounded-lg w-full h-auto flex flex-col mb-4 hidden">
+                <!-- Article Header -->
+                <a class="flex items-center pt-3 px-3" href="/u/4">
+                    <img src="https://a.seventwentyseven.xyz/4" class="h-12 w-12 rounded-full mr-3">
+                    <div class="flex flex-col text-gray-300">
+                        <p>by <span class="text-hsl-90 font-medium hover:text-hsl-80 transition duration-200">def750</span></p>
+                        <p>7 days ago</p>
+                    </div>
+                    <div class="ml-auto flex text-lg text-hsl-90">
+                        <i class="fab fa-twitter mx-1"></i>
+                        <i class="fab fa-reddit mx-1"></i>
+                        <i class="fab fa-facebook mx-1"></i>
+                    </div>
+                </a>
+                <a href="#" class="flex flex-col">
+                    <img class="my-4" src="https://cdn-images-1.medium.com/fit/t/800/240/1*O8kFu0TjM9BFdvZjGdzycw.jpeg">
+                    <h1 class="text-2xl font-semibold mb-3 mx-4">2000 Users Registered!</h1>
+                    <p class="text-gray-300 mb-4 mx-4">
+                        Today is a big day for Seven Twenty Seven, we've reached 2000 registered users.
+                        Ok fuck this this is test article We don't give a slightest f*** about what's written here.
+                        Blah blah blah giveaway soon and stuff like that<br>
+                        <span class="text-hsl-90 hover:text-hsl-80 transition duration-200">Read More...</span>
+                    </p>
+                </a>
+            </div>
+        </div>
 
+        <div class="w-full md:w-4/12 h-full mt-4 md:mt-0 md:ml-4">
+            <!--* Right Panel *-->
+            <!-- Online -->
+            <div class="w-full bg-hsl-20 h-28 rounded-lg mb-4">
+                <div class="flex flex-col h-full">
+                    <span class="text-lg font-medium text-hsl-90 pt-3 px-3"><i class="fas fa-users mr-2"></i>Online Users</span>
+                    <div class="w-full h-auto mt-auto rounded-b-lg mb-px" id="chart-users-online"></div>
+                </div>
+            </div>
+            <!-- Last Registered -->
+            <div class="w-full bg-hsl-20 h-auto rounded-lg mb-4"
+                 style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)),
+                 url(https://i.imgur.com/TBHkkIP.jpg) !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
+                <div class="p-3 flex flex-col">
+                    <span class="text-lg font-medium text-hsl-90"><i class="fas fa-user mr-2"></i>Last Registered</span>
+                    <a class="flex flex-row mt-2 items-center" href="/u/4">
+                        <img src="https://a.seventwentyseven.xyz/4" class="h-10 w-10 rounded">
+                        <div class="flex flex-col ml-4">
+                            <span class="text-hsl-90 font-medium hover:text-hsl-80 transition duration-200">def750</span>
+                            <span class="text-hsl-90 font-medium">7 days ago</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!-- Most Played 24h -->
+            <div class="w-full bg-hsl-20 rounded-lg p-4 mb-4">
+                <span class="text-lg font-medium text-hsl-90"><i class="fas fa-trophy mr-2"></i>Most Played Today</span>
+                <div class="w-full bg-hsl-20 h-auto rounded-lg my-2"
+                    style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)),
+                    url(https://i.imgur.com/TBHkkIP.jpg) !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
+                    <a class="p-3 flex flex-col" href="/b/2137">
+                        <p class="mt-1">Some Map - By Some Artist [Some Diff]</p>
+                        <span class="text-hsl-90 text-sm mt-1">Played 24 times</span>
+                    </a>
+                </div>
+                <div class="w-full bg-hsl-20 h-auto rounded-lg mb-2"
+                    style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)),
+                    url(https://i.imgur.com/TBHkkIP.jpg) !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
+                    <a class="p-3 flex flex-col" href="/b/2137">
+                        <p class="mt-1">Some Map - By Some Artist [Some Diff]</p>
+                        <span class="text-hsl-90 text-sm mt-1">Played 24 times</span>
+                    </a>
+                </div>
+                <div class="w-full bg-hsl-20 h-auto rounded-lg"
+                    style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)),
+                    url(https://i.imgur.com/TBHkkIP.jpg) !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
+                    <a class="p-3 flex flex-col" href="/b/2137">
+                        <p class="mt-1">Some Map - By Some Artist [Some Diff]</p>
+                        <span class="text-hsl-90 text-sm mt-1">Played 24 times</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Recent Ranked -->
+            <div class="w-full bg-hsl-20 rounded-lg p-4">
+                <span class="text-lg font-medium text-hsl-90"><i class="fas fa-trophy mr-2"></i>Recently Ranked</span>
+                <div class="w-full bg-hsl-20 h-auto rounded-lg my-2" style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)), url('https://assets.ppy.sh/beatmaps/727348/covers/cover.jpg') !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
+                    <div class="p-3 flex flex-col mb-0">
+                        <a href="/b/727348" class="transform duration-200">
+                            <p>Some Map - By Some Artist [Some Diff]</p>
+                            <h4 class="text-sm mt-1 text-gray-300">
+                                Ranked by
+                                <a href="/u/jkzu123"><span class="text-hsl-90 hover:text-hsl-80 transition duration-200">grafika dzifors</span></a>
+                            </h4>
+                        </a>
+                    </div>
+                </div>
+                <div class="w-full bg-hsl-20 h-auto rounded-lg mb-2" style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)), url('https://assets.ppy.sh/beatmaps/727348/covers/cover.jpg') !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
+                    <div class="p-3 flex flex-col mb-0">
+                        <a href="/b/727348" class="transform duration-200">
+                            <p>Some Map - By Some Artist [Some Diff]</p>
+                            <h4 class="text-sm mt-1 text-gray-300">
+                                Ranked by
+                                <a href="/u/jkzu123"><span class="text-hsl-90 hover:text-hsl-80 transition duration-200">grafika dzifors</span></a>
+                            </h4>
+                        </a>
+                    </div>
+                </div>
+                <div class="w-full bg-hsl-20 h-auto rounded-lg" style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)), url('https://assets.ppy.sh/beatmaps/727348/covers/cover.jpg') !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
+                    <div class="p-3 flex flex-col my-2">
+                        <a href="/b/727348" class="transform duration-200">
+                            <p>Some Map - By Some Artist [Some Diff]</p>
+                            <h4 class="text-sm mt-1 text-gray-300">
+                                Ranked by
+                                <a href="/u/jkzu123"><span class="text-hsl-90 hover:text-hsl-80 transition duration-200">grafika dzifors</span></a>
+                            </h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block bottom %}
+<script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+      users_reg = []
+      // Make user online data (48 entries) for a linear graph
+      // Data should make a "wave" with peaks at value no 0 and 47
+      // Highest value: 23
+      // Lowest value: 1
+        for (var i = 0; i < 48; i++) {
+            users_reg.push(Math.floor(Math.random() * 23) + 1)
+        }
+
+      // Make array of hours (NOT DATE OBJECTS) dates_reg, every 30 minutes start from 18:00, (48 elements in array)
+        let dates_reg = []
+        for (let i = 0; i < 48; i++) {
+            dates_reg.push(new Date(new Date().setHours(18, 0, 0, 0) + (i * 30 * 60 * 1000)))
+        }
+      window.ApexCharts && (new ApexCharts(document.getElementById('chart-users-online'), {
+          chart: {
+              type: "area",
+              fontFamily: 'inherit',
+              height: 50.0,
+              sparkline: {
+                  enabled: true
+              },
+              animations: {
+                  enabled: false
+              },
+          },
+          tooltip: {
+              theme: "dark",
+          },
+          dataLabels: {
+              enabled: false,
+          },
+          fill: {
+              opacity: .16,
+              type: 'solid'
+          },
+          stroke: {
+              width: 2,
+              lineCap: "round",
+              curve: "smooth",
+          },
+          series: [{
+              name: "Users Online",
+              data: users_reg
+          }],
+          grid: {
+              strokeDashArray: 4,
+          },
+          xaxis: {
+              labels: {
+                  padding: 0,
+              },
+              tooltip: {
+                  enabled: false
+              },
+              axisBorder: {
+                  show: false,
+              },
+              type: 'time',
+          },
+          yaxis: {
+              labels: {
+                  padding: 4
+              },
+          },
+          labels: dates_reg,
+          colors: ["#5c70d6"],
+          legend: {
+              show: false,
+          },
+      })).render();
+  });
+  // @formatter:on
+</script>
 {% endblock %}
