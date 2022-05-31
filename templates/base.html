@@ -21,13 +21,13 @@
     {% block head %}{% endblock %}
 </head>
 
-<body class="bg-hsl-15 text-white">
+<body class="bg-hsl-15 text-white" style="min-height: 100%;">
     {% include 'components/navbar.html' %}
-    <div class="py-6" id="main-block">
+    <div class="pt-6 flex flex-col flex-1 min-h-max" id="main-block">
         <!-- Content-->
-        <div class="min-h-screen flex flex-col w-11/12 max-w-screen-xl mx-auto">
+        <div class="min-h-screen flex flex-1 flex-col w-11/12 max-w-screen-xl mx-auto">
             <!-- Flashes -->
-            <div class="flex flex-col">
+            <div class="flex flex-col mb-4">
                 <!-- Restricted message -->
                 <figure class="w-full h-auto lg:h-16">
                     <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg
@@ -70,7 +70,7 @@
                         <div class="flex mx-4 mt-2 lg:mt-0">
                             <p class="text-sm text-white text-center lg:text-left">
                                 Your account is currently restricted, you can appeal after 3 months on our <a href="/discord" class="text-hsl-90">discord</a> or via <a href="mailto:accounts@seventwentyseven.xyz" class="text-hsl-90">email</a>.<br>
-                                If you belive that this is a mistake, please contact us. <span class="font-medium text-red-400">Creating new accounts may take away the ability to appeal!</span>
+                                If you belive that this is a mistake, please contact us. <span class="font-medium text-red-400">Creating new accounts may take away the ability to appeal permanently!</span>
                             </p>
                         </div>
                     </div>
@@ -78,11 +78,11 @@
             </div>
             <!--* Actual Content *-->
             <div>
-            {% block content %}{% endblock %}
+                {% block content %}{% endblock %}
             </div>
         </div>
+        {% include 'components/footer.html' %}
     </div>
-    {% include 'components/footer.html' %}
 </body>
 {% block bottom %}{% endblock %}
 </html>
