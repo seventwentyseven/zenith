@@ -23,13 +23,13 @@
 
 <body class="bg-hsl-15 text-white" style="min-height: 100%;">
     {% include 'components/navbar.html' %}
-    <div class="pt-6 flex flex-col flex-1 min-h-max" id="main-block">
+    <div class="flex flex-col flex-1 min-h-max" id="main-block">
         <!-- Content-->
-        <div class="min-h-screen flex flex-1 flex-col w-11/12 max-w-screen-xl mx-auto">
+        <div class="min-h-screen flex flex-1 flex-col max-w-screen-xl mx-auto" id="content-container">
             <!-- Flashes -->
-            <div class="flex flex-col mb-4">
+            <div class="flex flex-col my-4" id="flash-container">
                 <!-- Restricted message -->
-                <figure class="w-full h-auto lg:h-16">
+                <figure class="w-full h-auto lg:h-16 hidden">
                     <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg
                         flex flex-col lg:flex-row items-center border-l-3 border-red-500 py-3 lg:py-0">
                         <!-- Left block -->
