@@ -15,7 +15,24 @@
                     <h3 class="text-2xl font-bold text-white flex items-center justify-center">Welcome back,</h3>
                     <h4 class="text-3xl font-bold text-hsl-90 flex items-center justify-center">{{ user.name }}!</h4>
                 </div>
-                <div class="lg:mt-auto w-full flex flex-col items-between lg:flex-row lg:justify-between mt-2">
+                <div class="mt-2 lg:mt-auto w-full grid grid-cols-2 grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 text-center whitespace-nowrap gap-1">
+                    <div class="col-span-1 row-span-1 flex flex-col">
+                        <span class="text-pink-500 font-medium">registered</span>
+                        <span class="text-2xl font-bold text-hsl-90 -mt-1">2231</span>
+                    </div>
+                    <div class="col-span-1 row-span-1 flex flex-col">
+                        <span class="text-green-500 font-medium">online</span>
+                        <span class="text-2xl font-bold text-hsl-90 -mt-1">21</span>
+                    </div>
+                    <div class="col-span-1 row-span-1 flex flex-col">
+                        <span class="text-cyan-400 font-medium">total scores</span>
+                        <span class="text-2xl font-bold text-hsl-90 -mt-1">248,112</span>
+                    </div>
+                    <div class="col-span-1 row-span-1 flex flex-col">
+                        <span class="text-purple-500 font-medium">ranked maps</span>
+                        <span class="text-2xl font-bold text-hsl-90 -mt-1">148,755</span>
+                    </div>
+                    <!--
                     <div class="flex flex-row justify-around w-full lg:w-4/5">
                         <div class="flex flex-col">
                             <span class="text-base font-medium text-pink-500 whitespace-nowrap">registered</span>
@@ -36,6 +53,7 @@
                             <span class="text-2xl font-bold text-hsl-90 -mt-1">190,231</span>
                         </div>
                     </div>
+                    -->
                 </div>
             </div>
         </div>
@@ -54,8 +72,8 @@
             </div>
         </div>
     </div>
-    <div class="mt-4 flex flex-col md:flex-row h-fit">
-        <div class="w-full md:w-8/12 h-full flex flex-col">
+    <div class="mt-4 flex flex-col lg:flex-row h-fit">
+        <div class="w-full lg:w-7/12 xl:w-8/12 h-full flex flex-col">
             <div class="bg-hsl-20 rounded-lg w-full h-auto flex flex-col mb-4">
                 <!-- Article Header -->
                 <a class="flex items-center pt-3 px-3" href="/u/4">
@@ -131,7 +149,7 @@
                     </p>
                 </a>
             </div>
-            <div class="bg-hsl-20 rounded-lg w-full h-auto flex flex-col mb-4 hidden">
+            <div class="bg-hsl-20 rounded-lg w-full h-auto flex flex-col mb-4">
                 <!-- Article Header -->
                 <a class="flex items-center pt-3 px-3" href="/u/4">
                     <img src="https://a.seventwentyseven.xyz/4" class="h-12 w-12 rounded-full mr-3">
@@ -158,7 +176,7 @@
             </div>
         </div>
 
-        <div class="w-full md:w-4/12 h-full mt-4 md:mt-0 md:ml-4">
+        <div class="w-full lg:w-5/12 xl:w-4/12 h-full lg:ml-4">
             <!--* Right Panel *-->
             <!-- Online -->
             <div class="w-full bg-hsl-20 h-28 rounded-lg mb-4">
