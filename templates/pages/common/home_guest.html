@@ -147,17 +147,17 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
         <div class="p-4 col-span-1 row-span-1 bg-hsl-20 rounded-lg flex flex-col">
             <h6 class="text-2xl text-hsl-90"><i class="fa-solid fa-users mr-2"></i>Registered Users</h6>
             <hr class="my-3 bg-hsl-70">
-            <span class="text-4xl font-semibold font-mono">2,137</span>
+            <span class="text-4xl font-semibold font-mono" id="users-count"></span>
         </div>
         <div class="p-4 col-span-1 row-span-1 bg-hsl-20 rounded-lg flex flex-col">
             <h6 class="text-2xl text-hsl-90"><i class="fa-solid fa-trophy mr-2"></i>Scores Submitted</h6>
             <hr class="my-3 bg-hsl-70">
-            <span class="text-4xl font-semibold font-mono" id="scores-count">223,556</span>
+            <span class="text-4xl font-semibold font-mono" id="scores-count"></span>
         </div>
         <div class="p-4 col-span-1 row-span-1 bg-hsl-20 rounded-lg flex flex-col">
             <h6 class="text-2xl text-hsl-90"><i class="fa-solid fa-music mr-2"></i>Custom Rankeds</h6>
             <hr class="my-3 bg-hsl-70">
-            <span class="text-4xl font-semibold font-mono">7,285</span>
+            <span class="text-4xl font-semibold font-mono" id="rankeds-count"r></span>
         </div>
     </div>
 </section>
@@ -176,6 +176,21 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
     // Move flashes from flash-container to flashes-moved, delete old ones
     document.querySelector('#flashes-moved').innerHTML = document.querySelector('#flash-container').innerHTML;
     document.getElementById('flash-container').remove();
+
+    // Make api request to /webapi/home?type=guest
+    fetch('/webapi/home?type=guest', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        // Set the count of scores submitted
+        document.querySelector('#scores-count').innerHTML = addCommas(data.scores);
+        document.querySelector('#rankeds-count').innerHTML = addCommas(data.rankeds);
+        document.querySelector('#users-count').innerHTML = addCommas(data.users);
+    });
 </script>
 
 <script>
