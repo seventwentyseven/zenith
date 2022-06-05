@@ -18,13 +18,15 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
         <p class="text-xl md:text-2xl lg:text-3xl md:font-medium mt-2 text-center w-11/12 mx-auto">
             The place where you reach your zenith.
         </p>
-        <div class="flex text-xl font-light mt-5 lg:mt-0 lg:absolute lg:-mb-48">
+        <div class="flex text-xl font-light mt-5 lg:mt-0 lg:absolute lg:-mb-48" x-data="{id: 1}">
             <button class="rounded-lg border-3 border-white text-white px-3 py-1
-                hover:text-hsl-50 hover:bg-white transition duration-200 mr-3">
+                hover:text-hsl-50 hover:bg-white transition duration-200 mr-3"
+                @click="$dispatch('open-dropdown',{id})" >
                 Login
             </button>
             <button class="rounded-lg border-3 border-white text-white px-3 py-1
-                hover:text-hsl-50 hover:bg-white transition duration-200">
+                hover:text-hsl-50 hover:bg-white transition duration-200"
+                onclick="location.href='/register'">
                 Register
             </button>
         </div>
@@ -97,8 +99,8 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
                 <h4 class="text-2xl lg:text-3xl font-semibold mt-3">Customization</h4>
                 <div class="w-3/4 mx-auto h-px bg-white my-4"></div>
                 <p class="text-lg">
-                    Your profile is your home, you can change your banner, background,
-                    position of elements, website colors, default mode, write about me, set up
+                    Your profile is like your home, you can change ton of things, your banner, background,
+                    position of elements, website colors, default mode. You can write about me, set up
                     your contact info and more!
                 </p>
             </div>
@@ -187,9 +189,9 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
         return response.json();
     }).then(function(data) {
         // Set the count of scores submitted
-        document.querySelector('#scores-count').innerHTML = addCommas(data.scores);
-        document.querySelector('#rankeds-count').innerHTML = addCommas(data.rankeds);
-        document.querySelector('#users-count').innerHTML = addCommas(data.users);
+        $('#scores-count').text(addCommas(data.scores));
+        $('#rankeds-count').text(addCommas(data.rankeds));
+        $('#users-count').text(addCommas(data.users));
     });
 </script>
 
