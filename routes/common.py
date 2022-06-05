@@ -17,6 +17,6 @@ common = Blueprint('common', __name__)
 @common.route('/', methods=['GET'])
 async def index():
     if 'authenticated' in session:
-        return await render_template('/pages/common/index.html')
+        return await render_template('/pages/common/home.html')
     else:
-        return await render_template('/pages/common/index_guest.html')
+        return await render_template('/pages/common/home_guest.html')
