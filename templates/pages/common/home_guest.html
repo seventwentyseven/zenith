@@ -6,14 +6,16 @@
 <script src="https://cdn.jsdelivr.net/npm/greensock@1/dist/TweenMax.min.js"></script>
 {% endblock %}
 {% block content %}
-<section class="flex h-screen flex-col w-full bg-hsl-20 top-0" id="welcome-banner"
+<section class="flex min-h-screen flex-col w-full bg-hsl-20 top-0" id="welcome-banner"
 style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(--main), 20%, 20%, 0.55), hsla(var(--main), 20%, 20%, 1)),
             url(https://seventwentyseven.xyz/banners/4) !important; background-repeat: no-repeat !important; background-size: cover !important;">
     <!-- Move Flashes Here OwO -->
-    <!--! TEMPORARLY HIDDEN !-->
-    <div class="w-11/12 mx-auto max-w-screen-xl py-4 hidden" id="flashes-moved"></div>
+    <div class="relative lg:absolute w-full pt-4 z-50">
+        <div class="mx-4 lg:mx-8 xl:mx-auto flex flex-col items-center" id="flashes-moved"></div>
+    </div>
+
     <!-- Sitename Text -->
-    <div class="w-full h-full flex flex-col items-center justify-center -mt-[60px]">
+    <div class="w-full h-full flex flex-col items-center justify-center mt-10 lg:-mt-[60px] absolute">
         <span class="text-4xl md:text-5xl lg:text-7xl font-bold text-center">Seven Twenty Seven</span>
         <p class="text-xl md:text-2xl lg:text-3xl md:font-medium mt-2 text-center w-11/12 mx-auto">
             The place where you reach your zenith.
@@ -159,7 +161,7 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
         <div class="p-4 col-span-1 row-span-1 bg-hsl-20 rounded-lg flex flex-col">
             <h6 class="text-2xl text-hsl-90"><i class="fa-solid fa-music mr-2"></i>Custom Rankeds</h6>
             <hr class="my-3 bg-hsl-70">
-            <span class="text-4xl font-semibold font-mono" id="rankeds-count"r></span>
+            <span class="text-4xl font-semibold font-mono" id="rankeds-count"></span>
         </div>
     </div>
 </section>
@@ -172,12 +174,10 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    // Delete max-w-screen-xl from main-block
-    document.querySelector('#content-container').classList.remove('max-w-screen-xl', 'mx-auto');
-
     // Move flashes from flash-container to flashes-moved, delete old ones
     document.querySelector('#flashes-moved').innerHTML = document.querySelector('#flash-container').innerHTML;
-    document.getElementById('flash-container').remove();
+    // Delete max-w-screen-xl from main-block
+    $('#content-container').remove()
 
     // Make api request to /webapi/home?type=guest
     fetch('/webapi/home?type=guest', {
@@ -193,9 +193,7 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
         $('#rankeds-count').text(addCommas(data.rankeds));
         $('#users-count').text(addCommas(data.users));
     });
-</script>
 
-<script>
     // Baltic sea
     var wave1 = $('#wave-1').wavify({
         height: 35,

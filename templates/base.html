@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,12 +30,12 @@
             <!-- Flashes -->
             <div class="flex flex-col my-4" id="flash-container">
                 <!-- Restricted message -->
-                <figure class="w-full h-auto lg:h-16 hidden">
+                <figure class="w-full h-auto lg:h-18 shadow-md">
                     <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg
                         flex flex-col lg:flex-row items-center border-l-3 border-red-500 py-3 lg:py-0">
                         <!-- Left block -->
                         <div class="flex flex-col lg:flex-row items-center mx-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-12 h-12 fill-current text-white mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-12 h-12 fill-current text-white lg:mr-3">
                                 <g clip-path="url(#clip0)">
                                     <path class="fill-current text-red-500"
                                         d="M65.0474 9.31178C70.2491 9.31178 75.0792 12.1005 77.6801
@@ -75,6 +76,16 @@
                         </div>
                     </div>
                 </figure>
+                <!-- Flash code + jinja -->
+                {% with flashes = get_flashed_messages(with_categories=True) %}
+                {% if flashes %}
+                    {% from 'components/flashes.html' import el_flash %}
+                    {% for category, message in flashes %}
+                        {{ el_flash(category, message) }}
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+                </div>
             </div>
             <!--* Actual Content *-->
             <div>
@@ -84,5 +95,22 @@
         {% include 'components/footer.html' %}
     </div>
 </body>
+<style>
+    /* Custom Scroll /*
+    -------------------------------------------------- */
+    ::-webkit-scrollbar {
+        width: 11px;
+    }
+    ::-webkit-scrollbar-track {
+        background: hsl(var(--main), 10%, 10%);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: hsl(var(--main), 60%, 40%);
+        border-radius: 9001px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--main), 60%, 30%);
+    }
+</style>
 {% block bottom %}{% endblock %}
 </html>
