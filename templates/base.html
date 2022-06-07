@@ -30,8 +30,8 @@
             <!-- Flashes -->
             <div class="flex flex-col my-4" id="flash-container">
                 <!-- Restricted message -->
-                <figure class="w-full h-auto lg:h-18 shadow-md">
-                    <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg
+                <figure class="w-full h-auto lg:h-18">
+                    <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg shadow-lg
                         flex flex-col lg:flex-row items-center border-l-3 border-red-500 py-3 lg:py-0">
                         <!-- Left block -->
                         <div class="flex flex-col lg:flex-row items-center mx-4">
@@ -96,21 +96,37 @@
     </div>
 </body>
 <style>
-    /* Custom Scroll /*
-    -------------------------------------------------- */
+    /* Custom Scroll */
     ::-webkit-scrollbar {
-        width: 11px;
+        width: 12px;
     }
     ::-webkit-scrollbar-track {
         background: hsl(var(--main), 10%, 10%);
     }
     ::-webkit-scrollbar-thumb {
-        background: hsl(var(--main), 60%, 40%);
+        background: hsl(var(--main), 50%, 50%);
         border-radius: 9001px;
     }
     ::-webkit-scrollbar-thumb:hover {
-        background: hsl(var(--main), 60%, 30%);
+        background: hsl(var(--main), 40%, 40%);
     }
+
+    /* Change Autocomplete styles in Chrome*/
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
+        box-shadow: 0 0 0px 1000px rgba(0,0,0,0) inset;
+        -webkit-text-fill-color: white;
+        -webkit-box-shadow: 0 0 0px 1000px rgba(0,0,0,0) inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
 </style>
 {% block bottom %}{% endblock %}
 </html>

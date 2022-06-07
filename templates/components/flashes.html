@@ -1,8 +1,8 @@
 <!-- Flashes -->
 {% macro el_flash(type, message) %}
     {% if type == 'error' %}
-    <figure class="w-full h-auto lg:h-16 mt-4 shadow-md" x-data="{open: true}" :class="{'hidden': !open}" x-show="open">
-        <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg
+    <figure class="w-full h-auto lg:h-16 mt-4" x-data="{open: true}" :class="{'hidden': !open}" x-show="open">
+        <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg shadow-lg
             flex flex-col lg:flex-row items-center border-l-3 border-red-500 py-3 lg:py-0">
             <!-- Left block -->
             <div class="flex flex-col lg:flex-row items-center mx-4">
@@ -59,8 +59,8 @@
         </div>
     </figure>
     {% elif type == 'warning' %}
-    <figure class="w-full h-auto lg:h-16 mt-4 shadow-md" x-data="{open: true}" :class="{'hidden': !open}" x-show="open">
-        <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg
+    <figure class="w-full h-auto lg:h-16 mt-4" x-data="{open: true}" :class="{'hidden': !open}" x-show="open">
+        <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg shadow-lg
             flex flex-col lg:flex-row items-center border-l-3 border-yellow-500 py-3 lg:py-0">
             <!-- Left block -->
             <div class="flex flex-col lg:flex-row items-center mx-4">
@@ -117,8 +117,8 @@
         </div>
     </figure>
     {% elif type == 'success' %}
-    <figure class="w-full h-auto lg:h-16 mt-4 shadow-md" x-data="{open: true}" :class="{'hidden': !open}" x-show="open">
-        <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg
+    <figure class="w-full h-auto lg:h-16 mt-4" x-data="{open: true}" :class="{'hidden': !open}" x-show="open">
+        <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg shadow-lg
             flex flex-col lg:flex-row items-center border-l-3 border-green-500 py-3 lg:py-0">
             <!-- Left block -->
             <div class="flex flex-col lg:flex-row items-center mx-4">
