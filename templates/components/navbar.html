@@ -1,4 +1,4 @@
-<nav id="navbar" class="bg-hsl-10 bg-opacity-60 w-full transition duration-300 sticky top-0" x-data="{ open: false }" 
+<nav id="navbar" class="backdrop-blur bg-hsl-10 bg-opacity-60 w-full transition duration-300 sticky top-0" x-data="{ open: false }" 
     :class="{'bg-opacity-100': open}">
     <div class="h-full w-11/12 mx-auto">
         <div class="flex flex-col mx-auto md:items-center py-3
@@ -48,13 +48,13 @@
                     </div>
                 </div>
                 <div class="flex-col flex-grow flex md:justify-end md:flex-row" id="nav-right-row">
-                    {% if 'authenticated' in session %}
+                    {% if session.authenticated == True %}
                     <div @click.away="open = false" class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex flex-row items-center w-full px-3 mt-2 text-sm
                             font-semibold bg-transparent rounded-lg md:w-auto md:mt-0 focus:outline-none h-full">
                             <div class="h-8 w-8 mr-2 rounded-full bg-cover"
-                                style="background-image: url(https://a.{{ domain() }}/{{ session['user_data']['id'] }});"></div>
-                            <span>{{ session['user_data']['name'] }}</span>
+                                style="background-image: url(https://a.{{ domain() }}/{{ session.userid }});"></div>
+                            <span>{{ session.username }}</span>
                             <svg fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open, 'rotate-0': !open}" class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-px"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                         </button>
                         <div x-show="open"
@@ -67,7 +67,7 @@
                                 <a class="block px-6 py-2 text-sm font-semibold bg-transparent md:mt-0
                                     hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
                                     border-hsl-50 hover:border-l-3 focus:border-l-3
-                                    focus:outline-none focus:shadow-outline" href="/u/{{ session['user_data']['id'] }}">Profile</a>
+                                    focus:outline-none focus:shadow-outline" href="/u/{{ session.userid }}">Profile</a>
                                 <a class="block px-6 py-2 text-sm font-semibold bg-transparent md:mt-0
                                     hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
                                     border-hsl-50 hover:border-l-3 focus:border-l-3
@@ -98,7 +98,7 @@
                             class="absolute right-0 md:-right-28 w-full mt-2 origin-top-right rounded-lg shadow-lg md:w-72 z-10">
                             <div class="py-2 bg-hsl-15 rounded-lg shadow">
                                 <div class="px-4 flex flex-row mt-2">
-                                    <span class="text-3xl font-extralight text-center">Please Log in</span>
+                                    <span class="text-3xl font-extralight text-center">Please log in</span>
                                     <button class="ml-auto my-auto mr-2 text-lg cursor-pointer" @click="l_open = false">
                                         <i class="fa-solid fa-xmark hover:rotate-full
                                             scale-110 transition duration-300"></i>

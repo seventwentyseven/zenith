@@ -24,12 +24,13 @@
 
 <body class="bg-hsl-15 text-white" style="min-height: 100%;">
     {% include 'components/navbar.html' %}
-    <div class="flex flex-col flex-1 min-h-max" id="main-block">
+    <div class="flex flex-col flex-1 min-h-screen" id="main-block">
         <!-- Content-->
-        <div class="min-h-screen flex flex-1 flex-col max-w-screen-xl mx-auto" id="content-container">
+        <div class="flex flex-1 flex-col" id="content-container">
             <!-- Flashes -->
             <div class="flex flex-col my-4" id="flash-container">
                 <!-- Restricted message -->
+                {% if session.authenticated == True and session.restricted == True %}
                 <figure class="w-full h-auto lg:h-18">
                     <div class="h-full mx-auto max-w-screen-xl bg-hsl-20 rounded-lg shadow-lg
                         flex flex-col lg:flex-row items-center border-l-3 border-red-500 py-3 lg:py-0">
@@ -76,6 +77,7 @@
                         </div>
                     </div>
                 </figure>
+                {% endif %}
                 <!-- Flash code + jinja -->
                 {% with flashes = get_flashed_messages(with_categories=True) %}
                 {% if flashes %}
