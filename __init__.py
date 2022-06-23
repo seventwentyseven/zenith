@@ -5,3 +5,4 @@ from . import const
 from . import routes
 from . import utils
 from . import jinjaextend
+from . import caching

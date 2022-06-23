@@ -1,6 +1,7 @@
 import bcrypt
 import datetime as dt
 import hashlib
+import timeago
 from zenith.utils import make_session
 
 from quart import Blueprint
@@ -20,10 +21,22 @@ common = Blueprint('common', __name__)
 
 @common.route('/', methods=['GET'])
 async def home():
+    data = await app.state.services.database.fetch_one(
+        "SELECT (SELECT COUNT(*) FROM users) AS users, "
+        "(SELECT COUNT(*) FROM scores) AS scores, "
+        "(SELECT COUNT(*) FROM maps WHERE (status=2 OR status=5) AND frozen=1) AS maps "
+    )
+    data = dict(data)
     if 'authenticated' in session:
-        return await render_template('/pages/common/home.html')
+        data['online'] = len(app.state.sessions.players.unrestricted)-1
+        data['last_user'] = dict(await app.state.services.database.fetch_one(
+            "SELECT id, name, creation_time "
+            "FROM users WHERE priv & 1 "
+            "ORDER BY id DESC LIMIT 1"
+        ))
+        return await render_template('/pages/common/home.html', data=data)
     else:
-        return await render_template('/pages/common/home_guest.html')
+        return await render_template('/pages/common/home_guest.html', data=data)
 
 @common.route('/team', methods=['GET'])
 async def team():
@@ -93,3 +106,4 @@ async def logout():
 async def test():
     print(session)
     return 'Logs'
+
