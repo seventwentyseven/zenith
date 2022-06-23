@@ -151,17 +151,17 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
         <div class="p-4 col-span-1 row-span-1 bg-hsl-20 rounded-lg flex flex-col">
             <h6 class="text-2xl text-hsl-90"><i class="fa-solid fa-users mr-2"></i>Registered Users</h6>
             <hr class="my-3 bg-hsl-70">
-            <span class="text-4xl font-semibold font-mono" id="users-count"></span>
+            <span class="text-4xl font-semibold font-mono" id="users-count">{{ data.users }}</span>
         </div>
         <div class="p-4 col-span-1 row-span-1 bg-hsl-20 rounded-lg flex flex-col">
             <h6 class="text-2xl text-hsl-90"><i class="fa-solid fa-trophy mr-2"></i>Scores Submitted</h6>
             <hr class="my-3 bg-hsl-70">
-            <span class="text-4xl font-semibold font-mono" id="scores-count"></span>
+            <span class="text-4xl font-semibold font-mono" id="scores-count">{{ data.scores }}</span>
         </div>
         <div class="p-4 col-span-1 row-span-1 bg-hsl-20 rounded-lg flex flex-col">
             <h6 class="text-2xl text-hsl-90"><i class="fa-solid fa-music mr-2"></i>Custom Rankeds</h6>
             <hr class="my-3 bg-hsl-70">
-            <span class="text-4xl font-semibold font-mono" id="rankeds-count"></span>
+            <span class="text-4xl font-semibold font-mono" id="maps-count"> {{ data.maps }}</span>
         </div>
     </div>
 </section>
@@ -169,30 +169,10 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
 
 {% block bottom %}
 <script>
-    function addCommas(x) {
-        // I have no idea how this shit works
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
     // Move flashes from flash-container to flashes-moved, delete old ones
     document.querySelector('#flashes-moved').innerHTML = document.querySelector('#flash-container').innerHTML;
     // Delete max-w-screen-xl from main-block
     $('#content-container').remove()
-
-    // Make api request to /webapi/home?type=guest
-    fetch('/webapi/home?type=guest', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    }).then(function(response) {
-        return response.json();
-    }).then(function(data) {
-        // Set the count of scores submitted
-        $('#scores-count').text(addCommas(data.scores));
-        $('#rankeds-count').text(addCommas(data.rankeds));
-        $('#users-count').text(addCommas(data.users));
-    });
 
     // Baltic sea
     var wave1 = $('#wave-1').wavify({
@@ -202,5 +182,15 @@ style="background: linear-gradient(hsla(var(--main), 20%, 20%, 0.55), hsla(var(-
         color: 'hsl(230, 20%, 20%)',
         speed: .20
       });
+    // Add commas to numbers with jquery
+    $('#users-count').text(function(index, value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    });
+    $('#scores-count').text(function(index, value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    });
+    $('#maps-count').text(function(index, value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    });
 </script>
 {% endblock %}
