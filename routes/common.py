@@ -1,7 +1,8 @@
 import bcrypt
 import datetime as dt
 import hashlib
-import timeago
+import os
+
 from zenith.utils import make_session
 
 from quart import Blueprint
@@ -41,6 +42,22 @@ async def home():
 @common.route('/team', methods=['GET'])
 async def team():
     return await render_template('/pages/common/team.html')
+
+@common.route('/docs', methods=['GET'])
+async def docs():
+    data = []
+    for file in os.listdir('zenith/templates/pages/docs'):
+        if file.endswith('.html'):
+            if file.startswith('index'):
+                continue
+            data.append(file[:-5])
+    
+    return await render_template('/pages/docs/index.html', data=data)
+
+@common.route('/docs/<name>', methods=['GET'])
+async def docs_page(name):
+    content = open("zenith/templates/pages/docs/{}.html".format(name)).read()
+    return content
 
 @common.route('/login', methods=['POST'])
 async def login():
@@ -107,3 +124,11 @@ async def test():
     print(session)
     return 'Logs'
 
+@common.route('/leaderboard', methods=['GET'])
+async def leaderboard():
+    # Args
+    mode = request.args.get('mode', type=int, default=None)
+    page = request.args.get('page', type=int, default=1)
+    country = request.args.get('country', type=str, default=None)
+    _type = request.args.get('type', type=str, default='pp')
+    return await render_template('/pages/common/leaderboard.html')

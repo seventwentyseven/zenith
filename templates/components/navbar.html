@@ -23,7 +23,13 @@
                 <a class="px-3 py-2 mt-2 text-sm font-semibold md:mt-0
                     hover:text-hsl-90 transition duration-200
                     focus:outline-none focus:shadow-outline" href="/beatmaps">Beatmaps</a>
-                <div @click.away="open = false" class="relative" x-data="{ open: false }">
+                    <div class="flex flex-row items-center w-full px-3 py-2 mt-2 text-sm
+                                font-semibold text-left bg-transparent rounded-lg md:w-auto md:inline md:mt-0  hover:text-hsl-90 transition duration-200
+                                focus:outline-none focus:shadow-outline">
+                        <a href="/docs">Docs</a>
+                    </div>
+                    <!--! Commented out in case we want to bring it back -->
+                <!-- <div @click.away="open = false" class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="flex flex-row items-center w-full px-3 py-2 mt-2 text-sm
                         font-semibold text-left bg-transparent rounded-lg md:w-auto md:inline md:mt-0 focus:outline-none">
                         <span>Docs</span>
@@ -46,7 +52,7 @@
                                 focus:outline-none focus:shadow-outline" href="/docs/privacy_policy">Privacy Policy</a>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="flex-col flex-grow flex md:justify-end md:flex-row" id="nav-right-row">
                     {% if session.authenticated == True %}
                     <div @click.away="open = false" class="relative" x-data="{ open: false }">

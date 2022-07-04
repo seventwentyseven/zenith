@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Docs{% endblock %}
+{% block content %}
+<div class="flex flex-col items-center h-screen">
+
+    <div class="w-full py-10">
+        <p class="text-center font-bold text-3xl text-white">Documentation</p>
+    </div>
+
+    <div class="grid grid-cols-5 grid-rows-[repeat(2,_max-content)] auto-rows-fr gap-2 w-full p-20 py-0">
+
+        <div class="bg-hsl-20 rounded-lg col-span-1 text-center p-4">
+            Documentation
+        </div>
+
+        <div class="bg-hsl-20 rounded-lg col-span-4 text-center p-4">
+            Description
+        </div>
+
+        <div class="bg-hsl-20 rounded-lg col-span-1 text-center p-4" id="docs-names">
+            {% for el in data %}
+                <a href='/docs/{{el}}' id="{{el}}" class="hover:text-hsl-90 transition duration-200 focus:outline-none focus:shadow-outline">{{el}}</a><br>
+            {% endfor %}
+        </div>
+
+        <div class="bg-hsl-20 rounded-lg col-span-4 text-center p-4">
+            <div class="items-center text-center text-white" id="docs-content">
+                <div class="text-center">
+                    <p class="text-white">
+                        Click on a link from the left to see the documentation.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block bottom %}
+<script>
+    var links = document.getElementById('docs-names').getElementsByTagName('a');
+    for (var i = 0; i < links.length; i++) {
+        links[i].addEventListener('click', function(e) {
+            e.preventDefault();
+            var id = `/docs/${this.id}`;
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", id, false);
+            xmlhttp.send();
+            document.getElementById('docs-content').innerHTML = xmlhttp.responseText;
+        });
+    }
+</script>
+{% endblock %}

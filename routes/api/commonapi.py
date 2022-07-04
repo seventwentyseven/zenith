@@ -26,3 +26,11 @@ async def home():
             "most_played_24h": Cache.get('most_played_24h'),
     }, 200
 
+# Route for getting point data for online users graph (last 24h)
+@commonapi.route('/online_data/', methods=['GET'])
+async def online_data():
+    return {
+            "success": True,
+            "data": Cache.get('online_data'),
+    }, 200
+
