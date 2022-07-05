@@ -108,78 +108,74 @@
         }
     }
     document.addEventListener("DOMContentLoaded", function () {
-      users_reg = []
-      // Make user online data (48 entries) for a linear graph
-      // Data should make a "wave" with peaks at value no 0 and 47
-      // Highest value: 23
-      // Lowest value: 1
-        for (var i = 0; i < 48; i++) {
-            users_reg.push(Math.floor(Math.random() * 23) + 1)
-        }
-
-      // Make array of hours (NOT DATE OBJECTS) dates_reg, every 30 minutes start from 18:00, (48 elements in array)
-        let dates_reg = []
-        for (let i = 0; i < 48; i++) {
-            dates_reg.push(new Date(new Date().setHours(18, 0, 0, 0) + (i * 30 * 60 * 1000)))
-        }
-      window.ApexCharts && (new ApexCharts(document.getElementById('chart-users-online'), {
-          chart: {
-              type: "area",
-              fontFamily: 'inherit',
-              height: 50.0,
-              sparkline: {
-                  enabled: true
-              },
-              animations: {
-                  enabled: false
-              },
-          },
-          tooltip: {
-              theme: "dark",
-          },
-          dataLabels: {
-              enabled: false,
-          },
-          fill: {
-              opacity: .16,
-              type: 'solid'
-          },
-          stroke: {
-              width: 2,
-              lineCap: "round",
-              curve: "smooth",
-          },
-          series: [{
-              name: "Users Online",
-              data: users_reg
-          }],
-          grid: {
-              strokeDashArray: 4,
-          },
-          xaxis: {
-              labels: {
-                  padding: 0,
-              },
-              tooltip: {
-                  enabled: false
-              },
-              axisBorder: {
-                  show: false,
-              },
-              type: 'time',
-          },
-          yaxis: {
-              labels: {
-                  padding: 4
-              },
-          },
-          labels: dates_reg,
-          colors: ["#5c70d6"],
-          legend: {
-              show: false,
-          },
-      })).render();
-  });
+    // Fetch data from /webapi/online_data
+        $.getJSON("/webapi/online_data/", function (r) {
+            console.log(r.data[26])
+            dates_array = [];
+            online_array = [];
+            for (el of r.data) {
+                dates_array.push(new Date(el[0]).toTimeString().split(' ')[0].slice(0, -3));
+                online_array.push(el[1]);
+            }
+            window.ApexCharts && (new ApexCharts(document.getElementById('chart-users-online'), {
+                chart: {
+                    type: "area",
+                    fontFamily: 'inherit',
+                    height: 50.0,
+                    sparkline: {
+                        enabled: true
+                    },
+                    animations: {
+                        enabled: false
+                    },
+                },
+                tooltip: {
+                    theme: "dark",
+                },
+                dataLabels: {
+                    enabled: false,
+                },
+                fill: {
+                    opacity: .16,
+                    type: 'solid'
+                },
+                stroke: {
+                    width: 2,
+                    lineCap: "round",
+                    curve: "smooth",
+                },
+                series: [{
+                    name: "Users Online",
+                    data: online_array
+                }],
+                grid: {
+                    strokeDashArray: 4,
+                },
+                xaxis: {
+                    labels: {
+                        padding: 0,
+                    },
+                    tooltip: {
+                        enabled: false
+                    },
+                    axisBorder: {
+                        show: false,
+                    },
+                    //type: 'time',
+                },
+                yaxis: {
+                    labels: {
+                        padding: 4
+                    },
+                },
+                labels: dates_array,
+                colors: ["#5c70d6"],
+                legend: {
+                    show: false,
+                },
+            })).render();
+        })
+    });
     // Get data from api with jquery
     last_reg = timeago.format(Number('{{ data.last_user.creation_time }}')*1000)
     console.log(last_reg)

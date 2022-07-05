@@ -3,6 +3,11 @@ import app.state
 import asyncio
 from app.utils import log, Ansi
 import datetime as dt
+from zenith import config
+from datadog_api_client import ApiClient, Configuration
+from datadog_api_client.v1.api.metrics_api import MetricsApi
+# Import point type
+from datadog_api_client.v1.model.point import Point
 
 CACHE = app.state.web.cache['data']
 
@@ -19,6 +24,7 @@ async def init_web_housekeeping_tasks() -> None:
             loop.create_task(task)
             for task in (
                 _update_home_cache(interval=10 * 60),
+                _users_online(interval=30 * 60),
             )
         },
     )
@@ -63,7 +69,13 @@ async def _update_home_cache(interval:int) -> None:
     """
     while True:
         recent_ranked = await app.state.services.database.fetch_all(
-            "SELECT id, set_id, artist, title, version, creator FROM maps WHERE (status=2 OR status=5) AND frozen=1 ORDER BY id DESC LIMIT 3"
+            "SELECT r.userid, r.setid, r.status, "
+            "r.date, m.title, m.artist, u.name, m.mode "
+            "FROM recent_ranked r "
+            "LEFT JOIN maps m ON r.setid = m.set_id "
+            "LEFT JOIN users u ON r.userid = u.id "
+            "WHERE r.status = 2 OR r.status = 5 "
+            "ORDER BY r.date DESC LIMIT 3"
         )
 
         most_played_24h = await app.state.services.database.fetch_all(
@@ -88,9 +100,39 @@ async def _update_home_cache(interval:int) -> None:
         for article in articles:
             article['content'] = article['content'][:300] + "..."
 
-        Cache.set("articles", articles, 10)
-        Cache.set("most_played_24h", most_played_24h, 10)
-        Cache.set("recent_ranked", recent_ranked, 10)
+        Cache.set("articles", articles, interval)
+        Cache.set("most_played_24h", most_played_24h, interval)
+        Cache.set("recent_ranked", recent_ranked, interval)
+
+        # Sleep for interval
+        await asyncio.sleep(interval)
+
+async def _users_online(interval:int) -> None:
+    # Define configuration and set it's values, due to
+    # how shitty the API is, it's made like that, sorry! :c
+    dd_config = Configuration()
+    dd_config.host = config.DD_API_HOST
+    dd_config.api_key['apiKeyAuth'] = config.DD_API_KEY
+    dd_config.api_key['appKeyAuth'] = config.DD_APP_KEY
+
+    # Create a new client and create api instance
+    with ApiClient(dd_config) as api_client:
+        dd_client = MetricsApi(api_client)
+
+        res = dd_client.query_metrics(
+            _from=int((dt.datetime.utcnow() - dt.timedelta(days=1)).timestamp()), #TD - 1 day
+            to=int(dt.datetime.utcnow().timestamp()), # Timestamp for now
+            query="max:bancho.online_players{*}.rollup(max, 5)",
+        )
+        res = res['series'][0]['pointlist'] # Why is it so fucked?
+
+        # Process response data
+        data = []
+        for el in res:
+            data.append(el._data_store['value'])
+
+        # Save data to cache
+        Cache.set("online_data", data, interval)
 
         # Sleep for interval
         await asyncio.sleep(interval)
