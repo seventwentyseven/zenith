@@ -1,13 +1,13 @@
 from typing import Any
-import app.state
+
 import asyncio
-from app.utils import log, Ansi
 import datetime as dt
-from zenith import config
 from datadog_api_client import ApiClient, Configuration
 from datadog_api_client.v1.api.metrics_api import MetricsApi
-# Import point type
 from datadog_api_client.v1.model.point import Point
+
+import app.state
+from app.utils import log, Ansi
 
 CACHE = app.state.web.cache['data']
 
