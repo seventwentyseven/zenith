@@ -6,8 +6,8 @@ from quart import send_file
 from quart import session
 
 import app.state
-import zenith.config
-from zenith.caching import Cache
+import app.settings
+
 
 commonapi = Blueprint('commonapi', __name__)
 

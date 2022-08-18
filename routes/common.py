@@ -16,7 +16,7 @@ from quart import url_for
 from quart import get_flashed_messages
 
 import app.state
-import zenith.config
+import app.settings
 
 common = Blueprint('common', __name__)
 
@@ -51,7 +51,7 @@ async def docs():
             if file.startswith('index'):
                 continue
             data.append(file[:-5])
-    
+
     return await render_template('/pages/docs/index.html', data=data)
 
 @common.route('/docs/<name>', methods=['GET'])
