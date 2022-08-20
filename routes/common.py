@@ -3,8 +3,6 @@ import datetime as dt
 import hashlib
 import os
 
-from zenith.utils import make_session
-
 from quart import Blueprint
 from quart import redirect
 from quart import render_template
@@ -14,6 +12,9 @@ from quart import session
 from quart import flash
 from quart import url_for
 from quart import get_flashed_messages
+
+from zenith.utils import make_session
+from zenith.utils import validate_password, validate_captcha
 
 import app.state
 import app.settings
@@ -61,53 +62,84 @@ async def docs_page(name):
 
 @common.route('/login', methods=['POST'])
 async def login():
-    # Login is by login modal, get the form data and check if it's valid
+    form = await request.form
+    username = form.get('username', type=str)
+    passwd_txt = form.get('password', type=str)
+    captcha_data = form.get('h-captcha-response', type=str)
+    il = app.state.web.invalid_logins
+    user_ip = request.headers.get('CF-Connecting-IP')
+    now = dt.datetime.utcnow()
+    #TODO: Redirect to viewed page
+
+    # First, check if user is already logged in
     if 'authenticated' in session:
         await flash('You are already logged in.', 'warning')
         return redirect(url_for('common.home'))
 
-    form = await request.form
-    username = form.get('username', type=str)
-    passwd_txt = form.get('password', type=str)
+    if captcha_data is None or not await validate_captcha(captcha_data):
+        await flash('Captcha failed or left unsolved, please try again.', 'warning')
+        return redirect(url_for('common.home'))
+
+
+    # Check if user has tried to login too many times
+    # and if last try was less than 15 minutes ago
+    if user_ip in il:
+        if il[user_ip]['count'] >= 3:
+            if now - il[user_ip]['last_try'] < dt.timedelta(minutes=15):
+                # Create time reaming var, return str `{x} minutes, {x} seconds`
+                time_reaming: dt.timedelta = dt.timedelta(minutes=15) - (now - il[user_ip]['last_try'])
+                await flash(
+                    f'You have tried to login too many times. Please wait {time_reaming.seconds // 60} minutes.',
+                    'error'
+                )
+                return redirect(url_for('common.home'))
 
     if not username or not passwd_txt:
         await flash('Please enter a username and password.', 'warning')
         return redirect(url_for('common.home'))
 
-    # Check if the user exists
+    # Get user's encrypted password and check if user exists
     user = await app.state.services.database.fetch_one(
-        "SELECT id, name, priv, pw_bcrypt FROM users WHERE name = :username",
-        {'username': username})
+        "SELECT id, name, priv, pw_bcrypt FROM users "
+        "WHERE name = :username",
+        {'username': username}
+    )
     if not user:
         await flash('Invalid username or password.', 'warning')
         return redirect(url_for('common.home'))
     else:
         user = dict(user)
 
-    # Hash password ~200ms
-    pw_bcrypt = user['pw_bcrypt'].encode()
-    pw_md5 = hashlib.md5(passwd_txt.encode()).hexdigest().encode()
-    # Delete unecryped password from memory
-    del(passwd_txt)
 
-    # Slow on purpose, will chache to speed up
-    if pw_bcrypt in app.state.web.cache['bcrypt']:
-        if pw_md5 != app.state.web.cache['bcrypt'][pw_bcrypt]: # ~0.1ms
-            await flash('Invalid username or password.', 'warning')
-            return redirect(url_for('common.home'))
-    else: # ~200ms
-        if not bcrypt.checkpw(pw_md5, pw_bcrypt):
-            await flash('Invalid username or password.', 'warning')
-            return redirect(url_for('common.home'))
+    # Check if the password is correct
+    print(pwd_valid := await validate_password(user['pw_bcrypt'], passwd_txt))
+    if not pwd_valid:
+        # add ip into il, if doesn't exist create it
+        if user_ip not in il:
+            il[user_ip] = {'count': 1, 'last_try': now}
+            await flash("Invalid username or password.", 'warning')
+        else:
+            il[user_ip] = {'count': il[user_ip]['count']+1, 'last_try': now}
 
-        # Login successful Save pw_bcrypt to cache
-        app.state.web.cache['bcrypt'][pw_bcrypt] = pw_md5
+            if il[user_ip]['count'] >= 3:
+                await flash('Too many attempts. Please wait 15 minutes.', 'error')
+            elif il[user_ip]['count'] == 1:
+                await flash('Invalid username or password. You have 2 more tries before being locked out for 15 minutes.', 'warning')
+            elif il[user_ip]['count'] == 2:
+                await flash('Invalid username or password. You have 1 more try before being locked out for 15 minutes.', 'warning')
 
-    #* Login successful
-    await make_session(user)
+        return redirect(url_for('common.home'))
+    else:
+        #* Login successful
+        # Delete from invalid logins
+        if user_ip in il:
+            del il[user_ip]
 
-    await flash ('You are now logged in! Thank you for playing on 727 ❤️', 'success')
-    return redirect(url_for('common.home'))
+        #* Login successful
+        await make_session(user)
+        await flash ('You are now logged in! Thank you for playing on 727 ❤️', 'success')
+        print("Total time: ", dt.datetime.utcnow() - now)
+        return redirect(url_for('common.home'))
 
 @common.route('/logout', methods=['GET'])
 async def logout():
@@ -123,6 +155,11 @@ async def logout():
 async def test():
     print(session)
     return 'Logs'
+
+@common.route('/login/2fa', methods=['GET', 'POST'])
+async def login_2fa():
+    #TODO: 2FA support, more info on trello
+    return {'status': 'ok'}
 
 @common.route('/leaderboard', methods=['GET'])
 async def leaderboard():

@@ -18,7 +18,7 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/timeago.js/4.0.2/timeago.min.js" integrity="sha512-SVDh1zH5N9ChofSlNAK43lcNS7lWze6DTVx1JCXH1Tmno+0/1jMpdbR8YDgDUfcUrPp1xyE53G42GFrcM0CMVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <!-- Page Specific Stuff -->
     {% block head %}{% endblock %}
 </head>
@@ -37,7 +37,7 @@
                         flex flex-col lg:flex-row items-center border-l-3 border-red-500 py-3 lg:py-0">
                         <!-- Left block -->
                         <div class="flex flex-col lg:flex-row items-center mx-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-12 h-12 fill-current text-white lg:mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 100" class="w-12 h-12 fill-current text-white lg:mr-3">
                                 <g clip-path="url(#clip0)">
                                     <path class="fill-current text-red-500"
                                         d="M65.0474 9.31178C70.2491 9.31178 75.0792 12.1005 77.6801
@@ -57,9 +57,9 @@
                                     <path class="fill-current text-red-500" fill-rule="evenodd" clip-rule="evenodd" d="M50 59.6875C51.933 59.6875 53.5 61.2545 53.5 63.1875V66.1875C53.5 68.1205 51.933 69.6875 50 69.6875C48.067 69.6875 46.5 68.1205 46.5 66.1875V63.1875C46.5 61.2545 48.067 59.6875 50 59.6875Z" fill="white"/>
                                 </g>
                                 <defs>
-                                    <clipPath id="clip0">
+                                    <clippath id="clip0">
                                     <rect width="100" height="92" fill="white" transform="translate(0 4)"/>
-                                    </clipPath>
+                                    </clippath>
                                 </defs>
                             </svg>
                             <div class="flex flex-col text-center lg:text-left">
