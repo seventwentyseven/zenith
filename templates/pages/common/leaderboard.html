@@ -1,9 +1,345 @@
+<!DOCTYPE html>
 {% extends 'base.html' %}
 {% block title %}Leaderboard{% endblock %}
 {% block content %}
-<div class="flex flex-col items-center h-screen">
-    
+<style>
+    @media (max-width: 899px) {
+        .hidden-xs {
+            display: none!important;
+        }
+    }
+</style>
+<script>
+    // Update Page
+    // Get args from url
+    args = {} //! Global variable for arg management
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        args[key] = value;
+    });
+    // Decide if default mode is specified or not
+    if (args.mode == undefined) {
+        args.mode = Number('{{ defmode }}');
+        // Split mode into mode and mods
+        if (args.mode < 4) { args.mods = 'vn' }
+        else if (args.mode < 4) { args.mods = 'rx'; args.mode -= 4; }
+        else if (args.mode > 7) {args.mods = 'ap'; args.mode -= 8; }
+    }
+    function updatePage() {
+        success: function (data) {
+            // Replace url with corrected one
+            let l_args = data.args;
+            let url = "?";
+            // Get corrected args and convert them into request str
+            for (let key in l_args) { url += key + "=" + l_args[key] + "&"; }
 
+            url = url.substring(0, url.length - 1); // Cut off last &
+            if (url != window.location.href) {
+                window.history.pushState({path:url},'',url); // Replace url with corrected one
+            }
+
+            args = l_args // Update args with fixed ones from api
+
+            // Create leaderboard
+            $('#leaderboard-body').empty(); // Wipe LB
+            let i = 0;
+            for (let u of data.data) {
+                // Rank is page*50+1+i
+                let rank = ((l_args.page-1)*50+1)+i++;
+                // Add brackets to clan tag, else set it to empty string
+                if (u.tag != null) {u.tag = `[${u.tag}] `;} else {u.tag = '';}
+
+                $('#leaderboard-body').append(`
+                    <tr class="truncate bg-hsl-15">
+                        <td class="pr-2 pl-3 font-bold text-center rounded-l-lg">#${rank}</td>
+                        <td class="p-1 text-left">
+                            <div class="flex items-center w-full">
+                                <img src="https://a.seventwentyseven.xyz/${u.id}" onerror="this.src='/public/images/avatar_notwork.png';"
+                                    class="object-cover w-10 h-10 rounded-md">
+                                <div class="flex gap-2 ml-3 mr-32 items-center justify-items-center">
+                                    <a href="#"><img src="/public/images/flags/${u.country.toUpperCase()}.png" class="cursor-pointer h-5 w-8"></a>
+                                    <a href="/u/${u.id}" class="font-bold hover:text-hsl-70 transition duration-200">
+                                        ${u.tag}${u.name}
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-2 text-center">${u.acc}%</td>
+                        <td class="py-2 text-center">${u.plays}</td>
+                        <td class="py-2 text-center">${u.max_combo}</td>
+                        <td class="py-2 font-bold text-center rounded-r-lg pr-5">${u.pp}pp</td>
+                    </tr>
+                `);
+            }
+
+            // Update header
+        }
+
+        $.ajax({
+            url: '/webapi/no1lb',
+            type: 'GET',
+            data: args,
+            success: function (data) {
+                // Output: userid: int, image: bool
+                // Update banner on header with jqerry
+                // Banner route https://{{domain}}.xyz/banners/userid
+                // If above route responds with 404, don't do anything, fallback is
+                // coded in css
+                if (data.image == true) {
+                    console.log(data)
+                    document.getElementById('#header-bg').style = `background: linear-gradient(rgba(0, 0, 0, 0.7),
+                    rgba(0, 0, 0, 0.7)), url(https://dzifors.pl/banners/${data.userid}) center no-repeat;
+                    background-size: cover !important;`
+
+                } else {
+                    console.log('test2')
+                    // Delete style tag from header-bg
+                    document.getElementById('#header-bg').style = ''
+                }
+            }
+        })
+    }
+    // Hello
+
+    function getLb(args) {
+        // Make the api request
+        $.ajax({
+            url: '/webapi/leaderboard',
+            type: 'GET',
+            data: args,
+            success: function (data) {
+                // Replace url with corrected one
+                let l_args = data.args;
+                let url = "?";
+                // Get corrected args and convert them into request str
+                for (let key in l_args) { url += key + "=" + l_args[key] + "&"; }
+
+                url = url.substring(0, url.length - 1); // Cut off last &
+                if (url != window.location.href) {
+                    window.history.pushState({path:url},'',url); // Replace url with corrected one
+                }
+
+                args = l_args // Update args with fixed ones from api
+
+                // Create leaderboard
+                $('#leaderboard-body').empty(); // Wipe LB
+                let i = 0;
+                for (let u of data.data) {
+                    // Rank is page*50+1+i
+                    let rank = ((l_args.page-1)*50+1)+i++;
+                    // Add brackets to clan tag, else set it to empty string
+                    if (u.tag != null) {u.tag = `[${u.tag}] `;} else {u.tag = '';}
+
+                    $('#leaderboard-body').append(`
+                        <tr class="truncate bg-hsl-15">
+                            <td class="pr-2 pl-3 font-bold text-center rounded-l-lg">#${rank}</td>
+                            <td class="p-1 text-left">
+                                <div class="flex items-center w-full">
+                                    <img src="https://a.seventwentyseven.xyz/${u.id}" onerror="this.src='/public/images/avatar_notwork.png';"
+                                        class="object-cover w-10 h-10 rounded-md">
+                                    <div class="flex gap-2 ml-3 mr-32 items-center justify-items-center">
+                                        <a href="#"><img src="/public/images/flags/${u.country.toUpperCase()}.png" class="cursor-pointer h-5 w-8"></a>
+                                        <a href="/u/${u.id}" class="font-bold hover:text-hsl-70 transition duration-200">
+                                            ${u.tag}${u.name}
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-2 text-center">${u.acc}%</td>
+                            <td class="py-2 text-center">${u.plays}</td>
+                            <td class="py-2 text-center">${u.max_combo}</td>
+                            <td class="py-2 font-bold text-center rounded-r-lg pr-5">${u.pp}pp</td>
+                        </tr>
+                    `);
+                }
+
+                // Update header
+            }
+        });
+    }
+    getLb(args);
+    updatePage();
+
+</script>
+<div class="flex flex-col items-center max-w-screen-xl mx-auto mb-8">
+    <!-- Header -->
+    <div class="w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 h-72 flex flex-row"
+         style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+               url(https://seventwentyseven.xyz/banners/4) center no-repeat; background-size: cover !important;"
+            id="#header-bg">
+        <!-- Lb type, name, country -->
+        <div class="w-1/2">
+            <div class="flex flex-col ml-5 mt-6 w-auto font-light">
+                <div class="text-3xl flex items-center" id="mode-text">
+                    <em class="mode-icon mania mr-1.5 text-3xl "></em>
+                    osu!Mania 7k
+                </div>
+                <div class="text-5xl flex items-center" id="lb_type-text">
+                    <div class="w-12 h-8 mr-1.5 -mb-0.5 rounded-sm bg-cover bg-center group"
+                        style="background-image: url(/public/images/flags/PL.png)" id="flag-top">
+                        <em class="fa-solid fa-xmark text-2xl w-full h-full invisible
+                            group-hover:visible group-hover:bg-zinc-700
+                            group-hover:bg-opacity-60 group-hover:text-white
+                            flex items-center justify-center transition duration-250 ease-in
+                            text-transparent"></em>
+                    </div>
+                    <span id="lb_name-text">Poland's PP Leaderboard</span>
+                </div>
+            </div>
+        </div>
+        <!-- LB filters -->
+        <div class="w-1/2">
+            <!-- 3 rows of buttons
+            1st row: Mode (std, taiko, catch, mania)
+            2nd row: Mods (Vanilla, Relax, Autopilot or in case of mania, 4k and 7k)
+            3rd row: Type (pp, plays, rscore)-->
+            <div class="flex flex-col ml-auto w-max mr-6 mt-5">
+                <!-- Mode -->
+                <div class="flex flex-row mb-1.5 text-xl justify-end">
+                    <button class="py-2 px-3 bg-hsl-20 rounded-l-lg hover:bg-hsl-25 transition duration-200"
+                        onclick="updateMode(0)">
+                        <em class="mode-icon std"></em>
+                    </button>
+                    <button class="py-2 px-3 bg-hsl-20 hover:bg-hsl-25 transition duration-200"
+                        onclick="updateMode(1)">
+                        <em class="mode-icon taiko"></em>
+                    </button>
+                    <button class="py-2 px-3 bg-hsl-20 hover:bg-hsl-25 transition duration-200"
+                        onclick="updateMode(2)">
+                        <em class="mode-icon catch"></em>
+                    </button>
+                    <button class="py-2 px-3 bg-hsl-20 rounded-r-lg hover:bg-hsl-25 transition duration-200"
+                        onclick="updateMode(3)">
+                        <em class="mode-icon mania"></em>
+                    </button>
+
+                </div>
+                <!-- Mods -->
+                <div class="flex flex-row mb-1.5 text-lg justify-end">
+                    <button class="p-2 bg-hsl-20 rounded-l-lg mania-mods-btn">
+                        <span>4k</span>
+                    </button>
+                    <button class="p-2 bg-hsl-40 rounded-r-lg mania-mods-btn">
+                        <span>7k</span>
+                    </button>
+                    <button class="p-2 bg-hsl-20 rounded-r-lg hidden">
+                        <span>Vanilla</span>
+                    </button>
+                    <button class="p-2 bg-hsl-20 rounded-r-lg hidden">
+                        <span>Relax</span>
+                    </button>
+                    <button class="p-2 bg-hsl-20 rounded-r-lg hidden">
+                        <span>Autopilot</span>
+                    </button>
+                </div>
+                <!-- Mods -->
+                <div class="flex flex-row mb-1.5 text-lg justify-end">
+                    <button class="p-2 bg-hsl-40 rounded-l-lg">
+                        <span>PP</span>
+                    </button>
+                    <button class="p-2 bg-hsl-20">
+                        <span>Playcount</span>
+                    </button>
+                    <button class="p-2 bg-hsl-20 rounded-r-lg">
+                        <span>Score</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Leaderboard -->
+    <div class="w-full flex flex-col mt-8 shadow-lg bg-hsl-20 rounded-lg">
+        <!-- Pager no1 -->
+        <div class="flex flex-row justify-center mt-4 font-semibold text-sm" id="pager-1">
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <em class="fa-solid fa-chevron-left"></em>
+                <span class="hidden-xs">FIRST</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span>1</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span>2</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-30 rounded-full m-0.5">
+                <span>3</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span>4</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span>5</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span class="hidden-xs">LAST</span>
+                <em class="fa-solid fa-chevron-right"></em>
+            </button>
+        </div>
+        <!-- Leaderboard -->
+        <div class="">
+            <div class="relative px-7 py-4 mx-auto overflow-hidden transition-all">
+                <div class="relative overflow-x-auto">
+                    <table class="relative table w-full overflow-x-auto text-sm text-white table-auto whitespace-nowrap border-separate" style="border-spacing: 0em 0.6em;">
+                        <thead class="text-hsl-90 pb-3">
+                            <tr>
+                                <th class="px-2.5 text-center font-normal">Rank</th>
+                                <th class="w-full text-left font-normal pl-12">User</th>
+                                <th class="px-4 font-normal text-center">Accuracy</th>
+                                <th class="px-4 font-normal text-center">Playcount</th>
+                                <th class="px-4 font-normal text-center">Max Combo</th>
+                                <th class="px-4 text-center">PP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <tr class="truncate bg-hsl-15">
+                                <td class="pr-2 pl-3 font-bold text-center rounded-l-lg">#1</td>
+                                <td class="p-1 text-left">
+                                    <div class="flex items-center w-full">
+                                        <img src="https://a.seventwentyseven.xyz/1297" onerror="this.src='/public/images/avatar_notwork.png';"
+                                            class="object-cover w-10 h-10 rounded-md">
+                                        <div class="flex gap-2 ml-3 mr-32 items-center justify-items-center">
+                                            <a href="#"><img src="/public/images/flags/US.png" class="cursor-pointer h-5 w-8"></a>
+                                            <a href="/u/1297" class="font-bold hover:text-hsl-70 transition duration-200">
+                                                [UTO] Siz
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-2 text-center">97.71%</td>
+                                <td class="py-2 text-center">2,159</td>
+                                <td class="py-2 text-center">4,290</td>
+                                <td class="py-2 font-bold text-center rounded-r-lg pr-5">13285pp</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Pager no2 -->
+        <div class="flex flex-row justify-center mb-4 mt-4 font-semibold text-sm" id="pager-2">
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <em class="fa-solid fa-chevron-left"></em>
+                <span class="hidden-xs">FIRST</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span>1</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span>2</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-30 rounded-full m-0.5">
+                <span>3</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span>4</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span>5</span>
+            </button>
+            <button class="py-1 px-2.5 bg-hsl-25 rounded-full m-0.5">
+                <span class="hidden-xs">LAST</span>
+                <em class="fa-solid fa-chevron-right"></em>
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}

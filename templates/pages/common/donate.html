@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block title %}Donate{% endblock %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js" integrity="sha512-1mDhG//LAjM3pLXCJyaA+4c+h5qmMoTc7IuJyuNNPaakrWT9rVTxICK4tIizf7YwJsXgDC2JP74PGCc7qxLAHw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.css" integrity="sha512-MKxcSu/LDtbIYHBNAWUQwfB3iVoG9xeMCm32QV5hZ/9lFaQZJVaXfz9aFa0IZExWzCpm7OWvp9zq9gVip/nLMg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+{% block content %}
+
+<div class="flex flex-col items-center max-w-screen-xl mx-auto mb-8 font-comfortaa">
+    <!-- First Block, make some background with a blur, put opacity 0.75 on top of that-->
+    <section class="w-full bg-[url('/banners/4')] bg-center bg-no-repeat bg-cover h-96 lg:h-80" id="top">
+        <div class="backdrop-blur-sm bg-opacity-50 bg-slate-800 w-full h-full">
+            <div class="flex flex-col justify-center items-center text-center h-full w-full md:w-2/3 xl:w-1/3 mx-auto">
+                <h1 class="text-4xl text-white font-bold">Support Us!</h1>
+                <p class="mt-3 text-lg mx-3 lg:mx-0">
+                    By supporting, you're helping us build one of the best osu!
+                    servers avaliable, and in return for spending your precious kromers
+                    you'll get some awesome perks!
+                </p>
+                <a class="bg-hsl-50 px-6 pt-3 pb-2.5 text-xl font-light rounded-full mt-3
+                    hover:bg-hsl-40 transition duration-200" href="#purchase">purchase</a>
+            </div>
+        </div>
+    </section>
+    <section id="perks" class="bg-hsl-20 w-full flex flex-col">
+        <span class="text-3xl lg:text-4xl font-bold text-white my-5 text-center">Ok, so what will I get?</span>
+        <!-- Grid structure 4 cols-->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mx-5 mb-5">
+
+            <!-- Grid Elements -->
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">1</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Custom Banner and Background</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            With supporter you can finally change your profile banner and background!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">2</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Profile Badge</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            You'll get badge with heart on your profile, with every supporter <span class="underline">bought</span>
+                            it'll be upgraded!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">3</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Changing username</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            As a supporter you can change your username once a month!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">4</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Yellow nickname in chat</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            You'll get yellow nickname in chat, so everyone will know that you're a supporter!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">5</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">See your followers</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            As a supporter you can see who added you as friend!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">6</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">See your every play on the map</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            Supporter you can see all your submitted plays on the map in chronological order,
+                            download replays and more!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">7</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">More requests</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            Supporters can request 3 maps per hour instead of 2!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">8</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Leaderboard by pp</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            Using Auto mod you can see pp leaderboards in game!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">9</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Rankings on unrankeds</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            Supportes can view rankings on unranked maps!<br>
+                            Remember that this works like loved maps, pp isn't awarded for that.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">10</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Profile Wipe</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            Ever wanted to start over for some reason? Supporters can wipe their profile once 3 months!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">11</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">More Favorite Plays</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            We all know that your 3 mod fc on harumachi isn't your proudest score,
+                            with supporter you can add 10 favorite scores instead of 5!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">12</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Clan creation</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            With supporter you can create a clan with it's own leaderboard, stats
+                            and page!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 row-span-1 h-52 bg-[url('/public/images/donate/perk1.png')] bg-cover bg-no-repeat bg-center rounded-md">
+                <div class="w-full h-full bg-hsl-20 hover:bg-hsl-25_10-70a transition duration-300 rounded-md">
+                    <div class="flex flex-col ">
+                        <div class="flex flex-row items-center mx-4 mt-4">
+                            <div class="bg-hsl-50 h-12 flex justify-center items-center rounded" style="min-width: 48px !important;">
+                                <span class="text-white font-bold text-2xl">13</span>
+                            </div>
+                            <span class="text-white font-bold text-2xl ml-4">Discord rank</span>
+                        </div>
+                        <p class="mt-2 text-xl mx-4">
+                            After connectiong your discord account you'll get rank on our discord server
+                            and access to special supporters channel where you can vote for new features!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="purchase" class="bg-hsl-20 w-full flex flex-col">
+        <span class="text-3xl lg:text-4xl font-bold text-white my-5 text-center">Okay I'm in!</span>
+        <!-- Thus fnuy box is divided into 2 parts
+            1st (left) where you can buy supporer, payment method
+                and month slider
+            2nd (right) where you can see how much supporter left you have
+        -->
+        <div class="flex flex-row my-5">
+            <div class="w-11/12 mx-auto flex flex-col items-center bg-hsl-25 rounded-xl">
+                <span class="mx-auto font-bold text-2xl mt-5">Purchase Supporter</span>
+                <div class="w-36 h-1 rounded-full bg-hsl-50 mt-3px mx-auto"></div>
+                <form id="purchase_form" class="flex flex-col justify-center w-10/12"
+                    action="/donate/checkout" method="post">
+                    <!-- User Card -->
+                    <a class="flex w-11/12 md:w-8/12 lg:w-1/2 h-24 bg-hsl-10 mt-8 mb-2 mx-auto rounded-lg shadow-md font-sans"
+                        style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.65),
+                            hsl(var(--main), 10%, 10%, 0.65)), url(/banners/4);
+                            background-position: center; background-size: cover;"
+                        href="/u/{{ session.user.id }}" id="user_card">
+
+                    </a>
+                    <input class="w-11/12 md:w-8/12 lg:w-1/2 h-10 bg-hsl-20 rounded-md text-hsl-90 text-xl font-semibold
+                    text-center focus:bg-hsl-15 outline-none transition duration-300 mx-auto"
+                    type="text" id="username" name="username" placeholder="It's a gift"
+                    />
+
+                    <!-- Month slider -->
+                    <div id="range_slider1" class="w-9/12 mx-auto slider-styled" style="margin-top: 118px;"></div>
+                    <input type="hidden" id="months_val" name="months" value="1" />
+                    <!-- Text Input, on input send api to check if player exists -->
+
+                    <!-- Button Group, Paypal, Stripe -->
+                    <label class="mx-auto text-lg font-semibold mt-8">Choose Payment Method</label>
+                    <div class="flex flex-row mt-2 text-2xl font-semibold mx-auto">
+                        <button class="border-y-2 border-l-2 h-11 w-36 rounded-l-xl
+                            transition duration-300"
+                            type="button" id="paypal">
+                        </button>
+                        <button class="border-y-2 border-r-2 border-hsl-80 h-11 w-36 rounded-r-xl
+                            hover:border-transparent transition duration-300"
+                            type="button" id="stripe">
+                        </button>
+                        <input type="hidden" name="payment_method" id="payment_method" value="paypal" class="hidden" />
+                    </div>
+                    <label class="mt-1.5 w-10/12 mx-auto text-center text-sm font-light" id="payment_desc"></label>
+
+                    <button class="py-2 px-8 mx-auto my-4 bg-hsl-50 rounded-full hover:bg-hsl-40 hover:scale-105 transition duration-200"
+                        type="submit">
+                        <span class="text-lg font-light mt-0.5">checkout</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    #paypal {
+        background: url('/public/images/donate/paypal.png') no-repeat center;
+        background-size: 60%;
+        filter: contrast(0%);
+        border-color: hsl(var(--main), 80%, 80%)
+    } .active-paypal {
+        background-color: #f8c454 !important;
+        filter: contrast(100%) !important;
+        border-color: transparent !important;
+    }
+
+    #stripe {
+        background: url('/public/images/donate/stripe.png') no-repeat center;
+        background-size: 60%;
+        filter: contrast(0%);
+        border-color: hsl(var(--main), 80%, 80%)
+    } .active-stripe {
+        background-color: #ffffff !important;
+        filter: contrast(100%) !important;
+        border-color: transparent !important;
+    }
+
+
+    /* Style out #month_slider  thumb*/
+    .slider-styled,
+    .slider-styled .noUi-handle {
+        box-shadow: none;
+    }
+
+    /* Hide markers on slider handles */
+    .slider-styled .noUi-handle::before,
+    .slider-styled .noUi-handle::after {
+        display: none;
+        border-radius: 9001px;
+    }
+
+    #range_slider1 {
+        height: 12px;
+        background-color: hsl(var(--main), 20%, 20%);
+        border-radius: 9001px;
+        border: none;
+    }
+
+    #range_slider1 .noUi-connect {
+        background: hsl(var(--main), 50%, 50%);
+        border-radius: 9001px;
+    }
+
+    #range_slider1 .noUi-handle {
+        background: hsl(var(--main), 50%, 50%);
+        height: 24px;
+        width: 24px;
+        top: -6px;
+        right: -13px; /* half the width */
+        border-radius: 9001px;
+        border: 4px solid hsl(var(--main), 25%, 25%);
+        cursor: pointer;
+    }
+
+    #range-slider1 .noUi-connects {
+        border-radius: 9001px;
+    }
+
+    .noUi-tooltip {
+        display: block;
+        position: absolute;
+        border: none;
+        text-align: center;
+        white-space: nowrap;
+        background: hsl(var(--main), 20%, 20%);
+        border-radius: 12px;
+        padding: 0.5rem;
+        margin-bottom: 8px;
+        margin-left: 1px;
+    }
+
+    .noUi-tooltip .tooltip_text:after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -10px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: hsl(var(--main), 20%, 20%) transparent transparent transparent;
+     }
+
+</style>
+<script>
+
+    // Before you start touching that in hope that you'll hack the system
+    // and get supporter for free, you should know that this is just a
+    // frontend thing, price and stuff is calculated on backend :trollface:
+    var slider = document.getElementById('range_slider1');
+    sliderEl = noUiSlider.create(slider, {
+        start: [1],
+        step: 1,
+        connect: [true, false],
+        range: {
+            'min': 1,
+            'max': 24
+        },
+        // Create bubble tooltips
+        tooltips: true,
+        format: {
+            // Tooltip has 3 lines of text
+            to : function(value) {
+                if (value < 4) { d = 0}
+                else if (value > 12) { d = 45 }
+                else { d = value*3.0 }
+
+                // Product Price: 3 USD
+                // Discount = d (percentage)
+                // Calculate price and discount, round it to 2 decimals
+                price = 3*(value - (value * (d/100)))
+                if (d!=0) {
+                    // discount != 0,
+                    // calculate price per month
+                    ppm = `${Math.round(((price/value) + Number.EPSILON) * 100) / 100} USD`
+                } else {ppm = "3 USD"}
+
+                value = Math.ceil(value);
+                $('months_val').val(value);
+                return `
+                    <div class="flex flex-col mx-0 md:mx-5 text-white font-medium tooltip_text">
+                        <span class="font-bold text-sm md:text-base">Total: ${Math.round((price + Number.EPSILON) * 100) / 100} USD</span>
+                        <span class="text-sm">${value} ${value > 1 ? "Months" : "Month"}</span>
+                        <span class="text-hsl-90 text-xs">Save ${Math.round((d + Number.EPSILON) * 100) / 100}%</span>
+                        <span class="text-hsl-90 text-xs">Per Month: ${ppm}</span>
+                    </div>
+                `;
+            },
+            from : function(value) {
+                // round it up to celling
+                return value
+            },
+        }
+    });
+
+    // block image drag on user card
+    document.getElementById('user_card').ondragstart = function() { return false; };
+    // using jquery, create a function that will be called when the user
+    // types anything in the username input
+    // debounce: 2 seconds
+    // using jquery, create a function with 1500ms debounce
+    card = $('#user_card');
+    $('#username').on('textInput', $.debounce(1500, function() {
+        name = $('#username').val()
+        if (name === "" ) name = '{{ session.user.name }}'
+        // using jquery, make a request to /webapi/card_data
+        // with username as a parameter
+        $.get('/webapi/card_data', {name: name}, function(r) {
+            if (r.success == true) {
+                // Update link
+                card.attr('href', '/u/' + r.data.id)
+
+                // If user has banner, set it else set to hsl 50 50
+                if (r.data.has_banner == true) {
+                    card.css({'background': 'linear-gradient(hsl(var(--main), 10%, 10%, 0.65), hsl(var(--main), 10%, 10%, 0.65)), url("/banners/' + r.data.id + '" ) no-repeat center center / cover'})
+                } else {
+                    card.css({'background': 'hsl(var(--main), 50%, 50%)'})
+                }
+
+                // If user is in clan, add clan tag to the name
+                if (r.data.tag !== null) { tag = `[${r.data.tag}] ` } else { tag = '' }
+
+                // Set online status
+                if (r.data.online == true) {
+                    status = `<div class="h-5 w-5 border-3 border-lime-500 rounded-full"></div>
+                              <span class="text-sm ml-2">Online</span>`
+                }
+                else {
+                    status = `<div class="h-5 w-5 border-3 border-gray-200 rounded-full"></div>
+                              <span class="text-sm ml-2">Offline</span>`
+                }
+
+                // Update card itself
+                document.getElementById('user_card').innerHTML = `
+                    <div class="flex flex-row items-center ml-4">
+                        <img class="rounded-lg w-16 h-16" src="https://a.dzifors.pl/${r.data.id}"
+                            onerror='this.src="/public/images/avatar_notwork.png"'>
+                        <div class="flex flex-col ml-2.5">
+                            <div class="flex flex-row justify-center items-center">
+                                <img src="/public/images/flags/${r.data.country.toUpperCase()}.png" class="w-8 h-5 mr-1.5">
+                                <span class="text-white font-medium text-lg -mt-1">${tag}${r.data.name}</span>
+                            </div>
+                            <div class="flex mt-2">
+                                ${status}
+                            </div>
+                        </div>
+                    </div>
+                `
+            } else { // User not found / restricted
+                $('#user_card').removeAttr('href')
+                $('#user_card').removeAttr('style')
+                document.getElementById('user_card').innerHTML = `
+                    <div class="flex flex-col justify-center items-center w-full h-full font-comfortaa">
+                        <span class="text-white font-medium text-2xl">User not found</span>
+                        <span class="text-white text-xl">Check your spelling</span>
+                    </div>
+                `
+            }
+        })
+
+    }))
+
+    // On page load call the function above
+    // to set the user card to the current user
+    // Value of the input: {{ session.user.name }} // <-- This is set by jinja
+    $('#username').val('{{ session.user.name }}')
+    $('#username').trigger('textInput')
+    $('#username').val('') // Empty the input
+
+    $('#paypal').click(function() {
+        $('#payment_method').val('paypal');
+        $('#payment_desc').text('Pay using PayPal.');
+        $('#paypal').addClass('active-paypal');
+        $('#stripe').removeClass('active-stripe');
+    });
+    $('#stripe').click(function() {
+        $('#payment_method').val('stripe');
+        $('#payment_desc').text('Use stripe if you want to pay using credit/debit card, Google Pay/Apple Pay or many other payment methods like Polish Blik or German giropay.');
+        $('#stripe').addClass('active-stripe');
+        $('#paypal').removeClass('active-paypal');
+    });
+    // defaults to paypal
+    $('#paypal').click();
+
+
+</script>
+
+{% endblock %}
