@@ -19,7 +19,7 @@
                     you'll get some awesome perks!
                 </p>
                 <a class="bg-hsl-50 px-6 pt-3 pb-2.5 text-xl font-light rounded-full mt-3
-                    hover:bg-hsl-40 transition duration-200" href="#purchase">purchase</a>
+                    hover:bg-hsl-40 transition duration-200" href="#purchase" id="scroll-down">purchase</a>
             </div>
         </div>
     </section>
@@ -411,7 +411,6 @@
                 if (value < 4) { d = 0}
                 else if (value > 12) { d = 45 }
                 else { d = value*3.0 }
-
                 // Product Price: 3 USD
                 // Discount = d (percentage)
                 // Calculate price and discount, round it to 2 decimals
@@ -423,7 +422,7 @@
                 } else {ppm = "3 USD"}
 
                 value = Math.ceil(value);
-                $('months_val').val(value);
+                document.getElementById('months_val').value = value;
                 return `
                     <div class="flex flex-col mx-0 md:mx-5 text-white font-medium tooltip_text">
                         <span class="font-bold text-sm md:text-base">Total: ${Math.round((price + Number.EPSILON) * 100) / 100} USD</span>
@@ -529,6 +528,12 @@
     // defaults to paypal
     $('#paypal').click();
 
+
+    $("#scroll-down").click(function() {
+        $('html, body').animate({
+            scrollTop: $("#purchase").offset().top
+        }, 2000);
+    });
 
 </script>
 
