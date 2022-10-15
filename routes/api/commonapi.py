@@ -1,12 +1,16 @@
+from collections import OrderedDict
 import datetime as dt
 import math
 import os
+import stripe
+import stripe.error
 from pathlib import Path
 
 from quart import Blueprint
 from quart import request
 from quart import send_file
 from quart import session
+import json
 
 import app.state
 import app.settings
@@ -209,3 +213,162 @@ async def carddata():
 
 
     return {'success': True, 'data': user}, 200
+
+
+ENDPOINT_SECRET = 'whsec_8d5cba9bc2b4182e2a858b7c2b88b661c5d50e79aef447de0c71e1e31e76b850'
+stripe.api_key = 'sk_test_51LnJv1EUCKjdFhXKGsjNwfLBIEd9kS5rKLaazxjKXLkEUQjrovtHh1ZdYkePFeDc50J0mQV1bEwMwIGRET7FVHmi00rvA4e22R'
+# Create webhook for stripe payment callbacks
+@commonapi.route('/stripe_webhook', methods=['GET', 'POST'])
+async def stripe_webhook():
+    # Get raw data
+    payload = await request.data
+    data = json.loads(payload, object_pairs_hook=OrderedDict)
+    event: stripe.Event = stripe.Event.construct_from(data, stripe.api_key)
+
+    # Since I'm fucking dumb and I can't figure out how to verify signatures
+    # Make an API request to stripe to verify the event
+    try:
+        event_api = stripe.Event.retrieve(event.id)
+    except stripe.error.InvalidRequestError as e:
+        return {"success": False, "error": "Invalid event id"}, 400
+    except Exception as e:
+        print(e)
+        return {"success": False, "error": "Unknown error"}, 400
+
+    del event_api # We don't need this anymore
+
+    p_session: stripe.checkout.Session = event['data']['object']
+    if event['type'] == 'checkout.session.completed':
+
+        # Save an order in your database, marked as 'awaiting payment'
+        await stripe_create_order(p_session)
+        # Check if the order is already paid (for example, from a card payment)
+        #
+        # A delayed notification payment will have an `unpaid` status, as
+        # you're still waiting for funds to be transferred from the customer's
+        # account.
+        if p_session.payment_status == "paid":
+            # Fulfill the purchase
+            await stripe_fulfill_order(p_session)
+
+    elif event['type'] == 'checkout.session.async_payment_succeeded':
+
+        # Fulfill the purchase
+        stripe_fulfill_order(session)
+
+    elif event['type'] == 'checkout.session.async_payment_failed':
+
+        # Send an email to the customer asking them to retry their order
+        stripe_email_customer(session, 'failed')
+
+
+
+
+
+    # Passed signature verification
+    return {'success': True}, 200
+
+async def stripe_create_order(p_session: stripe.checkout.Session) -> bool:
+    now = int(dt.datetime.utcnow().timestamp())
+
+    # Check if order already exists
+    if await app.state.services.database.fetch_one(
+        "SELECT * FROM orders WHERE gateway_identifier = :payment_id",
+        {'payment_id': p_session.id}
+    ):
+        await app.state.services.database.execute(
+            "UPDATE orders SET "
+            "payment_status = :status, last_update = :last_update "
+            "WHERE payment_id = :payment_id",
+            {
+                'status': p_session.payment_status,
+                'last_update': now,
+                'payment_id': p_session.payment_intent
+            }
+        )
+    # Else, create order in database
+    else:
+        metadata = {
+            'currency': p_session.currency,
+            'buyer_email': p_session.customer_details['email'],
+            'exact_payment_method': p_session.payment_method_types[0],
+        }
+        await app.state.services.database.execute(
+            "INSERT INTO orders "
+            "(gateway, gateway_identifier, payment_status, metadata, buyer_id, "
+            "bought_for, total, months, created_at, last_update) "
+            "VALUES ('stripe', :p_id, :p_status, :metadata, :buyer_id, "
+            ":bought_for, :total, :months, :created_at, :last_update)",
+            {
+                'p_id': p_session.payment_intent,
+                'p_status': p_session.payment_status,
+                'metadata': json.dumps(metadata),
+                'buyer_id': p_session.metadata['bought_by'],
+                'bought_for': p_session.metadata['bought_for'],
+                'total': p_session.amount_total,
+                'months': p_session.metadata['months'],
+                'created_at': now,
+                'last_update': now,
+            }
+        )
+
+    return True
+
+async def stripe_fulfill_order(p_session: dict) -> bool:
+    now = int(dt.datetime.utcnow().timestamp())
+    # Check if order exists
+    order = await app.state.services.database.fetch_one(
+        "SELECT * FROM orders WHERE gateway_identifier = :payment_id",
+        {'payment_id': p_session.id}
+    )
+    if not order:
+        # There's no order but order is paid, log this into errorlog.txt
+        with open('errorlog.txt', 'a') as f:
+            f.write(f'[{dt.datetime.utcnow()}] No order found for payment {p_session.payment_intent} (stripe)')
+        # Create order in database
+        await stripe_create_order(p_session)
+
+    # Check if traget user already has a supporter,
+    # if yes, add months to it
+    # if no, dt.datetime.utcnow() + dt.timedelta(days=30 * months)
+
+    t = await app.state.services.database.fetch_one(
+        "SELECT id, priv, donor_end FROM users WHERE id = :id",
+        {'user_id': order['bought_for']}
+    )
+
+    if t['priv'] & Privileges.SUPPORTER and not t['donor_end'] < now:
+        # Add months to current supporter
+        await app.state.services.database.execute(
+            "UPDATE users SET donor_end = donor_end + :months WHERE id = :id",
+            {'months': order['months'], 'id': order['bought_for']}
+        )
+    else:
+        # Create new supporter
+        await app.state.services.database.execute(
+            "UPDATE users SET priv = priv | :priv, donor_end = :end WHERE id = :id",
+            {
+                'priv': Privileges.SUPPORTER,
+                'end': now + dt.timedelta(days=30 * order['months']),
+                'id': order['bought_for']
+            }
+        )
+
+    # Update order status
+    await app.state.services.database.execute(
+        "UPDATE orders SET payment_status = :status, last_update = :last_update "
+        "WHERE payment_id = :payment_id",
+        {
+            'status': p_session.payment_status,
+            'last_update': now,
+            'payment_id': p_session.payment_intent
+        }
+    )
+
+
+
+
+def email_customer_about_failed_payment(session):
+    # TODO: fill me in
+    # Three states, paid, unpaid, and failed
+    print("Emailing customer")

@@ -3,6 +3,7 @@ import datetime as dt
 import timeago
 import hashlib
 from quart import session
+from app.constants.privileges import Privileges
 
 import app.state
 import app.settings
@@ -13,10 +14,7 @@ async def make_session(user:dict) -> None:
     Use only when target user is authenticated!"""
     session['authenticated'] = True
     session['user'] = user
-    if int(user['priv']) & 1:
-        session['restricted'] = False
-    else:
-        session['restricted'] = True
+    session['restricted'] = True if user['priv'] & 1 else False
     session.permanent = True
 
 async def validate_password(pwd_db: str, pwd_str: str) -> bool:
@@ -55,3 +53,7 @@ async def validate_captcha(data: str) -> bool:
         res = await resp.json()
 
         return res['success']
+
+def userViewPerms(priv: int, tpriv: int, pid: int, tid:int) -> bool:
+    pass
+
