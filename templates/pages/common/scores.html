@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block title %}Score{% endblock %}
+
+{% block content %}
+
+{% if error %}
+
+    <h1 class="bg-red-500 p-2 w-full text-center">Error: {{ error }}</h1>
+
+{% else %}
+
+    <h1>{{ score }}</h1>
+    <h1>{{ map }}</h1>
+    <h1>{{ user }}</h1>
+
+    <h1>{{ score['mode'] }}</h1>
+
+{% endif %}
+
+{% endblock %}
+
+{% block bottom %}
+<script>
+    console.log("{{ user }}");
+</script>
+{% endblock %}

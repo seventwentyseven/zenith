@@ -3,6 +3,7 @@ import bcrypt
 import datetime as dt
 import hashlib
 import os
+import stripe
 from pathlib import Path
 
 from quart import Blueprint
@@ -20,6 +21,8 @@ from zenith.utils import validate_password, validate_captcha
 
 import app.state
 import app.settings
+from app.constants.mods import Mods
+from app.constants.gamemodes import GameMode
 
 common = Blueprint('common', __name__)
 
@@ -182,19 +185,68 @@ async def login_2fa():
 #! grafika dzifors code
 
 
-@common.route('/scores/<scoreid>', methods=['GET'])
-async def scores(scoreid):
-    data = await app.state.services.database.fetch_one(
-        "SELECT * "
-        "FROM scores "
-        "WHERE id = :id",
-        {'id': scoreid}
+# @common.route('/scores/<scoreid>', methods=['GET'])
+# async def scores(scoreid):
+#     data = await app.state.services.database.fetch_one(
+#         "SELECT * "
+#         "FROM scores "
+#         "WHERE id = :id",
+#         {'id': scoreid}
+#     )
+#     if not data:
+#         await flash('Score not found!', 'error')
+#     else:
+#         data = dict(data)
+#     return await render_template('/pages/common/scores.html', scoreid=scoreid)
+
+@common.route('/score/<id>')
+async def scores(id: int = None):
+    # Get user and check priv
+    s = await app.state.services.database.fetch_one(
+        "SELECT id, map_md5, score, pp, acc, max_combo, mods, n300, n100, n50, "
+        "nmiss, ngeki, nkatu, grade, status, mode,  userid, play_time, online_checksum "
+        "FROM scores WHERE id=:id",
+        {"id": id}
     )
-    if not data:
-        await flash('Score not found!', 'error')
+    if not s:
+        return await render_template('/pages/common/scores.html', scoreid=id, error="Score not found!")
+    s = dict(s)
+    u = await app.state.services.database.fetch_one(
+        "SELECT id, name, priv FROM users WHERE id=:id",
+        {"id": s['userid']}
+    )
+    if not u:
+        return await render_template('/pages/common/scores.html', scoreid=id, error="Database error, user not found, report this to developers.")
+    u = dict(u)
+    if not u['priv'] & 1:
+        if ('authenticated' not in session and not session['user_data']['is_staff']
+                and u['id'] != session['user_data']['id']):
+            return await render_template('/pages/common/scores.html', scoreid=id, error="Score not found!")
+
+    m = await app.state.services.database.fetch_one(
+        "SELECT id, set_id, artist, title, version, creator, diff "
+        "FROM maps WHERE md5=:md5",
+        {"md5": s['map_md5']}
+    )
+    if not m:
+        return await render_template('/pages/common/scores.html', scoreid=id, error="Database error, map not found, report this to developers.")
+    m = dict(m)
+
+    # * Format stuff
+    s['score'] = f"{s['score']:,}"
+    s['pp'] = round(s['pp'], 2)
+    s['acc'] = round(s['acc'], 2)
+    s['mode'] = GameMode(s['mode']).gulag_int_conv
+    m['diff'] = round(m['diff'], 2)
+    m['diff_color'] = '#FF00FF'   # utils.getDiffColor(m['diff'])
+    if s['mods'] != 0:
+        s['mods'] = f"+{Mods(s['mods'])!r}"
+        if "DT" in s['mods'] and "NC" in s['mods']:
+            s['mods'] = s['mods'].replace("DT", "")
     else:
-        data = dict(data)
-    return await render_template('/pages/common/scores.html', scoreid=scoreid)
+        s['mods'] = "No Mods"
+
+    return await render_template('/pages/common/scores.html', user=u, map=m, score=s)
 
 
 @common.route('/leaderboard', methods=['GET'])
@@ -212,12 +264,15 @@ async def leaderboard():
 async def testcolors():
     return await render_template('/pages/common/testcolors.html')
 
+
 @common.route('/donate', methods=['GET'])
 async def donate():
     if 'authenticated' not in session:
         await flash('You must be logged in to access this page!', 'error')
         return redirect(url_for('common.home'))
     return await render_template('/pages/common/donate.html')
+
+
 @common.route('/donate/checkout', methods=['POST'])
 async def donate_checkout():
     if 'authenticated' not in session:
@@ -225,8 +280,87 @@ async def donate_checkout():
         return redirect(url_for('common.home'))
     # Get form data and print it
     data = await request.form
-    print(data)
-    return redirect(url_for('common.donate'))
+    username = data.get('username', type=str)
+    months = data.get('months', type=int)
+    payment_method = data.get('payment_method', type=str)
+
+    if not username or username == '':
+        username = session['user']['name']
+    if not months or months < 1 or months > 24:
+        await flash('Missing data, please fill out form again!', 'error')
+        return redirect(url_for('common.donate'))
+    if not payment_method or payment_method not in ('paypal', 'stripe'):
+        await flash('Missing data, please fill out form again!', 'error')
+        return redirect(url_for('common.donate'))
+
+    # Check if user exists
+    if username == '':
+        username = session['user']['name']
+    user = await app.state.services.database.fetch_one(
+        "SELECT id, name, country FROM users WHERE name = :username",
+        {'username': username}
+    )
+    if not user:
+        await flash('User not found!', 'error')
+        return redirect(url_for('common.donate'))
+    user = dict(user)
+
+    # Calculate price and discount
+    SUPPORTER_PRICE = 3.00
+    DISCOUNT = 3.00  # Percent per month
+    if months < 4:
+        d = 0
+    elif months > 12:
+        d = 42
+    else:
+        d = months*DISCOUNT
+
+    total = SUPPORTER_PRICE*(months - (months * (d/100)))
+    total_d = "{:.2f}".format(total)  # Add decimal zeroes if needed
+
+    if payment_method == 'paypal':
+        pass
+    else:
+        stripe.api_key = 'sk_test_51LnJv1EUCKjdFhXKGsjNwfLBIEd9kS5rKLaazxjKXLkEUQjrovtHh1ZdYkePFeDc50J0mQV1bEwMwIGRET7FVHmi00rvA4e22R'
+        app.settings.DOMAIN
+        # Create payment intent and then create checkout session using it
+        checkout_session = stripe.checkout.Session.create(
+            # Create custom product
+            currency='usd',
+            mode='payment',
+            success_url=f'https://{app.settings.DOMAIN}/donate/checkout/success',
+            cancel_url=f'https://{app.settings.DOMAIN}/donate/checkout/cancel',
+            automatic_tax={'enabled': True},
+            # In line_items, create new product, with cost of total USD
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': f'Supporter Tag',
+                            'description': f'Supporter Tag for {months} {"month" if months == 1 else "months"} for {user["name"]}',
+                        },
+                        'unit_amount': int(total*100),
+                        'tax_behavior': 'exclusive',
+                    },
+                    'quantity': 1,
+                },
+            ],
+            metadata={
+                'bought_for': user['id'],
+                'bought_by': session['user']['id'],
+                'months': months,
+            },
+            payment_intent_data={
+                "metadata": {
+                    'bought_for': user['id'],
+                    'bought_by': session['user']['id'],
+                    'months': months,
+                }
+            },
+        )
+
+    return redirect(checkout_session.url, code=303)
 
 
 @common.route('/banners/<uid>')
