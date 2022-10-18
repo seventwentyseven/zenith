@@ -7,17 +7,16 @@ from datadog_api_client.v1.api.metrics_api import MetricsApi
 from datadog_api_client.v1.model.point import Point
 
 import app.state
+import app.settings
 from app.utils import log, Ansi
 
 CACHE = app.state.web.cache['data']
 
 __all__ = ("init_web_housekeeping_tasks", "Cache")
 
-async def init_web_housekeeping_tasks() -> None:
+async def init_web_housekeeping_tasks(loop: asyncio.AbstractEventLoop) -> None:
     """Create tasks for each website housekeeping tasks."""
     log("Initializing website housekeeping tasks.", Ansi.LCYAN)
-
-    loop = asyncio.get_running_loop()
 
     app.state.sessions.housekeeping_tasks.update(
         {
@@ -69,14 +68,15 @@ async def _update_home_cache(interval:int) -> None:
     """
     while True:
         recent_ranked = await app.state.services.database.fetch_all(
-            "SELECT r.userid, r.setid, r.status, "
-            "r.date, m.title, m.artist, u.name, m.mode "
+            "SELECT r.userid, r.setid, r.new_status, r.date, "
+            "m.title, m.artist, u.name, m.mode "
             "FROM recent_ranked r "
             "LEFT JOIN maps m ON r.setid = m.set_id "
             "LEFT JOIN users u ON r.userid = u.id "
-            "WHERE r.status = 2 OR r.status = 5 "
-            "ORDER BY r.date DESC LIMIT 3"
+            "WHERE r.new_status = 2 OR r.new_status = 5 "
+            "GROUP BY r.setid ORDER BY r.date DESC LIMIT 3"
         )
+        print(dict(recent_ranked[0]))
 
         most_played_24h = await app.state.services.database.fetch_all(
             "SELECT m.id, m.set_id, m.title, m.artist, "
@@ -111,9 +111,9 @@ async def _users_online(interval:int) -> None:
     # Define configuration and set it's values, due to
     # how shitty the API is, it's made like that, sorry! :c
     dd_config = Configuration()
-    dd_config.host = config.DD_API_HOST
-    dd_config.api_key['apiKeyAuth'] = config.DD_API_KEY
-    dd_config.api_key['appKeyAuth'] = config.DD_APP_KEY
+    # dd_config.host = app.settings.DATADOG_API_HOST
+    dd_config.api_key['apiKeyAuth'] = str(app.settings.DATADOG_API_KEY)
+    dd_config.api_key['appKeyAuth'] = str(app.settings.DATADOG_APP_KEY)
 
     # Create a new client and create api instance
     with ApiClient(dd_config) as api_client:
@@ -136,3 +136,5 @@ async def _users_online(interval:int) -> None:
 
         # Sleep for interval
         await asyncio.sleep(interval)
+
+
