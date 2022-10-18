@@ -211,7 +211,7 @@
                             <p class="text-sm mt-1 text-gray-300">
                                 Ranked by
                                 <a href="/u/${el.userid}"><span class="text-hsl-90 hover:text-hsl-80 transition duration-200">${el.name}, </span></a>
-                                <span class="text-sm text-white">${timeago.format(new Date(el.date))}</span>
+                                <span class="text-sm text-white">${timeago.format(new Date(el.date+"000"))}</span>
                             </p>
                         </a>
                     </div>
@@ -234,7 +234,7 @@
                         </div>
                     </a>
                     <a href="/article/${el.id}" class="flex flex-col">
-                        <img class="my-4" src="${el.thumbnail_url}">
+                        <img class="my-4" src="${el.thumb_img}">
                         <h1 class="text-2xl font-semibold mb-3 mx-4">${el.title}</h1>
                         <p class="text-gray-300 mb-4 mx-4">
                             ${el.content}
