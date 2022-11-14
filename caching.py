@@ -14,6 +14,7 @@ CACHE = app.state.web.cache['data']
 
 __all__ = ("init_web_housekeeping_tasks", "Cache")
 
+
 async def init_web_housekeeping_tasks(loop: asyncio.AbstractEventLoop) -> None:
     """Create tasks for each website housekeeping tasks."""
     log("Initializing website housekeeping tasks.", Ansi.LCYAN)
@@ -28,14 +29,16 @@ async def init_web_housekeeping_tasks(loop: asyncio.AbstractEventLoop) -> None:
         },
     )
 
+
 class Cache:
     """
     Chaching tools and utils
     """
+
     def __init__(self) -> None:
         self = CACHE
 
-    def set(key:str, value: Any, ttl: int) -> None:
+    def set(key: str, value: Any, ttl: int) -> None:
         """
         Set value in cache
          Parameters:
@@ -46,14 +49,14 @@ class Cache:
         ttl = dt.datetime.utcnow() + dt.timedelta(minutes=ttl)
         CACHE[key] = (value, ttl)
 
-    def get(key:str) -> Any:
+    def get(key: str) -> Any:
         """
         Get value from cache
         """
         if key in CACHE:
             return CACHE[key][0]
 
-    def delete(self, key:str) -> None:
+    def delete(self, key: str) -> None:
         """
         Delete value from cache
         """
@@ -61,11 +64,14 @@ class Cache:
             del CACHE[key]
 
 
-
-async def _update_home_cache(interval:int) -> None:
+async def _update_home_cache(interval: int) -> None:
     """
     Update the home cache
     """
+    # TODO1: For recent rankeds & recent plays, loop through it
+    # and get their mode, set displayed mode to the mode that most
+    # maps are in, if there's a tie, set it to
+    # std > mania > taiko > ctb
     while True:
         recent_ranked = await app.state.services.database.fetch_all(
             "SELECT r.userid, r.setid, r.new_status, r.date, "
@@ -76,7 +82,6 @@ async def _update_home_cache(interval:int) -> None:
             "WHERE r.new_status = 2 OR r.new_status = 5 "
             "GROUP BY r.setid ORDER BY r.date DESC LIMIT 3"
         )
-        print(dict(recent_ranked[0]))
 
         most_played_24h = await app.state.services.database.fetch_all(
             "SELECT m.id, m.set_id, m.title, m.artist, "
@@ -92,9 +97,15 @@ async def _update_home_cache(interval:int) -> None:
             "ORDER BY date_posted DESC LIMIT 8"
         )
 
+        last_user = await app.state.services.database.fetch_one(
+            "SELECT id, name, creation_time FROM users "
+            "WHERE priv & 1 = 1 ORDER BY id DESC LIMIT 1"
+        )
+
         articles = [dict(article) for article in articles]
         most_played_24h = [dict(played) for played in most_played_24h]
         recent_ranked = [dict(ranked) for ranked in recent_ranked]
+        last_user = dict(last_user)
 
         # Truncate the articles to the 300 character limit
         for article in articles:
@@ -103,11 +114,13 @@ async def _update_home_cache(interval:int) -> None:
         Cache.set("articles", articles, interval)
         Cache.set("most_played_24h", most_played_24h, interval)
         Cache.set("recent_ranked", recent_ranked, interval)
+        Cache.set("last_user", last_user, interval)
 
         # Sleep for interval
         await asyncio.sleep(interval)
 
-async def _users_online(interval:int) -> None:
+
+async def _users_online(interval: int) -> None:
     # Define configuration and set it's values, due to
     # how shitty the API is, it's made like that, sorry! :c
     dd_config = Configuration()
@@ -120,11 +133,12 @@ async def _users_online(interval:int) -> None:
         dd_client = MetricsApi(api_client)
 
         res = dd_client.query_metrics(
-            _from=int((dt.datetime.utcnow() - dt.timedelta(days=1)).timestamp()), #TD - 1 day
-            to=int(dt.datetime.utcnow().timestamp()), # Timestamp for now
+            _from=int((dt.datetime.utcnow() - dt.timedelta(days=1)
+                       ).timestamp()),  # TD - 1 day
+            to=int(dt.datetime.utcnow().timestamp()),  # Timestamp for now
             query="max:bancho.online_players{*}.rollup(max, 5)",
         )
-        res = res['series'][0]['pointlist'] # Why is it so fucked?
+        res = res['series'][0]['pointlist']  # Why is it so fucked?
 
         # Process response data
         data = []
@@ -136,5 +150,3 @@ async def _users_online(interval:int) -> None:
 
         # Sleep for interval
         await asyncio.sleep(interval)
-
-
