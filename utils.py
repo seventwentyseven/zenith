@@ -17,7 +17,7 @@ async def make_session(user:dict) -> None:
     Use only when target user is authenticated!"""
     session['authenticated'] = True
     session['user'] = user
-    session['restricted'] = True if user['priv'] & 1 else False
+    session['restricted'] = True if not user['priv'] & 1 else False
     session.permanent = True
 
 async def validate_password(pwd_db: str, pwd_str: str) -> bool:
