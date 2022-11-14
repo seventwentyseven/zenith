@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Home{% endblock %}
 {% block head %}
+<script type="text/babel" src="/public/js/home.jsx"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.33.2/apexcharts.min.js" integrity="sha512-iBEfFld2z1SAXCPmgoA40VQtqGP0cEJw4fy+t3ARW30uEfzf8hyrmm4mc5qdth3wZRPdKTv/auk5WH52klRVDg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/public/js/privileges.js"></script>
 {% endblock %}
 {% block content %}
 <div class="flex flex-col max-w-screen-xl mx-auto">
@@ -37,6 +39,7 @@
             </div>
         </div>
         <!-- Second block -->
+        <!--TODO: Change it to something better -->
         <div class="hidden lg:flex w-full lg:w-3/5 bg-hsl-20 rounded-lg h-full ml-4">
             <div class="p-4 flex flex-col h-full w-full">
                 <div class="mt-2 grid grid-cols-2 grid-rows-2 gap-3 w-full h-full text-xl font-semibold text-hsl-85">
@@ -51,200 +54,9 @@
             </div>
         </div>
     </div>
-    <div class="mt-4 flex flex-col lg:flex-row h-fit">
-        <div class="w-full lg:w-7/12 xl:w-8/12 h-full flex flex-col" id="articles"></div>
-
-        <div class="w-full lg:w-5/12 xl:w-4/12 h-full lg:ml-4">
-            <!--* Right Panel *-->
-            <!-- Online -->
-            <div class="w-full bg-hsl-20 h-28 rounded-lg mb-4">
-                <div class="flex flex-col h-full">
-                    <span class="text-lg font-medium text-hsl-90 pt-3 px-3"><i class="fas fa-users mr-2"></i>Online Users</span>
-                    <div class="w-full h-auto mt-auto rounded-b-lg mb-px" id="chart-users-online"></div>
-                </div>
-            </div>
-            <!-- Last Registered -->
-            <div class="w-full bg-hsl-20 h-auto rounded-lg mb-4"
-                 style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)),
-                 url(https://i.imgur.com/TBHkkIP.jpg) !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
-                <div class="p-3 flex flex-col">
-                    <span class="text-lg font-medium text-hsl-90"><i class="fas fa-user mr-2"></i>Last Registered</span>
-                    <a class="flex flex-row mt-2 items-center" href="/u/{{ data.last_user.id }}">
-                        <img src="https://a.seventwentyseven.xyz/{{ data.last_user.id }}" class="h-11 w-11 rounded">
-                        <div class="flex flex-col ml-4">
-                            <span class="text-hsl-90 font-medium hover:text-hsl-80 transition duration-200">{{ data.last_user.name }}</span>
-                            <span class="text-hsl-90 font-medium" id="last_user-date"></span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <!-- Most Played 24h -->
-            <div class="w-full bg-hsl-20 rounded-lg p-4 mb-4" id="most-played">
-                <span class="text-lg font-medium text-hsl-90"><i class="fas fa-trophy mr-2"></i>Most Played Today</span>
-            </div>
-            <!-- Recent Ranked -->
-            <div class="w-full bg-hsl-20 rounded-lg p-4" id="recent-ranked">
-                <span class="text-lg font-medium text-hsl-90"><i class="fas fa-trophy mr-2"></i>Recently Ranked</span>
-            </div>
-        </div>
+    <div class="" id="root">
     </div>
 </div>
 {% endblock %}
 
-{% block bottom %}
-<script>
-    function mode2str(mode) {
-        switch (mode) {
-            case 0:
-                return "osu";
-            case 1:
-                return "taiko";
-            case 2:
-                return "catch";
-            case 3:
-                return "mania";
-            default:
-                return "osu";
-        }
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-    // Fetch data from /webapi/online_data
-        $.getJSON("/webapi/online_data/", function (r) {
-            console.log(r.data[26])
-            dates_array = [];
-            online_array = [];
-            for (el of r.data) {
-                dates_array.push(new Date(el[0]).toTimeString().split(' ')[0].slice(0, -3));
-                online_array.push(el[1]);
-            }
-            window.ApexCharts && (new ApexCharts(document.getElementById('chart-users-online'), {
-                chart: {
-                    type: "area",
-                    fontFamily: 'inherit',
-                    height: 50.0,
-                    sparkline: {
-                        enabled: true
-                    },
-                    animations: {
-                        enabled: false
-                    },
-                },
-                tooltip: {
-                    theme: "dark",
-                },
-                dataLabels: {
-                    enabled: false,
-                },
-                fill: {
-                    opacity: .16,
-                    type: 'solid'
-                },
-                stroke: {
-                    width: 2,
-                    lineCap: "round",
-                    curve: "smooth",
-                },
-                series: [{
-                    name: "Users Online",
-                    data: online_array
-                }],
-                grid: {
-                    strokeDashArray: 4,
-                },
-                xaxis: {
-                    labels: {
-                        padding: 0,
-                    },
-                    tooltip: {
-                        enabled: false
-                    },
-                    axisBorder: {
-                        show: false,
-                    },
-                    //type: 'time',
-                },
-                yaxis: {
-                    labels: {
-                        padding: 4
-                    },
-                },
-                labels: dates_array,
-                colors: ["#5c70d6"],
-                legend: {
-                    show: false,
-                },
-            })).render();
-        })
-    });
-    // Get data from api with jquery
-    last_reg = timeago.format(Number('{{ data.last_user.creation_time }}')*1000)
-    console.log(last_reg)
-    $('#last_user-date').text(last_reg)
-    $.getJSON("/webapi/home/", function(data) {
-        console.log(data)
-        // Put most played in place
-        for (el of data.most_played_24h) {
-            $('#most-played').append(`
-                <div class="w-full bg-hsl-20 h-24 rounded-lg my-2 flex items-center"
-                    style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)),
-                    url(https://assets.ppy.sh/beatmaps/${el.set_id}/covers/card.jpg) !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
-                    <a class="p-3 flex flex-col" href="/b/${el.id}">
-                        <p class="mt-1">
-                            <i class="mode-icon ${mode2str(el.mode)} mr-0.5"></i>
-                            ${el.artist} - ${el.title} [${el.version}]
-                        </p>
-                        <span class="text-hsl-90 text-sm mt-1">Played ${el.plays} times</span>
-                    </a>
-                </div>
-            `)
-        }
-        // Put recent ranked in place
-        for (el of data.recent_ranked) {
-            $('#recent-ranked').append(`
-                <div class="w-full bg-hsl-20 h-24 rounded-lg my-2 flex items-center" style="background: linear-gradient(hsla(var(--main), 15%, 15%, 0.75), hsla(var(--main), 15%, 15%, 0.75)), url('https://assets.ppy.sh/beatmaps/${el.setid}/covers/cover.jpg') !important; background-repeat: no-repeat !important; background-size: cover !important; background-position: center !important;">
-                    <div class="p-3 flex flex-col my-2">
-                        <a href="/s/${el.setid}" class="transform duration-200">
-                            <p>
-                                <i class="mode-icon ${mode2str(el.mode)}"></i>
-                                ${el.artist} - ${el.title}
-                            </p>
-                            <p class="text-sm mt-1 text-gray-300">
-                                Ranked by
-                                <a href="/u/${el.userid}"><span class="text-hsl-90 hover:text-hsl-80 transition duration-200">${el.name}, </span></a>
-                                <span class="text-sm text-white">${timeago.format(new Date(el.date))}</span>
-                            </p>
-                        </a>
-                    </div>
-                </div>
-            `)
-        }
-        // Put articles in place
-        for (el of data.articles) {
-            $('#articles').append(
-                `<div class="bg-hsl-20 rounded-lg w-full h-auto flex flex-col mb-4">
-                    <!-- Article Header -->
-                    <a class="flex items-center pt-3 px-3" href="/u/${el.author}">
-                        <img src="https://a.seventwentyseven.xyz/${el.author}" class="h-12 w-12 rounded-full mr-3">
-                        <div class="flex flex-col text-gray-300">
-                            <p>by <span class="text-hsl-90 font-medium hover:text-hsl-80 transition duration-200">${el.author_name}</span></p>
-                            <p>${timeago.format(new Date(el.date_posted))}</p>
-                        </div>
-                        <div class="ml-auto flex text-lg text-hsl-90">
-                            <h2 class="text-lg">Put something here</h2>
-                        </div>
-                    </a>
-                    <a href="/article/${el.id}" class="flex flex-col">
-                        <img class="my-4" src="${el.thumb_img}">
-                        <h1 class="text-2xl font-semibold mb-3 mx-4">${el.title}</h1>
-                        <p class="text-gray-300 mb-4 mx-4">
-                            ${el.content}
-                            <br/>
-                            <span class="text-hsl-90 hover:text-hsl-80 transition duration-200">Read More...</span>
-                        </p>
-                    </a>
-                </div>`
-            )
-        }
-    });
-</script>
-{% endblock %}
+{% block bottom %}{% endblock %}

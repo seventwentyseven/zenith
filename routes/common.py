@@ -371,3 +371,8 @@ async def get_banner(uid: int):
             return await send_file(f'{BANNERS_PATH}/{uid}.{ext}')
     else:
         return {'success': False, 'message': 'This user does not have a banner.'}
+
+@common.route('/test2')
+async def test2():
+    return await render_template('/pages/common/test2.html')
+

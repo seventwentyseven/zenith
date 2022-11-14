@@ -2,6 +2,7 @@ from collections import OrderedDict
 import datetime as dt
 import math
 import os
+from soupsieve import select
 import stripe
 import stripe.error
 from pathlib import Path
@@ -25,6 +26,7 @@ commonapi = Blueprint('commonapi', __name__)
 
 BANNERS_PATH = Path.cwd() / '.data/banners'
 
+
 @commonapi.route('/', methods=['GET'])
 async def index():
     print(app.state.web.cache)
@@ -38,6 +40,7 @@ async def home():
         "articles": Cache.get('articles'),
         "recent_ranked": Cache.get('recent_ranked'),
         "most_played_24h": Cache.get('most_played_24h'),
+        "last_user": Cache.get('last_user'),
     }, 200
 
 # Route for getting point data for online users graph (last 24h)
@@ -97,8 +100,8 @@ async def leaderboard():
     sort = f"s.{_type}"
     # Get actual leaderboard data
     lb = await app.state.services.database.fetch_all(
-        "SELECT u.id, u.name, u.country, s.pp, "
-        "s.acc, s.max_combo, s.plays, c.tag, u.clan_id "
+        "SELECT u.id, u.name, u.country, s.pp, s.acc, "
+        "s.max_combo, s.plays, s.rscore, c.tag, u.clan_id "
         "FROM users u "
         "LEFT JOIN stats s ON u.id=s.id "
         "LEFT JOIN clans c ON u.clan_id=c.id "
@@ -168,9 +171,10 @@ async def no1lb():
     # Check if image exists at /banners
     return {"success": True, "userid": res, 'image': imageExists}, 200
 
+
 @commonapi.route('/card_data', methods=['GET'])
 async def carddata():
-    #NOTE: No badges here, they should be implemented user side :trollface:
+    # NOTE: No badges here, they should be implemented user side :trollface:
     #      Work them out using priv value
 
     # Get arguments
@@ -183,9 +187,11 @@ async def carddata():
 
     # Get user
     user = await app.state.services.database.fetch_one(
-        "SELECT u.id, u.name, u.priv, u.country, "
-        "u.latest_activity, c.tag "
-        "FROM users u LEFT JOIN clans c ON u.clan_id=c.id "
+        "SELECT u.id, u.name, u.priv, u.country, u.creation_time, "
+        "u.latest_activity, c.tag, s.card_theme "
+        "FROM users u "
+        "LEFT JOIN clans c ON u.clan_id=c.id "
+        "LEFT JOIN customs s ON u.id=s.userid "
         "WHERE u.name = :name OR u.id = :uid",
         {'name': name, 'uid': uid}
     )
@@ -194,12 +200,15 @@ async def carddata():
         return {"success": False, "error": "User not found"}, 200
     else:
         user = dict(user)
-        # TODO: Check if requester is staff, if so allow to see hidden users
-        # TODO2: Check if user has 'Privileges.HIDDEN', if so also return not found
-        if not user['priv'] & Privileges.UNRESTRICTED:
+        a_priv = session['user']['priv'] if 'user' in session else 0
+
+        # Don't show hidden users to non-staff members
+        if not user['priv'] & Privileges.UNRESTRICTED and not a_priv & Privileges.STAFF:
+            return {"success": False, "error": "User not found"}, 200
+        elif (user['priv'] & Privileges.HIDDEN and not a_priv & Privileges.STAFF):
             return {"success": False, "error": "User not found"}, 200
 
-        # Get user online status from app.state.players
+        # Get user online status from app.state
         p = await app.state.sessions.players.from_cache_or_sql(id=user['id'])
         user['online'] = p.online if p is not None else False
 
@@ -211,13 +220,27 @@ async def carddata():
     else:
         user['has_banner'] = False
 
+    # Check if requester is friend with user
+    if 'user' in session:
+        user['is_friend'] = True if await app.state.services.database.fetch_val(
+            "SELECT 1 FROM relationships WHERE "
+            "user1 = :user1 AND user2 = :user2 AND type='friend'",
+            {'user1': session['user']['id'], 'user2': user['id']}
+        ) else False
+        user['self'] = True if session['user']['id'] == user['id'] else False
+    else:
+        user['is_friend'] = False
+        user['self'] = False
 
     return {'success': True, 'data': user}, 200
 
 
+# Both are test keys, you can do nothing with them, it's safe to put them here (kinda)
 ENDPOINT_SECRET = 'whsec_8d5cba9bc2b4182e2a858b7c2b88b661c5d50e79aef447de0c71e1e31e76b850'
 stripe.api_key = 'sk_test_51LnJv1EUCKjdFhXKGsjNwfLBIEd9kS5rKLaazxjKXLkEUQjrovtHh1ZdYkePFeDc50J0mQV1bEwMwIGRET7FVHmi00rvA4e22R'
 # Create webhook for stripe payment callbacks
+
+
 @commonapi.route('/stripe_webhook', methods=['GET', 'POST'])
 async def stripe_webhook():
     # Get raw data
@@ -235,7 +258,7 @@ async def stripe_webhook():
         print(e)
         return {"success": False, "error": "Unknown error"}, 400
 
-    del event_api # We don't need this anymore
+    del event_api  # We don't need this anymore
 
     p_session: stripe.checkout.Session = event['data']['object']
     if event['type'] == 'checkout.session.completed':
@@ -260,7 +283,6 @@ async def stripe_webhook():
 
         # Send an email to the customer asking them to retry their order
         utils.stripe_email_customer(session, 'failed')
-
 
     # Passed signature verification
     return {'success': True}, 200
