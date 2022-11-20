@@ -27,6 +27,7 @@ from app.constants.gamemodes import GameMode
 common = Blueprint('common', __name__)
 
 BANNERS_PATH = Path.cwd() / '.data/banners'
+BG_PATH = Path.cwd() / '.data/backgrounds'
 
 
 @common.route('/', methods=['GET'])
@@ -369,6 +370,15 @@ async def get_banner(uid: int):
     for ext in ('png', 'jpg', 'jpeg', 'gif'):
         if os.path.exists(BANNERS_PATH / f'{uid}.{ext}'):
             return await send_file(f'{BANNERS_PATH}/{uid}.{ext}')
+    else:
+        return {'success': False, 'message': 'This user does not have a banner.'}
+
+@common.route('/backgrounds/<uid>')
+async def get_background(uid: int):
+    # Check if file exists
+    for ext in ('png', 'jpg', 'jpeg', 'gif'):
+        if os.path.exists(BG_PATH / f'{uid}.{ext}'):
+            return await send_file(f'{BG_PATH}/{uid}.{ext}')
     else:
         return {'success': False, 'message': 'This user does not have a banner.'}
 
