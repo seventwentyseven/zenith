@@ -41,9 +41,9 @@
     {% block head %}{% endblock %}
 </head>
 
-<body class="bg-hsl-15 text-white" style="min-height: 100%;">
+<body class="bg-hsl-15 text-white flex flex-col min-h-screen">
     {% include 'components/navbar.html' %}
-    <div class="flex flex-col flex-1 min-h-screen" id="main-block">
+    <div class="block min-h-screen" id="main-block">
         <!-- Content-->
         <div class="flex flex-col" id="content-container">
             <!-- Flashes -->
@@ -148,5 +148,12 @@
     }
 
 </style>
+<script>
+    // Set main-block height to match it's overflow
+    var main = document.getElementById("main-block");
+    main.style.height = (main.scrollHeight + 34) + "px";
+
+
+</script>
 {% block bottom %}{% endblock %}
 </html>
