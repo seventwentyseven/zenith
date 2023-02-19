@@ -1,5 +1,6 @@
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { buttonSizes, buttonTypes } from '../constants/styles'
 
 const QuickActions = () => {
   const { data: session } = useSession()
@@ -14,16 +15,19 @@ const QuickActions = () => {
         <div className="flex flex-row w-full justify-between h-full">
           <Link
             href={`/user/${session?.user.id}`}
-            className="bg-hsl-45 bg-opacity-50 backdrop-blur-xl rounded-lg p-2.5 text-center w-[35%] h-full duration-100 hover:bg-opacity-100"
+            className={buttonTypes.primary + buttonSizes.large + 'w-[35%]'}
           >
             Profile
           </Link>
-          <Link href="/beatmaps" className="bg-green-500 bg-opacity-50 backdrop-blur-xl rounded-lg p-2.5 text-center w-[30%] h-full duration-100 hover:bg-opacity-100">
+          <Link
+            href="/beatmaps"
+            className={buttonTypes.success + buttonSizes.large + 'w-[30%]'}
+          >
             Beatmaps
           </Link>
           <Link
             href="/api/auth/signout"
-            className="bg-red-600 bg-opacity-50 backdrop-blur-xl rounded-lg p-2.5 text-center w-[30%] h-full duration-100 hover:bg-opacity-100"
+            className={buttonTypes.danger + buttonSizes.large + 'w-[30%]'}
           >
             Log out
           </Link>

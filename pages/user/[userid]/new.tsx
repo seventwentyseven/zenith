@@ -3,10 +3,11 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import BackgroundImage from '../../components/background-image'
-import BadgeList from '../../components/badges/badge-list'
-import CircularProgress from '../../components/circular-progress'
-import Layout from '../../components/layout'
+import BackgroundImage from '../../../components/background-image'
+import BadgeList from '../../../components/badges/badge-list'
+import CircularProgress from '../../../components/circular-progress'
+import Layout from '../../../components/layout'
+import { getActionStringFromInt } from '../../../constants/ingame-actions'
 
 interface IBeatmap {
   md5: string
@@ -55,6 +56,38 @@ interface IPlayerInfo {
   meta: {}
 }
 
+interface IPlayerStatsModeData {
+  id: number
+  mode: number
+  tscore: number
+  rscore: number
+  pp: number
+  plays: number
+  playtime: number
+  acc: number
+  max_combo: number
+  total_hits: number
+  replay_views: number
+  xh_count: number
+  x_count: number
+  sh_count: number
+  s_count: number
+  a_count: number
+  level: number
+  scoreForNextLevel: number
+  levelProgress: number
+}
+
+interface IPlayerStatistics {
+  status: boolean
+  data: IPlayerStatsModeData
+  meta: {
+    total: number
+    page: number
+    page_size: number
+  }
+}
+
 interface IPlayerStatus {
   success: boolean
   player_status: {
@@ -75,7 +108,26 @@ interface IData {
   data: {
     playerInfo: IPlayerInfo
     playerStatus: IPlayerStatus
+    playerStats: IPlayerStatistics
   }
+}
+
+const getLevelScoreRequirement = (level: number) => {
+  if (level <= 0) return 0
+  if (level <= 100)
+    return Number(
+      Math.floor(
+        (5000 / 3) * (4 * Math.pow(level, 3) - 3 * Math.pow(level, 2) - level) +
+          Math.floor(1.25 * Math.pow(1.8, level - 60))
+      )
+    )
+  return Number(26931190827 + 99999999999 * (level - 100))
+}
+
+const getLevelFromScore = (totalScore: number) => {
+  let i = 1
+  while (getLevelScoreRequirement(i) < totalScore) i += 1
+  return Number(i)
 }
 
 // This is for fetching data from api, I'm still a noob at this
@@ -95,17 +147,25 @@ export const getServerSideProps = async (
   const playerStatus = await playerStatusRes.json()
 
   // Getting player's stats
-  const playerStatisticsRes = await fetch(
-    `https://api.seventwentyseven.xyz/v2/players/${context.query.userid}/stats`
+  const playerStatsRes = await fetch(
+    `https://api.seventwentyseven.xyz/v2/players/${context.query.userid}/stats/0`
   )
-  const playerStatistics = await playerStatisticsRes.json()
+  let playerStats = await playerStatsRes.json()
+
+  playerStats.data.level = getLevelFromScore(playerStats.data.tscore)
+  playerStats.data.scoreForNextLevel = getLevelScoreRequirement(
+    playerStats.data.level
+  )
+  playerStats.data.levelProgress = Math.round(
+    (playerStats.data.tscore * 100) / playerStats.data.scoreForNextLevel
+  )
 
   return {
     props: {
       data: {
         playerInfo,
         playerStatus,
-        playerStatistics
+        playerStats
       }
     }
   }
@@ -137,15 +197,15 @@ const UserPage = ({ data }: IData) => {
 
       <BackgroundImage userid={userid} />
 
-      <section className="min-h-screen w-full flex flex-col items-center mt-32 px-72">
-        <Image
-          src={`https://a.seventwentyseven.xyz/${userid}`}
-          alt="User avatar"
-          width={256}
-          height={256}
-          className="rounded-3xl shadow-xl shadow-white/20 z-10"
-        />
-        <div className="w-full flex flex-col items-center bg-hsl-15 backdrop-blur-xl -mt-40 pt-44 pb-6 rounded-t-3xl bg-cover bg-center">
+      <section className="min-h-screen w-full flex flex-col mt-32 px-72">
+        <div className="w-full flex flex-col items-center bg-hsl-15 backdrop-blur-xl pt-44 pb-6 rounded-t-3xl bg-cover bg-center">
+          <Image
+            src={`https://a.seventwentyseven.xyz/${userid}`}
+            alt="User avatar"
+            width={256}
+            height={256}
+            className="absolute left-0 top-[7rem] rounded-xl shadow-xl z-10 ml-4"
+          />
           <Image
             src={bannerLink}
             fill
@@ -162,14 +222,19 @@ const UserPage = ({ data }: IData) => {
           </div>
           {data.playerStatus.player_status.online && (
             <div className="absolute top-0 left-0 ml-5 p-2.5 max-w-lg mt-[4.5rem] bg-hsl-10 bg-opacity-40 rounded-lg text-white">
-              {data.playerStatus.player_status.status.action}:{' '}
-              {data.playerStatus.player_status.status.info_text}
+              {getActionStringFromInt(
+                data.playerStatus.player_status.status.action,
+                data.playerStatus.player_status.status.info_text
+              )}
             </div>
           )}
-          <div className="absolute top-0 right-0 m-5">
-            <CircularProgress percent={2} statDescription="Level 99" />
+          <div className="absolute bottom-0 right-0 m-5 mb-9">
+            <CircularProgress
+              percent={data.playerStats.data.levelProgress}
+              statDescription={`Level ${data.playerStats.data.level}`}
+            />
           </div>
-          <div className="flex flex-col justify-center items-center mb-2">
+          <div className="flex flex-col justify-center self-start items-start mb-2 ml-72">
             <div className="flex flex-row justify-center items-center mb-4">
               <img
                 src={`https://seventwentyseven.xyz/static/images/flags/${data.playerInfo.data.country.toUpperCase()}.png`}
@@ -184,8 +249,8 @@ const UserPage = ({ data }: IData) => {
             <BadgeList priv={data.playerInfo.data.priv} />
           </div>
         </div>
-        <div className="flex flex-col w-full py-4 bg-base-300 bg-opacity-50 backdrop-blur-xl border-base-content border-t-px px-8 rounded-b-3xl">
-          <div className="flex flex-row">
+        <div className="flex flex-col w-full py-4 bg-base-300 bg-opacity-50 backdrop-blur-xl border-base-content border-t-px px-8 rounded-b-3xl -z-10">
+          <div className="flex flex-row ml-64 text-white">
             <div className="flex flex-col items-center justify-center mr-4">
               <span>Global rank</span>
               <span className="text-3xl font-bold">#1</span>
@@ -195,7 +260,7 @@ const UserPage = ({ data }: IData) => {
               <span className="text-3xl font-bold">#1</span>
             </div>
           </div>
-          <div className="flex flex-row">
+          <div className="flex flex-row text-white">
             <div className="p-24 w-8/12 flex flex-col items-center justify-center border-r-px border-base-content">
               Imagine that the graph is there for a moment
             </div>
