@@ -3,11 +3,11 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import BackgroundImage from '../../../components/background-image'
-import BadgeList from '../../../components/badges/badge-list'
-import CircularProgress from '../../../components/circular-progress'
-import Layout from '../../../components/layout'
-import { getActionStringFromInt } from '../../../constants/ingame-actions'
+import BackgroundImage from '../../components/background-image'
+import BadgeList from '../../components/badges/badge-list'
+import CircularProgress from '../../components/circular-progress'
+import Layout from '../../components/layout'
+import { getActionStringFromInt } from '../../constants/ingame-actions'
 
 interface IBeatmap {
   md5: string
@@ -204,7 +204,7 @@ const UserPage = ({ data }: IData) => {
             alt="User avatar"
             width={256}
             height={256}
-            className="absolute left-0 top-[7rem] rounded-xl shadow-xl z-10 ml-4"
+            className="absolute left-0 top-[8.25rem] rounded-xl shadow-xl z-10 ml-4"
           />
           <Image
             src={bannerLink}
@@ -217,11 +217,11 @@ const UserPage = ({ data }: IData) => {
               setBannerLink('https://seventwentyseven.xyz/banners/4')
             }
           />
-          <div className="absolute top-0 left-0 m-5 p-2.5 bg-hsl-10 bg-opacity-40 rounded-lg text-white">
+          <div className="absolute top-0 left-0 m-4 mt-5 p-2.5 bg-hsl-10 bg-opacity-40 rounded-lg text-white">
             {data.playerStatus.player_status.online ? 'Online' : 'Offline'}
           </div>
           {data.playerStatus.player_status.online && (
-            <div className="absolute top-0 left-0 ml-5 p-2.5 max-w-lg mt-[4.5rem] bg-hsl-10 bg-opacity-40 rounded-lg text-white">
+            <div className="absolute top-0 left-0 mx-4 p-2.5 mt-[4.5rem] bg-hsl-10 bg-opacity-40 rounded-lg text-white">
               {getActionStringFromInt(
                 data.playerStatus.player_status.status.action,
                 data.playerStatus.player_status.status.info_text
@@ -234,7 +234,7 @@ const UserPage = ({ data }: IData) => {
               statDescription={`Level ${data.playerStats.data.level}`}
             />
           </div>
-          <div className="flex flex-col justify-center self-start items-start mb-2 ml-72">
+          <div className="flex flex-col justify-center self-start items-start pt-2 ml-72">
             <div className="flex flex-row justify-center items-center mb-4">
               <img
                 src={`https://seventwentyseven.xyz/static/images/flags/${data.playerInfo.data.country.toUpperCase()}.png`}
@@ -249,7 +249,7 @@ const UserPage = ({ data }: IData) => {
             <BadgeList priv={data.playerInfo.data.priv} />
           </div>
         </div>
-        <div className="flex flex-col w-full py-4 bg-base-300 bg-opacity-50 backdrop-blur-xl border-base-content border-t-px px-8 rounded-b-3xl -z-10">
+        <div className="flex flex-col w-full py-4 bg-hsl-15 bg-opacity-50 backdrop-blur-xl border-base-content border-t-px px-8 rounded-b-3xl -z-10">
           <div className="flex flex-row ml-64 text-white">
             <div className="flex flex-col items-center justify-center mr-4">
               <span>Global rank</span>
