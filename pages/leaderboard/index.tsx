@@ -1,4 +1,5 @@
 import { GetServerSidePropsContext } from 'next'
+import Head from 'next/head'
 import Link from 'next/link'
 import BackgroundImage from '../../components/background-image'
 import Layout from '../../components/layout'
@@ -53,6 +54,9 @@ const Leaderboard = ({ leaderboards }: IData) => {
   console.log(leaderboards)
   return (
     <Layout>
+      <Head>
+        <title>727 Leaderboard</title>
+      </Head>
       <BackgroundImage blur />
       <div className="top-0 mt-28 w-full px-72 dark">
         <div className="relative overflow-x-auto sm:rounded-lg">
