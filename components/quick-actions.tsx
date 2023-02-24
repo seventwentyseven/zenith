@@ -11,19 +11,19 @@ const QuickActions = () => {
           Quick actions
         </span>
 
-        <div className="flex flex-row w-full justify-between h-full">
+        <div className="grid grid-cols-3 grid-rows-1 h-full gap-2.5">
           <Link
             href={`/user/${session?.user.id}`}
-            className="btn btn-lg btn-primary w-[35%]"
+            className="btn btn-lg btn-primary w-full"
           >
             Profile
           </Link>
-          <Link href="/beatmaps" className="btn btn-lg btn-secondary w-[30%]">
+          <Link href="/beatmaps" className="btn btn-lg btn-secondary w-full">
             Beatmaps
           </Link>
           <Link
             href="/api/auth/signout"
-            className="btn btn-danger btn-lg w-[30%]"
+            className="btn btn-danger btn-lg w-full"
           >
             Log out
           </Link>
