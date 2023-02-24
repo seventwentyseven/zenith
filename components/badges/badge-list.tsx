@@ -1,5 +1,7 @@
-import BadgeDeveloper from './badge-developer'
 import BadgeOwner from './badge-owner'
+import BadgeDeveloper from './badge-developer'
+import BadgeAdmin from './badge-admin'
+import BagdgeModerator from './badge-moderator'
 
 enum Privileges {
   Unrestricted = 1 << 0,
@@ -36,13 +38,12 @@ const BadgeList = ({ priv }: IProps) => {
       console.log(Privileges[i])
     }
   }
-  if (priv & Privileges.Developer) {
-    console.log('Developer')
-  }
+
   return (
     <div className="flex flex-row gap-2">
       <BadgeOwner />
       <BadgeDeveloper />
+      <BadgeAdmin />
     </div>
   )
 }

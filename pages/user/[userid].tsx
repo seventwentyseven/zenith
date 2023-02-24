@@ -1,108 +1,27 @@
+//? NextJS and React imports
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+
+//? Our components
 import BackgroundImage from '../../components/background-image'
 import BadgeList from '../../components/badges/badge-list'
 import CircularProgress from '../../components/circular-progress'
 import Layout from '../../components/layout'
+
+//? Functions and types
 import { getActionStringFromInt } from '../../constants/ingame-actions'
-
-interface IBeatmap {
-  md5: string
-  id: number
-  server: string
-  set_id: number
-  artist: string
-  title: string
-  version: string
-  creator: string
-  last_update: string
-  total_length: number
-  max_combo: number
-  status: number
-  plays: number
-  passes: number
-  mode: number
-  bpm: number
-  cs: number
-  od: number
-  ar: number
-  hp: number
-  diff: number
-}
-
-interface IPlayerInfo {
-  status: boolean
-  data: {
-    id: number
-    name: string
-    safe_name: string
-    priv: number
-    country: string
-    silence_end: number
-    donor_end: number
-    creation_time: number
-    latest_activity: number
-    clan_id: number
-    clan_priv: number
-    preferred_mode: number
-    play_style: number
-    custom_badge_name: string | null
-    custom_badge_icon: string | null
-    userpage_content: string | null
-  }
-  meta: {}
-}
-
-interface IPlayerStatsModeData {
-  id: number
-  mode: number
-  tscore: number
-  rscore: number
-  pp: number
-  plays: number
-  playtime: number
-  acc: number
-  max_combo: number
-  total_hits: number
-  replay_views: number
-  xh_count: number
-  x_count: number
-  sh_count: number
-  s_count: number
-  a_count: number
-  level: number
-  scoreForNextLevel: number
-  levelProgress: number
-}
-
-interface IPlayerStatistics {
-  status: boolean
-  data: IPlayerStatsModeData
-  meta: {
-    total: number
-    page: number
-    page_size: number
-  }
-}
-
-interface IPlayerStatus {
-  success: boolean
-  player_status: {
-    online: boolean
-    login_time: number
-    status: {
-      action: number
-      info_text: string
-      mode: number
-      mods: number
-      beatmap: IBeatmap | null
-    }
-  }
-  meta: {}
-}
+import {
+  getLevelFromScore,
+  getLevelScoreRequirement
+} from '../../controllers/user-level-calculation'
+import {
+  IPlayerInfo,
+  IPlayerStatistics,
+  IPlayerStatus
+} from '../../types/user-data'
 
 interface IData {
   data: {
@@ -110,24 +29,6 @@ interface IData {
     playerStatus: IPlayerStatus
     playerStats: IPlayerStatistics
   }
-}
-
-const getLevelScoreRequirement = (level: number) => {
-  if (level <= 0) return 0
-  if (level <= 100)
-    return Number(
-      Math.floor(
-        (5000 / 3) * (4 * Math.pow(level, 3) - 3 * Math.pow(level, 2) - level) +
-          Math.floor(1.25 * Math.pow(1.8, level - 60))
-      )
-    )
-  return Number(26931190827 + 99999999999 * (level - 100))
-}
-
-const getLevelFromScore = (totalScore: number) => {
-  let i = 1
-  while (getLevelScoreRequirement(i) < totalScore) i += 1
-  return Number(i)
 }
 
 // This is for fetching data from api, I'm still a noob at this
