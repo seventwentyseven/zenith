@@ -1,27 +1,42 @@
+import axios, { AxiosError, isAxiosError } from 'axios'
+import { Session } from 'next-auth'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { isStaff } from '../../controllers/user-privileges'
+import { Privileges } from '../badges/badge-list'
 
-const HeaderNavigation = () => {
+interface IProps {
+  session: Session | null
+}
+
+const HeaderNavigation = ({ session }: IProps) => {
+  const [hasStaff, setHasStaff] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (session) {
+      setHasStaff(isStaff(session.user.priv))
+    }
+
+    console.log(session)
+    console.log(hasStaff)
+  }, [session])
+
   return (
-    <nav>
-      <Link
-        href="/leaderboard"
-        className="inline-block px-6 py-4 bg-transparent text-white font-medium text-sm leading-tight uppercase rounded hover:text-white hover:bg-hsl-15 hover:bg-opacity-40 focus:bg-gray-800 focus:outline-none focus:ring-0 active:bg-opacity-100 transition duration-150 ease-in-out"
-      >
+    <nav className="flex flex-row items-center justify-center">
+      <Link href="/leaderboard" className="btn btn-lg btn-ghost">
         Leaderboard
       </Link>
-      <Link
-        href="/beatmaps"
-        className="inline-block px-6 py-4 bg-transparent text-white font-medium text-sm leading-tight uppercase rounded hover:text-white hover:bg-hsl-15 hover:bg-opacity-40 focus:bg-gray-800 focus:outline-none focus:ring-0 active:bg-opacity-100 transition duration-150 ease-in-out"
-      >
+      <Link href="/beatmaps" className="btn btn-lg btn-ghost">
         Beatmaps
       </Link>
-      <Link
-        href="/docs"
-        className="inline-block px-6 py-4 bg-transparent text-white font-medium text-sm leading-tight uppercase rounded hover:text-white hover:bg-hsl-15 hover:bg-opacity-40 focus:bg-gray-800 focus:outline-none focus:ring-0 active:bg-opacity-100 transition duration-150 ease-in-out"
-      >
+      <Link href="/docs" className="btn btn-lg btn-ghost mr-0">
         Docs
       </Link>
+      {hasStaff && (
+        <Link href="/admin" className="btn btn-lg btn-ghost">
+          Admin Panel
+        </Link>
+      )}
     </nav>
   )
 }

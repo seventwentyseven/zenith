@@ -1,35 +1,72 @@
+import { initPopovers } from 'flowbite'
 import { Session } from 'next-auth'
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 type IProps = {
   session: Session | null
 }
 const HeaderRightBlock = ({ session }: IProps) => {
+  useEffect(() => {
+    initPopovers()
+  })
   if (session) {
     return (
-      <Link href={`/user/${session.user.id}`}>
-        <img
-          src={`https://a.seventwentyseven.xyz/${session.user.id}`}
-          alt="User image"
-          className="rounded-full w-12 h-12 duration-150 hover:opacity-60"
-        />
-      </Link>
+      <div className="dark flex flex-row w-full items-center justify-end">
+        <Link
+          data-popover-target="user-menu"
+          data-popover-placement="bottom"
+          href={`/user/${session.user.id}`}
+        >
+          <img
+            src={`https://a.seventwentyseven.xyz/${session.user.id}`}
+            alt="User image"
+            className="rounded-full w-12 h-12 duration-150 hover:opacity-60"
+          />
+        </Link>
+
+        <div
+          data-popover
+          id="user-menu"
+          role="tooltip"
+          className="absolute z-10 invisible inline-block w-48 text-sm font-light text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+        >
+          <div className="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-center">
+              {session.user.name}
+            </h3>
+          </div>
+          <div className="px-3 py-2 flex flex-col items-center justify-between gap-2">
+            <Link
+              href={`/user/${session.user.id}`}
+              className="btn btn-md btn-primary w-full"
+            >
+              Profile
+            </Link>
+
+            <Link href="/settings" className="btn btn-md btn-primary w-full">
+              Settings
+            </Link>
+
+            <Link
+              href="/auth/signout"
+              className="btn btn-md btn-primary w-full"
+            >
+              Sign out
+            </Link>
+          </div>
+          <div data-popper-arrow></div>
+        </div>
+      </div>
     )
   }
 
   return (
-    <div>
-      <Link
-        href="/api/auth/signin"
-        className="inline-block px-6 py-4 mr-2 bg-blue-600 text-white font-medium text-sm leading-tight uppercase rounded hover:text-white hover:bg-hsl-15 hover:bg-opacity-40 focus:bg-gray-800 focus:outline-none focus:ring-0 active:bg-opacity-100 transition duration-150 ease-in-out"
-      >
+    <div className="flex flex-row gap-2 w-full items-center justify-end">
+      <Link href="/auth/signin" className="btn btn-lg btn-primary">
         Sign in
       </Link>
-
-      <Link
-        href="/api/auth/signup"
-        className="inline-block px-6 py-4 -mr-4 bg-transparent text-white font-medium text-sm leading-tight uppercase rounded hover:text-white hover:bg-hsl-15 hover:bg-opacity-40 focus:bg-gray-800 focus:outline-none focus:ring-0 active:bg-opacity-100 transition duration-150 ease-in-out"
-      >
+      <Link href="/auth/signup" className="btn btn-lg btn-ghost">
         Sign up
       </Link>
     </div>

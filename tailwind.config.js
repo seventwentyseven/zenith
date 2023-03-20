@@ -73,11 +73,5 @@ module.exports = {
       }
     }
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-    require('tw-elements/dist/plugin')
-  ],
-  daisyui: {
-    themes: ['night']
-  }
+  plugins: [require('@tailwindcss/typography'), require('flowbite/plugin')]
 }

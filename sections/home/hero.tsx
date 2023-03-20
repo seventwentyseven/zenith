@@ -11,19 +11,13 @@ const Hero = () => {
         The place where you reach your zenith
       </h2>
 
-      <div className="flex flex-row mt-14">
-        <Link
-          href="/leaderboard"
-          className="inline-block px-6 py-4 mr-2 bg-blue-600 text-white font-medium text-sm leading-tight uppercase rounded hover:text-white hover:bg-hsl-15 hover:bg-opacity-40 focus:bg-gray-800 focus:outline-none focus:ring-0 active:bg-opacity-100 transition duration-150 ease-in-out"
-        >
+      <div className="flex flex-row mt-14 gap-2">
+        <Link href="/leaderboard" className="btn btn-lg btn-primary">
           Leaderboard
         </Link>
 
-        <Link
-          href="/auth/login"
-          className="inline-block px-6 py-4 bg-transparent text-white font-medium text-sm leading-tight uppercase rounded hover:text-white hover:bg-hsl-15 hover:bg-opacity-40 focus:bg-gray-800 focus:outline-none focus:ring-0 active:bg-opacity-100 transition duration-150 ease-in-out"
-        >
-          Login
+        <Link href="/auth/signin" className="btn btn-lg btn-ghost">
+          Sign in
         </Link>
       </div>
 

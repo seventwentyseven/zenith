@@ -7,7 +7,7 @@ import RecentRanked from '../../components/sidebar/recent-ranked'
 
 const HomeDashboard = () => {
   return (
-    <section className="min-h-screen w-full flex flex-col items-center mt-24 px-72">
+    <section className="min-h-screen max-w-screen-xl w-full flex flex-col items-center mt-24 mx-auto">
       <div className="w-full flex flex-col justify-between lg:flex-row h-auto">
         {/* <Stats /> */}
         <QuickActions />

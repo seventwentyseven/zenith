@@ -26,7 +26,7 @@ const CircularProgress = ({ percent, statDescription }: IProps) => {
             strokeWidth={10}
             strokeDasharray={circumference}
             strokeDashoffset={circumference - (percent / 100) * circumference}
-            // strokeLinecap="round"
+            strokeLinecap="round"
             stroke="currentColor"
             fill="transparent"
             r="50"
@@ -34,7 +34,9 @@ const CircularProgress = ({ percent, statDescription }: IProps) => {
             cy="60"
           />
         </svg>
-        <span className="absolute text-2xl text-red-400">{percent}%</span>
+        <span className="absolute text-2xl text-red-400">
+          {percent === null ? '0' : percent}%
+        </span>
       </div>
       <p className="ml-10 font-medium text-white sm:text-xl">
         {statDescription}

@@ -18,14 +18,20 @@ const QuickActions = () => {
           >
             Profile
           </Link>
-          <Link href="/beatmaps" className="btn btn-lg btn-secondary w-full">
+          {/* <Link href="/beatmaps" className="btn btn-lg btn-secondary w-full">
             Beatmaps
+          </Link> */}
+          <Link
+            href={`/user/${session?.user.id}/old`}
+            className="btn btn-lg btn-secondary w-full whitespace-nowrap"
+          >
+            Profile (old)
           </Link>
           <Link
             href="/api/auth/signout"
             className="btn btn-danger btn-lg w-full"
           >
-            Log out
+            Sign out
           </Link>
         </div>
       </div>

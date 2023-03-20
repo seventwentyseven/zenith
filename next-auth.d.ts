@@ -9,6 +9,7 @@ declare module 'next-auth' {
     name: string
     token: string
     priv: number
+    preferredMode: number
   }
   interface Session {
     user: User
@@ -21,5 +22,6 @@ declare module 'next-auth/jwt' {
     userName: string
     userToken: string
     userPriv: number
+    preferredMode: number
   }
 }

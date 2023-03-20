@@ -49,7 +49,7 @@ export default function Document() {
         />
         <link rel="shortcut icon" href="/favicons/favicon.ico" />
       </Head>
-      <body className="bg-hsl-15">
+      <body className="bg-hsl-15 font-comfortaa">
         <Main />
         <NextScript />
       </body>
