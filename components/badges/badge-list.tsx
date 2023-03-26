@@ -3,6 +3,7 @@ import BadgeDeveloper from './badge-developer'
 import BadgeModerator from './badge-moderator'
 import BadgeNominator from './badge-nominator'
 import BadgeOwner from './badge-owner'
+// import BadgeQAT from './badge-qat'
 
 export enum Privileges {
   Unrestricted = 1 << 0,
@@ -59,9 +60,9 @@ const BadgeList = ({ priv }: IProps) => {
       {priv === 31751 ? <BadgeOwner /> : ''}
       {priv & Privileges.Developer ? <BadgeDeveloper /> : ''}
       {priv & Privileges.Administrator ? <BadgeAdmin /> : ''}
-      {/* If User is an Owner, do not show Moderator badge */}
+      {/* If User is an Owner or an Administrator, do not show Moderator badge */}
       {priv & Privileges.Moderator ? (
-        priv === 31751 ? (
+        priv === 31751 || priv & Privileges.Administrator ? (
           ''
         ) : (
           <BadgeModerator />

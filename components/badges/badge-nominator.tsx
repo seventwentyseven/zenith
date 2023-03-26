@@ -1,11 +1,19 @@
-import { MdShield } from 'react-icons/md'
+import { MdMusicNote } from 'react-icons/md'
 
 const BadgeNominator = () => {
   return (
-    <div className="flex flex-row items-center justify-center bg-gradient-to-br from-blue-600 to-sky-400 rounded-lg py-4 px-3 h-8">
-      <MdShield className="mr-2 text-rose-100 text-xl" />
-      <span className="text-rose-100">Nominator</span>
-    </div>
+    <>
+      <span
+        className="inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-blue-600 to-sky-400 text-blue-100 group transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+        role="alert"
+        tabIndex={0}
+      >
+        <MdMusicNote className="text-xl" />
+        <span className="whitespace-nowrap inline-block group-hover:max-w-screen-2xl group-focus:max-w-screen-2xl max-w-0 scale-80 group-hover:scale-100 overflow-hidden transition-all duration-300 group-hover:px-2 group-focus:px-2">
+          Nominator
+        </span>
+      </span>
+    </>
   )
 }
 
