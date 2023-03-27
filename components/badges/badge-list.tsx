@@ -1,8 +1,17 @@
-import BadgeAdmin from './badge-admin'
 import BadgeDeveloper from './badge-developer'
-import BadgeModerator from './badge-moderator'
-import BadgeNominator from './badge-nominator'
 import BadgeOwner from './badge-owner'
+// import BadgeHeadAdmin from './badge-headadmin'
+import BadgeAdmin from './badge-admin'
+// import BadgeCommunityManager from './badge-community_manager'
+import BadgeModerator from './badge-moderator'
+// import BadgeQAT from './badge-qat'
+import BadgeNominator from './badge-nominator'
+// import BadgeAlumni from './badge-alumni'
+// import BadgeSupporter from './badge-supporter'
+// import BadgeVerified from './badge-verified'
+// import BadgeFrozen from './badge-frozen'
+// import BadgeRestricted from './badge-restricted'
+
 // import BadgeQAT from './badge-qat'
 
 export enum Privileges {
