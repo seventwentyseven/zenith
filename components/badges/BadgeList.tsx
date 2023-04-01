@@ -1,18 +1,18 @@
-import BadgeDeveloper from './badge-developer'
-import BadgeOwner from './badge-owner'
-import BadgeHeadAdmin from './badge-headadmin'
-import BadgeAdmin from './badge-admin'
-import BadgeCommunityManager from './badge-community_manager'
-import BadgeModerator from './badge-moderator'
-import BadgeQAT from './badge-qat'
-import BadgeNominator from './badge-nominator'
-import BadgeAlumni from './badge-alumni'
-import BadgeSupporter from './badge-supporter'
-import BadgeWhitelisted from './badge-whitelisted'
-import BadgeFrozen from './badge-frozen'
-import BadgeRestricted from './badge-restricted'
+import BadgeDeveloper from './BadgeDeveloper'
+import BadgeOwner from './BadgeOwner'
+import BadgeHeadAdmin from './BadgeHeadAdmin'
+import BadgeAdmin from './BadgeAdmin'
+import BadgeCommunityManager from './BadgeCommunityManager'
+import BadgeModerator from './BadgeModerator'
+import BadgeQAT from './BadgeQAT'
+import BadgeNominator from './BadgeNominator'
+import BadgeAlumni from './BadgeAlumni'
+import BadgeSupporter from './BadgeSupporter'
+import BadgeWhitelisted from './BadgeWhitelisted'
+import BadgeFrozen from './BadgeFrozen'
+import BadgeRestricted from './BadgeRestricted'
 
-import { Privileges } from '../../constants/privileges'
+import { Privileges } from '../../constants/Privileges'
 
 interface IProps {
   priv: number
@@ -39,31 +39,31 @@ const BadgeList = ({ priv }: IProps) => {
   }
   return (
     <div className="flex flex-row gap-2 max-w-3xl flex-wrap">
-      {priv & Privileges.OWNER ? <BadgeOwner /> : null}
-      {priv & Privileges.DEVELOPER ? <BadgeDeveloper /> : null}
-      {priv & Privileges.HEADADMIN ? (
+      {priv & Privileges.Owner ? <BadgeOwner /> : null}
+      {priv & Privileges.Developer ? <BadgeDeveloper /> : null}
+      {priv & Privileges.HeadAdmin ? (
         <BadgeHeadAdmin />
-      ) : priv & Privileges.ADMINISTRATOR ? (
+      ) : priv & Privileges.Administrator ? (
         <BadgeAdmin />
-      ) : priv & Privileges.MODERATOR ? (
+      ) : priv & Privileges.Moderator ? (
         <BadgeModerator />
       ) : null}
-      {priv & Privileges.COMMUNITY_MANAGER ? <BadgeCommunityManager /> : null}
+      {priv & Privileges.CommunityManager ? <BadgeCommunityManager /> : null}
       {/* TODO: Mutually exclusive if same */}
-      {priv & Privileges.QATS ? <BadgeQAT priv={priv} /> : null}
-      {priv & Privileges.NOMINATORS ? <BadgeNominator priv={priv} /> : null}
+      {priv & Privileges.Qats ? <BadgeQAT priv={priv} /> : null}
+      {priv & Privileges.Nominators ? <BadgeNominator priv={priv} /> : null}
 
-      {priv & Privileges.ALUMNI ? <BadgeAlumni /> : null}
-      {priv & Privileges.SUPPORTER ? <BadgeSupporter /> : null}
+      {priv & Privileges.Alumni ? <BadgeAlumni /> : null}
+      {priv & Privileges.Supporter ? <BadgeSupporter /> : null}
       {/* Show whitelisted only if user has the Whitelisted Privileges and does not have any of staff privileges */}
-      {priv & Privileges.WHITELISTED &&
-      !(priv & Privileges.STAFF) &&
-      !(priv & Privileges.NOMINATORS) &&
-      !Privileges.QATS ? (
+      {priv & Privileges.Whitelisted &&
+      !(priv & Privileges.Staff) &&
+      !(priv & Privileges.Nominators) &&
+      !Privileges.Qats ? (
         <BadgeWhitelisted />
       ) : null}
-      {priv & Privileges.FROZEN ? <BadgeFrozen /> : null}
-      {!(priv & Privileges.UNRESTRICTED) ? <BadgeRestricted /> : null}
+      {priv & Privileges.Frozen ? <BadgeFrozen /> : null}
+      {!(priv & Privileges.Unrestricted) ? <BadgeRestricted /> : null}
     </div>
   )
 }
