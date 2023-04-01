@@ -1,9 +1,9 @@
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import React from 'react'
-import HeaderNavigation from './header-navigation'
-import HeaderRightBlock from './header-right-block'
-import Logo from './logo'
+import HeaderNavigation from './HeaderNavigation'
+import HeaderRightBlock from './HeaderRightBlock'
+import Logo from './Logo'
 
 const Header = () => {
   const { data: session } = useSession()

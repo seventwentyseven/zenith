@@ -1,5 +1,5 @@
 import TimeAgo from 'timeago-react'
-import { recentUser } from '../../constants/recent-user'
+import { recentUser } from '../../constants/RecentUser'
 
 const NewUser: React.FC = () => {
   return (

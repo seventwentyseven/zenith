@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import TimeAgo from 'timeago-react'
-import { articles } from '../../constants/articles'
+import { articles } from '../../constants/Articles'
 import Card from '../Card'
 
 const ArticleList = () => {

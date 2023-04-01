@@ -1,4 +1,4 @@
-import { mostPlayed } from '../../constants/most-played'
+import { mostPlayed } from '../../constants/MostPlayed'
 
 const MostPlayed: React.FC = () => {
   return (

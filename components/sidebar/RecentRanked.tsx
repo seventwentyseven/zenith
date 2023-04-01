@@ -1,5 +1,5 @@
 import TimeAgo from 'timeago-react'
-import { recentRanked } from '../../constants/recent-ranked'
+import { recentRanked } from '../../constants/RecentRanked'
 
 const RecentRanked: React.FC = () => {
   return (

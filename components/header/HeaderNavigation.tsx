@@ -1,7 +1,7 @@
 import { Session } from 'next-auth'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { isStaff } from '../../controllers/user-privileges'
+import { isStaff } from '../../controllers/UserPrivileges'
 
 interface IProps {
   session: Session | null
