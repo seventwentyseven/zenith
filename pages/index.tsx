@@ -2,11 +2,11 @@ import type { NextPage } from 'next'
 import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import { ReactNode } from 'react'
-import BackgroundImage from '../components/background-image'
-import Layout from '../components/layout'
-import AboutUs from '../sections/home/about-us'
-import HomeDashboard from '../sections/home/dashboard'
-import Hero from '../sections/home/hero'
+import BackgroundImage from '../components/BackgroundImages'
+import Layout from '../components/Layout'
+import AboutUs from '../sections/home/AboutUs'
+import HomeDashboard from '../sections/home/Dashboard'
+import Hero from '../sections/home/Hero'
 
 const Home: NextPage = () => {
   const { status } = useSession()
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
   if (status === 'authenticated')
     pageContent = (
       <>
-        <BackgroundImage opacity={60} blur />
+        <BackgroundImage opacity={0.6} blur />
         <HomeDashboard />
       </>
     )
