@@ -193,3 +193,9 @@ html {
 .btn-ghost:active {
   background-color: rgb(31, 41, 55);
 }
+
+.gradient-lustrous {
+  /* ['#FFE600', '#ED82FF'] from top to bottom*/
+  background: linear-gradient(180deg, #ffe600, #ed82ff);
+  background-clip: text;
+}

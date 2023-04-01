@@ -62,14 +62,13 @@ module.exports = {
           '10-30': 'hsl(var(--main), 10%, 30%)',
           '10-25': 'hsl(var(--main), 10%, 25%)',
           '10-20': 'hsl(var(--main), 10%, 20%)',
-          '10-15': 'hsl(var(--main), 10%, 15%)',
-
-          // Ones with opacity
-          '25_10-70a': 'hsla(var(--main), 25%, 10%, 0.7)'
+          '10-15': 'hsl(var(--main), 10%, 15%)'
         }
       },
       fontFamily: {
-        comfortaa: ['Comfortaa', 'sans-serif']
+        comfortaa: ['Comfortaa', 'sans-serif'],
+        nunito: ['Nunito', 'sans-serif'],
+        torus: ['Torus', 'sans-serif']
       }
     }
   },
