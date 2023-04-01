@@ -31,13 +31,13 @@ export const getServerSideProps = async (
 ) => {
   // Getting player's status
   const playerStatusRes = await fetch(
-    `https://api.seventwentyseven.xyz/v1/get_player_status?id=${context.query.userid}`
+    `${process.env.API_URL}/v1/get_player_status?id=${context.query.userid}`
   )
   const playerStatus = await playerStatusRes.json()
 
   // Getting player's stats
   const playerDataRes = await fetch(
-    `https://api.seventwentyseven.xyz/v1/get_player_info?id=${context.query.userid}&scope=all`
+    `${process.env.API_URL}/v1/get_player_info?id=${context.query.userid}&scope=all`
   )
   let playerData = await playerDataRes.json()
 

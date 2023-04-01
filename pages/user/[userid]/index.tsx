@@ -56,13 +56,13 @@ export const getServerSideProps = async (
 ) => {
   // Getting player's status
   const playerStatusRes = await fetch(
-    `https://api.dzifors.tk/v1/get_player_status?id=${context.query.userid}`
+    `${process.env.API_URL}/v1/get_player_status?id=${context.query.userid}`
   )
   const playerStatus: IPlayerStatus = await playerStatusRes.json()
 
   // Getting player's stats
   const playerDataRes = await fetch(
-    `https://api.dzifors.tk/v1/get_player_info?id=${context.query.userid}&scope=all`
+    `${process.env.API_URL}/v1/get_player_info?id=${context.query.userid}&scope=all`
   )
   let playerData: IPlayerData = await playerDataRes.json()
 
@@ -105,17 +105,6 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
               backgroundImage: `linear-gradient(180deg, hsla(230, 10%, 10%, 0.5), hsla(230, 10%, 10%, 0.5)), url("https://seventwentyseven.xyz/banners/${data.playerData.player.info.id}")`
             }}
           >
-            {/* <Image
-            src={bannerLink}
-            fill
-            placeholder="blur"
-            blurDataURL={bannerLink}
-            alt="User banner"
-            className="w-full h-full rounded-t-3xl opacity-40 bg-center bg-cover bg-no-repeat -z-10"
-            onError={() =>
-              setBannerLink('https://seventwentyseven.xyz/banners/4')
-            }
-          /> */}
             <div className="absolute top-0 left-0 m-4 mt-5 p-2.5 bg-hsl-10 bg-opacity-40 rounded-lg">
               {data.playerStatus.player_status.online ? 'Online' : 'Offline'}
             </div>
@@ -207,8 +196,15 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
         </section>
         {/* 2nd Block (Scores) */}
         <section className="flex flex-col w-full py-4 bg-hsl-10 bg-opacity-50 backdrop-blur-xl px-8 rounded-3xl -z-10 mt-6 mb-3">
-          <div className="ml-4 text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap">
-            Best Scores
+          <div className="text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap">
+            Scores
+          </div>
+          {/* Best Scores */}
+          <div className="flex flex-col mt-4">
+            <div className="flex flex-row">
+              <div className="h-full"></div>
+              <span>Best Scores</span>
+            </div>
           </div>
         </section>
       </div>

@@ -41,7 +41,7 @@ export const getServerSideProps = async (
 ) => {
   // Getting leaderboards from api
   const leaderboardsRes = await fetch(
-    'https://api.seventwentyseven.xyz/v1/get_leaderboard'
+    `${process.env.API_URL}/v1/get_leaderboard`
   )
   const leaderboards = await leaderboardsRes.json()
 
@@ -60,11 +60,11 @@ const Leaderboard = ({ leaderboards }: IData) => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-      let leaderboardsApiLink = `https://api.seventwentyseven.xyz/v1/get_leaderboard?offset=${offset}`
+      let leaderboardsApiLink = `${process.env.API_URL}/v1/get_leaderboard?offset=${offset}`
       const leaderboardsReq = await fetch(leaderboardsApiLink)
-      const leaderboards = await leaderboardsReq.json()
+      const leaderboardToSet = await leaderboardsReq.json()
 
-      setLeaderboard(leaderboards)
+      setLeaderboard(leaderboardToSet)
       setLoading(false)
     }
     fetchData()

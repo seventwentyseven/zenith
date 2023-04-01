@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
 
         console.log(credentials)
 
-        const res = await fetch('https://api.dzifors.tk/v2/auth/login', {
+        const res = await fetch(`${process.env.API_URL}/v2/auth/login`, {
           method: 'POST',
           body: JSON.stringify(payload),
           headers: {
@@ -61,7 +61,7 @@ export const authOptions: NextAuthOptions = {
 
           console.log(tokenJson)
 
-          const userRes = await fetch('https://api.dzifors.tk/v2/auth/@me', {
+          const userRes = await fetch(`${process.env.API_URL}/v2/auth/@me`, {
             headers: { token: tokenJson.token }
           })
 
