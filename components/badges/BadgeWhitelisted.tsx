@@ -1,10 +1,10 @@
 import { FaUserCheck } from 'react-icons/fa'
 
-const BadgeVerified = () => {
+const BadgeWhitelisted = () => {
   return (
     <>
       <span
-        className="inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-green-400 to-green-500 text-green-100 group transition-all duration-300"
+        className="v inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-green-400 to-green-500 text-green-100 group transition-all duration-300"
         role="alert"
         tabIndex={0}
       >
@@ -17,4 +17,4 @@ const BadgeVerified = () => {
   )
 }
 
-export default BadgeVerified
+export default BadgeWhitelisted

@@ -4,7 +4,7 @@ const BadgeModerator = () => {
   return (
     <>
       <span
-        className="inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-green-700 to-emerald-500 text-green-100 group transition-all duration-300"
+        className="select-none inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-green-700 to-emerald-500 text-green-100 group transition-all duration-300"
         role="alert"
         tabIndex={0}
       >

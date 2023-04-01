@@ -4,7 +4,7 @@ const BadgeCommunityManager = () => {
   return (
     <>
       <span
-        className="inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-blue-500 to-sky-700 text-blue-100 group transition-all duration-300"
+        className="select-none inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-blue-500 to-sky-700 text-blue-100 group transition-all duration-300"
         role="alert"
         tabIndex={0}
       >

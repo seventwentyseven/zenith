@@ -4,7 +4,7 @@ const BadgeAlumni = () => {
   return (
     <>
       <span
-        className="inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-gray-400 to-gray-500 text-black group transition-all duration-300"
+        className="inline-flex items-center rounded-full px-2.5 py-2 bg-gradient-to-br from-gray-400 to-gray-500 text-black group transition-all duration-300 select-none"
         role="alert"
         tabIndex={0}
       >
