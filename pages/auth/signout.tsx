@@ -1,8 +1,7 @@
 import { signOut } from 'next-auth/react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import BackgroundImage from '../../components/background-image'
-import Layout from '../../components/layout'
+import BackgroundImage from '../../components/BackgroundImages'
+import Layout from '../../components/Layout'
 
 const handleSignout = () => {
   signOut({ callbackUrl: '/', redirect: true })

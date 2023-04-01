@@ -1,10 +1,9 @@
-import { signIn, SignInResponse } from 'next-auth/react'
-import Link from 'next/link'
-import BackgroundImage from '../../components/background-image'
-import Layout from '../../components/layout'
 import * as crypto from 'crypto'
-import { Router, useRouter } from 'next/router'
+import { signIn } from 'next-auth/react'
+import Link from 'next/link'
 import { useState } from 'react'
+import BackgroundImage from '../../components/BackgroundImages'
+import Layout from '../../components/Layout'
 
 const LoginPage = () => {
   const [username, setUsername] = useState<string>('')

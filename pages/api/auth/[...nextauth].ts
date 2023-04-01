@@ -1,33 +1,5 @@
-import axios, { AxiosError, isAxiosError } from 'axios'
-import NextAuth, { NextAuthOptions, User } from 'next-auth'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import * as crypto from 'crypto'
-import { Md5 } from 'ts-md5'
-import { requestToBodyStream } from 'next/dist/server/body-streams'
-
-// axios.interceptors.response.use(
-//   response => response,
-//   error => {
-//     throw new Error(error)
-//   }
-// )
-
-// const loginQuery = async () => {
-//   const response = await axios.post(
-//     'https://api.dzifors.tk/v2/auth/login',
-//     JSON.stringify({
-//       username: 'dzifors',
-//       pw_md5: 'dat za'
-//     }),
-//     {
-//       headers: {
-//         Accept: 'application/json',
-//         'Content-Type': 'application/json'
-//       }
-//     }
-//   )
-//   return response.data
-// }
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -48,7 +20,7 @@ export const authOptions: NextAuthOptions = {
           type: 'text'
         }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const payload: { username: string; pw_md5: string } = {
           username: credentials?.username || '',
           pw_md5: credentials?.password || ''
@@ -72,7 +44,8 @@ export const authOptions: NextAuthOptions = {
         } else if (
           res.headers.get('Content-Type') === 'text/html; charset=UTF-8'
         ) {
-          tokenJson = 'Api ded'
+          tokenJson =
+            'There was a problem connecting to the server, please try again in a few minutes'
         } else {
           tokenJson = await res.text()
         }
@@ -100,7 +73,8 @@ export const authOptions: NextAuthOptions = {
           } else if (
             res.headers.get('Content-Type') === 'text/html; charset=UTF-8'
           ) {
-            userJson = 'Api ded'
+            userJson =
+              'There was a problem connecting to the server, please try again in a few minutes'
           } else {
             userJson = await userRes.text()
             console.log(userJson)
@@ -121,8 +95,6 @@ export const authOptions: NextAuthOptions = {
           return userData
         }
         return null
-
-        // return { id: 3, name: 'dzifors', priv: 3, token: 'asdf' }
       }
     })
   ],

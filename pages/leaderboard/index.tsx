@@ -2,9 +2,9 @@ import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import BackgroundImage from '../../components/background-image'
-import Layout from '../../components/layout'
-import Pagination from '../../components/pagination'
+import BackgroundImage from '../../components/BackgroundImages'
+import Layout from '../../components/Layout'
+import Pagination from '../../components/Pagination'
 
 interface IData {
   leaderboards: ILeaderboard
