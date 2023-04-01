@@ -1,4 +1,4 @@
-import { BadgeGradients, LevelBadgeColor } from '../constants/gradients'
+import { LevelBadgeColor } from '../constants/Gradients'
 
 interface IProps {
   level: number
