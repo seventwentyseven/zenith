@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
-import BackgroundImage from '../components/background-image'
-import Layout from '../components/layout'
+import BackgroundImage from '../components/BackgroundImages'
+import Layout from '../components/Layout'
 
 const NotFound = () => {
   const router = useRouter()
