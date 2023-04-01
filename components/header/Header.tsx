@@ -9,7 +9,7 @@ const Header = () => {
   const { data: session } = useSession()
 
   return (
-    <header className="fixed top-0 w-full border-b border-white/40  bg-hsl-20 bg-opacity-40 backdrop-blur-xl z-10">
+    <header className="fixed top-0 w-full border-b border-hsl-20/40  bg-hsl-20 bg-opacity-40 backdrop-blur-xl z-10">
       <nav className="w-full max-w-screen-xl min-h-16 mx-auto grid grid-cols-3 grid-rows-1 my-auto py-1">
         <Link
           href="/"

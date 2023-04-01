@@ -1,9 +1,7 @@
-import axios, { AxiosError, isAxiosError } from 'axios'
 import { Session } from 'next-auth'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { isStaff } from '../../controllers/user-privileges'
-import { Privileges } from '../badges/badge-list'
 
 interface IProps {
   session: Session | null
