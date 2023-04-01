@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document'
+import Script from 'next/script'
 
 export default function Document() {
   return (
@@ -22,6 +23,10 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap"
+          rel="stylesheet"
+        ></link>
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         <link
@@ -48,8 +53,22 @@ export default function Document() {
           color="#5bbad5"
         />
         <link rel="shortcut icon" href="/favicons/favicon.ico" />
+        {/* -- Global site tag (gtag.js) - Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-5GVFCZY1N3"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-5GVFCZY1N3');
+        `}
+        </Script>
       </Head>
-      <body className="bg-hsl-15 font-comfortaa">
+      <body className="bg-hsl-15 font-comfortaa text-white">
         <Main />
         <NextScript />
       </body>
