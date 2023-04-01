@@ -1,5 +1,5 @@
 import { FaMusic } from 'react-icons/fa'
-import { Privileges } from '../../constants/privileges'
+import { Privileges } from '../../constants/Privileges'
 
 interface IProps {
   priv: number
@@ -7,16 +7,16 @@ interface IProps {
 
 const BadgeQAT = ({ priv }: IProps) => {
   let icon_array = []
-  if (priv & Privileges.QAT_STD) {
+  if (priv & Privileges.QatStd) {
     icon_array.push('osu')
   }
-  if (priv & Privileges.QAT_TAIKO) {
+  if (priv & Privileges.QatTaiko) {
     icon_array.push('taiko')
   }
-  if (priv & Privileges.QAT_CATCH) {
+  if (priv & Privileges.QatCatch) {
     icon_array.push('catch')
   }
-  if (priv & Privileges.QAT_MANIA) {
+  if (priv & Privileges.QatMania) {
     icon_array.push('mania')
   }
 

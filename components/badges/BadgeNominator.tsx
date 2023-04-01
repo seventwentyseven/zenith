@@ -1,5 +1,5 @@
 import { MdMusicNote } from 'react-icons/md'
-import { Privileges } from '../../constants/privileges'
+import { Privileges } from '../../constants/Privileges'
 
 interface IProps {
   priv: number
@@ -7,16 +7,16 @@ interface IProps {
 
 const BadgeNominator = ({ priv }: IProps) => {
   let icon_array = []
-  if (priv & Privileges.NOMINATOR_STD) {
+  if (priv & Privileges.NominatorStd) {
     icon_array.push('osu')
   }
-  if (priv & Privileges.NOMINATOR_TAIKO) {
+  if (priv & Privileges.NominatorTaiko) {
     icon_array.push('taiko')
   }
-  if (priv & Privileges.NOMINATOR_CATCH) {
+  if (priv & Privileges.NominatorCatch) {
     icon_array.push('catch')
   }
-  if (priv & Privileges.NOMINATOR_MANIA) {
+  if (priv & Privileges.NominatorMania) {
     icon_array.push('mania')
   }
 
