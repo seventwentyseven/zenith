@@ -1,11 +1,11 @@
-import { RankColor } from '../constants/gradients'
+import { RankColor } from '../constants/Gradients'
 
 interface IProps {
   countryRank: number
   country: string
   globalRank: number
 }
-
+// TODO: Add country name tooltip on country rank
 const ProfileRank = ({ countryRank, country, globalRank }: IProps) => {
   const rankColor = RankColor(globalRank)
   console.log(globalRank)
