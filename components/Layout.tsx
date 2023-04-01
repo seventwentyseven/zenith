@@ -1,4 +1,4 @@
-import Header from './header/header'
+import Header from './header/Header'
 import Footer from './Footer'
 import type { ReactNode } from 'react'
 
