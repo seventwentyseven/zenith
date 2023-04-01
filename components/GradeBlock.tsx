@@ -23,8 +23,8 @@ const GradeBlock = ({
   a_count
 }: IProps) => {
   return (
-    <div className="flex flex-row gap-2 items-center justify-center">
-      <div className="flex flex-col items-center justify-center">
+    <div className="grid grid-cols-6 grid-rows-2 gap-y-3 w-11/12 mx-auto items-center justify-center mt-6 ml-5 pointer-events-none select-none">
+      <div className="flex flex-col items-center justify-center col-span-3 ml-[38px]">
         <Image
           src={gradeXH}
           width={64}
@@ -34,7 +34,7 @@ const GradeBlock = ({
         />
         <span>{xh_count}</span>
       </div>
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center col-span-3 mr-[38px]">
         <Image
           src={gradeX}
           width={64}
@@ -44,7 +44,7 @@ const GradeBlock = ({
         />
         <span>{x_count}</span>
       </div>
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center col-span-2">
         <Image
           src={gradeSH}
           width={64}
@@ -54,7 +54,7 @@ const GradeBlock = ({
         />
         <span>{sh_count}</span>
       </div>
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center col-span-2">
         <Image
           src={gradeS}
           width={64}
@@ -64,7 +64,7 @@ const GradeBlock = ({
         />
         <span>{s_count}</span>
       </div>
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center col-span-2">
         <Image
           src={gradeA}
           width={64}

@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import TimeAgo from 'timeago-react'
 import { articles } from '../../constants/articles'
-import Card from '../card'
+import Card from '../Card'
 
 const ArticleList = () => {
   return (
     <div className="h-full w-[calc(70%+2rem)] mx-2 flex flex-col items-center justify-center mt-2">
-      {articles.map((article, index) => (
+      {articles.reverse().map((article, index) => (
         <Card
           key={`article-${index}`}
           callToAction={

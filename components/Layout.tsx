@@ -1,5 +1,5 @@
 import Header from './header/header'
-import Footer from './footer'
+import Footer from './Footer'
 import type { ReactNode } from 'react'
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <>
       <Header />
 
-      <main className="min-h-screen flex flex-col items-center justify-center mb-6">
+      <main className="min-h-screen flex flex-col items-center justify-center">
         {children}
       </main>
 
