@@ -17,12 +17,12 @@ export enum Privileges {
 
   // Staff (Nominators) Access to ranking maps
   NominatorStd = 1 << 10,
-  NominatorCatch = 1 << 11,
-  NominatorTaiko = 1 << 12,
+  NominatorTaiko = 1 << 11,
+  NominatorCatch = 1 << 12,
   NominatorMania = 1 << 13,
   QatStd = 1 << 14,
-  QatCatch = 1 << 15,
-  QatTaiko = 1 << 16,
+  QatTaiko = 1 << 15,
+  QatCatch = 1 << 16,
   QatMania = 1 << 17,
 
   Moderator = 1 << 18, // Access to moderation tools
