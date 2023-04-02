@@ -3,7 +3,10 @@ import { GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
+//? Flowbite imports
+import { initTabs } from 'flowbite'
 
 //? Our components
 import BackgroundImage from '../../../components/BackgroundImages'
@@ -11,6 +14,7 @@ import BadgeList from '../../../components/badges/BadgeList'
 import GamemodeSwitcher from '../../../components/GamemodeSwitcher'
 import Layout from '../../../components/Layout'
 import ProfileRank from '../../../components/ProfileRank'
+import ProfileStatsRight from '../../../components/ProfileStatsRight'
 
 //? Functions and types
 import { getActionStringFromInt } from '../../../constants/IngameActions'
@@ -18,10 +22,14 @@ import {
   getLevelFromScore,
   getLevelScoreRequirement
 } from '../../../controllers/UserLevelCalculation'
-import { IPlayerData, IPlayerStatus } from '../../../types/user-data'
+import { IPlayerData, IPlayerStatus } from '../../../types/UserData'
 
 import GradeBlock from '../../../components/GradeBlock'
 import UserLevel from '../../../components/UserLevel'
+
+import LineChart from 'react-apexcharts'
+import PPChart from '../../../components/PPChart'
+
 interface IData {
   data: {
     playerStatus: IPlayerStatus
@@ -89,6 +97,8 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
   const [gameMode, setGameMode] = useState<number>(
     data.playerData.player.info.preferred_mode
   )
+
+  useEffect(() => initTabs(), [])
 
   return (
     <Layout>
@@ -179,32 +189,149 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
                 </span>
               </div>
             </div>
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-14 mr-8">
               <ProfileRank
                 countryRank={
                   data.playerData.player.stats[gameMode].country_rank
                 }
-                country={data.playerData.player.info.country}
+                // country={data.playerData.player.info.country}
                 globalRank={data.playerData.player.stats[gameMode].rank}
+                // peakGlobal={[{ date: new Date(), rank: 2137 }]}
               />
             </div>
           </div>
-          <div className="flex flex-row">
-            <div className="p-24 w-9/12 flex flex-col items-center justify-center border-r-px"></div>
-            <div className="pl-4">Some stats</div>
+          <div className="flex flex-row gap-x-3">
+            <div className="p-24 ml-[16rem] w-8/12 flex flex-col items-center justify-center border-r-px">
+              <PPChart
+              // userid={data.playerData.player.info.id}
+              // gamemode={gameMode}
+              />
+            </div>
+            <ProfileStatsRight data={data.playerData.player.stats[gameMode]} />
           </div>
         </section>
         {/* 2nd Block (Scores) */}
-        <section className="flex flex-col w-full py-4 bg-hsl-10 bg-opacity-50 backdrop-blur-xl px-8 rounded-3xl -z-10 mt-6 mb-3">
-          <div className="text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap">
-            Scores
+        <section className="flex flex-col w-full py-4 bg-hsl-10 bg-opacity-50 backdrop-blur-xl px-8 rounded-3xl -z-10 my-3">
+          <div className="text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap ml-2">
+            About Me
           </div>
-          {/* Best Scores */}
-          <div className="flex flex-col mt-4">
-            <div className="flex flex-row">
-              <div className="h-full"></div>
-              <span>Best Scores</span>
+        </section>
+        <section className="flex flex-col w-full py-4 bg-hsl-10 bg-opacity-50 backdrop-blur-xl px-8 rounded-3xl -z-10 my-3">
+          <div className="text-xl font-bold border-b-2 border-hsl-50 w-full flex flex-row items-center whitespace-nowrap ml-2">
+            Scores
+            <div className="-mb-1 ml-5">
+              <ul
+                className="flex flex-row text-sm font-medium text-center"
+                id="tabs-scores-switcher"
+                data-tabs-toggle="#myTabContent"
+                role="tablist"
+              >
+                <li role="presentation">
+                  <button
+                    className="inline-block px-5 py-3 border-b-4 border-transparent text-white hover:text-hsl-80 hover:border-hsl-60 aria-selected:border-hsl-50 aria-selected:text-hsl-90 tansition-all duration-200"
+                    id="profile-tab"
+                    data-tabs-target="#profile"
+                    type="button"
+                    role="tab"
+                    aria-controls="profile"
+                    aria-selected="false"
+                  >
+                    <span className="-mb-[5px]">Best</span>
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button
+                    className="inline-block px-5 py-3 border-b-4 border-transparent text-white hover:text-hsl-80 hover:border-hsl-60 aria-selected:border-hsl-50 aria-selected:text-hsl-90 tansition-all duration-200"
+                    id="dashboard-tab"
+                    data-tabs-target="#dashboard"
+                    type="button"
+                    role="tab"
+                    aria-controls="dashboard"
+                    aria-selected="false"
+                  >
+                    <span className="-mb-[5px]">Recent</span>
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button
+                    className="inline-block px-5 py-3 border-b-4 border-transparent text-white hover:text-hsl-80 hover:border-hsl-60 aria-selected:border-hsl-50 aria-selected:text-hsl-90 tansition-all duration-200"
+                    id="contacts-tab"
+                    data-tabs-target="#contacts"
+                    type="button"
+                    role="tab"
+                    aria-controls="contacts"
+                    aria-selected="false"
+                  >
+                    <span className="-mb-[5px]">First</span>
+                  </button>
+                </li>
+              </ul>
             </div>
+          </div>
+
+          <div id="myTabContent">
+            <div
+              className="hidden py-4 px-2 rounded-lg"
+              id="profile"
+              role="tabpanel"
+              aria-labelledby="profile-tab"
+            >
+              <div className="flex flex-row font-bold ">
+                <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
+                <span className="-mb-0.5 ml-1.5">Best Scores</span>
+                <span className="-mb-1 ml-2 h-min px-2.5 py-1 text-sm text-slate-300 leading-3 font-bold bg-hsl-5 bg-opacity-50 rounded-full shadow">
+                  100
+                </span>
+              </div>
+            </div>
+            <div
+              className="hidden py-4 px-2 rounded-lg"
+              id="dashboard"
+              role="tabpanel"
+              aria-labelledby="dashboard-tab"
+            >
+              <div className="flex flex-row font-bold ">
+                <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
+                <span className="-mb-0.5 ml-1.5">Recent Scores</span>
+                <span className="-mb-1 ml-2 h-min px-2.5 py-1 text-sm text-slate-300 leading-3 font-bold bg-hsl-5 bg-opacity-50 rounded-full shadow">
+                  100
+                </span>
+              </div>
+            </div>
+            <div
+              className="hidden py-4 px-2 rounded-lg"
+              id="contacts"
+              role="tabpanel"
+              aria-labelledby="contacts-tab"
+            >
+              <div className="flex flex-row font-bold ">
+                <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
+                <span className="-mb-0.5 ml-1.5">First Places</span>
+                <span className="-mb-1 ml-2 h-min px-2.5 py-1 text-sm text-slate-300 leading-3 font-bold bg-hsl-5 bg-opacity-50 rounded-full shadow">
+                  100
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="flex flex-col w-full py-4 bg-hsl-10 bg-opacity-50 backdrop-blur-xl px-8 rounded-3xl -z-10 my-3">
+          <div className="text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap ml-2">
+            Graphs
+          </div>
+        </section>
+        <section className="flex flex-col w-full py-4 bg-hsl-10 bg-opacity-50 backdrop-blur-xl px-8 rounded-3xl -z-10 my-3">
+          <div className="text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap ml-2">
+            Beatmaps
+          </div>
+        </section>
+        <section className="flex flex-col w-full py-4 bg-hsl-10 bg-opacity-50 backdrop-blur-xl px-8 rounded-3xl -z-10 my-3">
+          <div className="text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap ml-2">
+            Achievements
+          </div>
+        </section>
+        <section className="flex flex-col w-full py-4 bg-hsl-10 bg-opacity-50 backdrop-blur-xl px-8 rounded-3xl -z-10 my-3">
+          <div className="text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap ml-2">
+            Account Standing
           </div>
         </section>
       </div>
