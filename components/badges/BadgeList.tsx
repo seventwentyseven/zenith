@@ -56,12 +56,7 @@ const BadgeList = ({ priv }: IProps) => {
       {priv & Privileges.Alumni ? <BadgeAlumni /> : null}
       {priv & Privileges.Supporter ? <BadgeSupporter /> : null}
       {/* Show whitelisted only if user has the Whitelisted Privileges and does not have any of staff privileges */}
-      {priv & Privileges.Whitelisted &&
-      !(priv & Privileges.Staff) &&
-      !(priv & Privileges.Nominators) &&
-      !Privileges.Qats ? (
-        <BadgeWhitelisted />
-      ) : null}
+      {priv & Privileges.Whitelisted ? <BadgeWhitelisted priv={priv} /> : null}
       {priv & Privileges.Frozen ? <BadgeFrozen /> : null}
       {!(priv & Privileges.Unrestricted) ? <BadgeRestricted /> : null}
     </div>

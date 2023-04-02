@@ -4,11 +4,16 @@ export enum Privileges {
   Verified = 1 << 1,
   Frozen = 1 << 2, // Read-only mode for the user
 
+  // has bypass to low-ceiling anticheat measures (trusted).
+  WhitelistedStd = 1 << 3,
+  WhitelistedTaiko = 1 << 4,
+  WhitelistedCatch = 1 << 5,
+  WhitelistedMania = 1 << 6,
+
   // Elevated users
-  Whitelisted = 1 << 5, // has bypass to low-ceiling anticheat measures (trusted).
-  Supporter = 1 << 6, // Has supporter tag
-  Alumni = 1 << 7, // Ex-Staff member with big contributions
-  TournamentManager = 1 << 8, // Can create tournaments
+  Supporter = 1 << 7, // Has supporter tag
+  Alumni = 1 << 8, // Ex-Staff member with big contributions
+  TournamentManager = 1 << 9, // Can create tournaments
 
   // Staff (Nominators) Access to ranking maps
   NominatorStd = 1 << 10,
@@ -47,7 +52,12 @@ export enum Privileges {
     Administrator |
     HeadAdmin |
     Developer |
-    Owner
+    Owner,
+
+  Whitelisted = WhitelistedStd |
+    WhitelistedTaiko |
+    WhitelistedCatch |
+    WhitelistedMania
 }
 
 const hasRole = (
@@ -80,6 +90,10 @@ export const isNominator = (privileges: Privileges) => {
 
 export const isQAT = (privileges: Privileges) => {
   return hasRole(privileges, Privileges.Qats)
+}
+
+export const isWhitelisted = (privileges: Privileges) => {
+  return hasRole(privileges, Privileges.Whitelisted)
 }
 
 export const hasPerks = (privileges: Privileges) => {
