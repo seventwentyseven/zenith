@@ -1,0 +1,538 @@
+{% extends 'profile/base.html' %}
+{% block title %}Profile{% endblock %}
+{% block header %}
+<!-- Discord Embed Support -->
+<meta content="{{ appName() }} - {{ user['name'] }}'s Profile" property="og:title" />
+<meta content="{{ user['name'] }} is player from {{ user['clong'] }} with {{ stats['pp'] }}pp"
+    property="og:description" />
+<meta content="https://{{ domain() }}/u/{{ user['id'] }}" property="og:url" />
+<meta content="#4055bf" data-react-helmet="true" name="theme-color" />
+
+<script>
+    function Capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+</script>
+<!-- Apexcharts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.33.2/apexcharts.min.js"
+    integrity="sha512-iBEfFld2z1SAXCPmgoA40VQtqGP0cEJw4fy+t3ARW30uEfzf8hyrmm4mc5qdth3wZRPdKTv/auk5WH52klRVDg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.33.2/apexcharts.min.css"
+    integrity="sha512-72LrFm5Wau6YFp7GGd7+qQJYkzRKj5UMQZ4aFuEo3WcRzO0xyAkVjK3NEw8wXjEsEG/skqvXKR5+VgOuzuqPtA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
+{% block content %}
+<!-- User Stats -->
+<div class="bg-hsl-20 rounded-lg flex flex-col">
+    <!-- Header -->
+    <div class="text-xl font-medium pl-5 py-2 bg-hsl-25 rounded-t-lg">
+        <i class="fas fa-address-card mr-2 w-auto"></i>Stats
+    </div>
+    <!-- Content -->
+    <div class="h-auto sm:h-64 flex flex-col sm:flex-row">
+        <div class="m-2 sm:w-8/12 flex flex-col">
+            <div class="flex flex-col sm:flex-row mx-4 justify-center">
+                <!-- Rankings -->
+                <div class="flex justify-center">
+                    <div class="flex flex-col items-center">
+                        <p class="text-sm">Global Ranking</p>
+                        <p class="text-3xl font-medium -mt-1 text-hsl-90" id="global-ranking">
+                            -
+                        </p>
+                    </div>
+                    <div class="flex flex-col items-center ml-4">
+                        <p class="text-sm">Country Ranking</p>
+                        <p class="text-3xl font-medium -mt-1 text-hsl-90" id="country-ranking">
+                            -
+                        </p>
+                    </div>
+                </div>
+                <!-- Grades -->
+                <div class="grid grid-cols-5 grid-rows-1 mx-auto sm:ml-auto mt-2 sm:mt-0">
+                    <div class="col-span-1 row-span-1 flex flex-col items-center mx-2">
+                        <p class="text-3xl font-bold -mt-1 text-gray-300">SS</p>
+                        <p class="text-sm">{{ stats['xh_count'] }}</p>
+                    </div>
+                    <div class="col-span-1 row-span-1 flex flex-col items-center mx-2">
+                        <p class="text-3xl font-bold -mt-1 text-yellow-400">SS</p>
+                        <p class="text-sm">{{ stats['x_count'] }}</p>
+                    </div>
+                    <div class="col-span-1 row-span-1 flex flex-col items-center mx-2">
+                        <p class="text-3xl font-bold -mt-1 text-gray-300">S</p>
+                        <p class="text-sm">{{ stats['sh_count'] }}</p>
+                    </div>
+                    <div class="col-span-1 row-span-1 flex flex-col items-center mx-2">
+                        <p class="text-3xl font-bold -mt-1 text-yellow-400">S</p>
+                        <p class="text-sm">{{ stats['s_count'] }}</p>
+                    </div>
+                    <div class="col-span-1 row-span-1 flex flex-col items-center mx-2">
+                        <p class="text-3xl font-bold -mt-1 text-green-500">A</p>
+                        <p class="text-sm">{{ stats['a_count'] }}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Graph -->
+            <div class="flex h-24 sm:h-full items-center justify-center my-3 text-center" id="pp-graph">
+            </div>
+        </div>
+        <div class="hidden sm:flex mx-2 bg-hsl-10 h-56 my-auto w-0.5"></div>
+        <!-- Stats -->
+        <div class="flex sm:w-4/12 h-auto sm:h-32 mt-6 m-2">
+            <div class="grid grid-cols-2 gap-1 gap-x-4 sm:gap-x-1 w-full h-full">
+                <p class="col-span-1 row-span-1 font-medium text-sm text-hsl-80 flex justify-end sm:justify-start">
+                    PP
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm text-hsl-90">
+                    {{ stats['pp'] }}
+                </p>
+                <p class="col-span-1 row-span-1 font-medium text-sm flex justify-end sm:justify-start">
+                    Accuracy
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm">
+                    {{ stats['acc'] }}%
+                </p>
+                <p class="col-span-1 row-span-1 font-medium text-sm flex justify-end sm:justify-start">
+                    Ranked Score
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm">
+                    {{ stats['rscore'] }}
+                </p>
+                <p class="col-span-1 row-span-1 font-medium text-sm flex justify-end sm:justify-start">
+                    Total Score
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm">
+                    {{ stats['tscore'] }}
+                </p>
+                <p class="col-span-1 row-span-1 font-medium text-sm flex justify-end sm:justify-start">
+                    Play Count
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm">
+                    {{ stats['plays'] }}
+                </p>
+                <p class="col-span-1 row-span-1 font-medium text-sm flex justify-end sm:justify-start">
+                    Playtime
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm">
+                    {{ stats['playtime'] }}
+                </p>
+                <p class="col-span-1 row-span-1 font-medium text-sm flex justify-end sm:justify-start">
+                    Total Hits
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm">
+                    {{ stats['total_hits'] }}
+                </p>
+                <p class="col-span-1 row-span-1 font-medium text-sm flex justify-end sm:justify-start">
+                    Max Combo
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm">
+                    {{ stats['max_combo'] }}
+                </p>
+                <p class="col-span-1 row-span-1 font-medium text-sm flex justify-end sm:justify-start">
+                    Replay Views
+                </p>
+                <p class="col-span-1 col-start-2 row-span-1 text-sm">
+                    {{ stats['replay_views'] }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% if votes != None %}
+<div class="bg-hsl-20 rounded-lg flex flex-col my-3">
+    <!-- Content -->
+    <div class="m-3">
+        {% if votes.reaming != 0 %}
+        You have voted {{ votes.total }} times in total. To get free supporter, you need to vote
+        {{ votes.reaming }} more times. You can find the link to the voting page in footer.
+        {% else %}
+        You have voted {{ votes.total }} times in total and you have got free supporter. Contact staff to redeem it!
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% if user['userpage_content'] != None %}
+<!-- About Me -->
+<div class="bg-hsl-20 rounded-lg flex flex-col my-3" style="min-height: 64px;">
+    <!-- Header -->
+    <div class="text-xl font-medium pl-5 py-2 bg-hsl-25 rounded-t-lg">
+        <i class="fas fa-address-card mr-2 w-auto"></i>About Me
+    </div>
+    <!-- Content -->
+    <div class="m-3 max-h-96 overflow-y-auto">
+        {{user['userpage_content'] | safe}}
+    </div>
+</div>
+{% endif %}
+<!-- Top Plays -->
+<div class="bg-hsl-20 rounded-lg flex flex-col my-3">
+    <!-- Header -->
+    <div class="text-xl font-medium pl-5 py-2 bg-hsl-25 rounded-t-lg">
+        <i class="fas fa-trophy mr-2 w-auto"></i>Top Plays
+    </div>
+    <!-- Content -->
+    <div class="m-3 overflow-x-scroll md:overflow-x-hidden" id="best"></div>
+    <div class="flex content-center justify-center w-full pb-5">
+        <button class="px-5 py-2 rounded bg-hsl-15 hover:bg-hsl-40 transform duration-200" onclick="get_best(cur_best)">
+            Load More
+        </button>
+    </div>
+</div>
+
+<!-- Recent -->
+<div class="bg-hsl-20 rounded-lg flex flex-col my-3">
+    <!-- Header -->
+    <div class="text-xl font-medium pl-5 py-2 bg-hsl-25 rounded-t-lg">
+        <i class="fas fa-history mr-2 w-auto"></i>Recent Plays
+    </div>
+    <!-- Content -->
+    <div class="m-3 overflow-x-scroll md:overflow-x-hidden" id="recent">
+    </div>
+    <div class="flex content-center justify-center w-full pb-5">
+        <button class="px-5 py-2 rounded bg-hsl-15 hover:bg-hsl-40 transform duration-200"
+            onclick="get_recent(cur_recent)">
+            Load More
+        </button>
+    </div>
+</div>
+
+<!-- Most Played-->
+<div class="bg-hsl-20 rounded-lg flex flex-col">
+    <!-- Header -->
+    <div class="text-xl font-medium pl-5 py-2 bg-hsl-25 rounded-t-lg">
+        <i class="fas fa-play mr-2 w-auto"></i>Most Played
+    </div>
+    <!-- Content -->
+    <div class="m-3 grid grid-cols-1 lg:grid-cols-2 gap-2" id="most-played">
+    </div>
+    <div class="flex content-center justify-center w-full pb-5">
+        <button class="px-5 py-2 rounded bg-hsl-15 hover:bg-hsl-40 transform duration-200"
+            onclick="get_most_played(cur_most_played)">
+            Load More
+        </button>
+    </div>
+</div>
+{% endblock %}
+{% block bottom %}
+<script>
+    // Display user id, this is not debug
+    console.log("userid: {{ user['id'] }}")
+
+    // Rank
+    axios.get('https://api.{{ domain() }}/get_player_info?id={{ user["id"] }}&scope=all')
+        .then((r) => {
+            if (Number("{{mode}}") == 8) {
+                var toget = 7
+            } else {
+                var toget = Number("{{ mode }}")
+            }
+            document.getElementById("country-ranking").innerHTML = "#" + r.data.player.stats[toget].country_rank
+            document.getElementById("global-ranking").innerHTML = "#" + r.data.player.stats[toget].rank
+        })
+    function addCommas(x) {
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+    function rank_colors(rank) {
+        switch (rank) {
+            case 'XH':
+                return 'text-gray-300'
+            case 'X':
+                return 'text-yellow-400'
+            case 'SH':
+                return 'text-gray-300'
+            case 'S':
+                return 'text-yellow-400'
+            case 'A':
+                return 'text-green-500'
+            case 'B':
+                return 'text-blue-500'
+            case 'C':
+                return 'text-purple-400'
+            case 'D':
+                return 'text-red-400'
+            case 'F':
+                return 'text-red-400'
+        }
+    }
+    function grade_normal(rank) {
+        switch (rank) {
+            case 'XH':
+                return 'SS'
+            case 'X':
+                return 'SS'
+            case 'SH':
+                return 'S'
+            default:
+                return rank
+        }
+    }
+
+
+    cur_best = 4
+    cur_recent = 4
+    cur_most_played = 5
+    best = document.getElementById("best")
+    recent = document.getElementById("recent")
+    most_played = document.getElementById("most-played")
+    function get_best(n) {
+        axios.get('https://api.{{ domain() }}/get_player_scores?scope=best&id={{ user["id"] }}&mode={{ mode }}&limit=' + Number(cur_best + 1))
+            .then((r) => {
+                resp = r.data.scores.splice(cur_best - 9, cur_best - 4)
+                for (el of resp) {
+                    let timeagovar = new Date(el.play_time).getTime()
+                    pauseel = ``
+                    if (el.pauses > 0) {
+                        pauseel = `<span class="bg-yellow-500 text-black py-0.5 px-1.5 text-xs rounded-full"><b class="font-semibold">PAUSES:</b> ${el.pauses}</span>`
+                    }
+                    best.innerHTML += `<div class="w-max md:w-full h-20 flex my-2">
+                    <div class="w-auto sm:w-full h-full rounded-lg flex"
+                         style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.70),
+                         hsl(var(--main), 10%, 10%, 0.65)), url(https://assets.ppy.sh/beatmaps/${el.beatmap.set_id}/covers/cover.jpg);
+                         background-position: center; background-size: cover">
+                        <div class="w-auto md:w-full h-full grid grid-cols-12 grid-rows-1">
+                            <!-- Map info -->
+                            <div class="col-span-10 row-span-1 flex flex-col justify-center ml-2">
+                                <p class="font-medium">
+                                    <a  class="w-full text-hsl-80 hover:text-hsl-90 transform duration-200"
+                                        href="/b/${el.beatmap.id}">
+                                        <span class="text-ellipsis overflow-hidden">${el.beatmap.artist} - ${el.beatmap.title} [${el.beatmap.version}]</span>
+                                    </a>
+                                    <span class="ml-1">${mods2str(el.mods).mod_text}</span>
+                                </p>
+                                <div>
+                                    ${pauseel}
+                                    <span class="ml-2 md:ml-3">${addCommas(el.score)} / ${el.max_combo}x</span>
+                                    <span class="ml-2 md:ml-3">${timeago().format(timeagovar)}</span>
+                                </div>
+                            </div>
+                            <!-- Score Info -->
+                            <div class="col-span-2 row-span-2 grid grid-cols-3 grid-rows-1 gap-x-1 mr-3">
+                                <div class="col-span-2 row-span-1 flex flex-col items-end justify-center mr-1">
+                                    <span class="text-xl text-hsl-80 font-bold whitespace-nowrap">${Math.round(el.pp * 100) / 100}pp</span>
+                                    <span class="text-hsl-90 whitespace-nowrap">Acc ${Math.round(el.acc * 100) / 100}%</span>
+                                </div>
+                                <div class="col-span-1 row-span-1 flex items-center justify-center">
+                                    <span class="text-3xl font-bold ${rank_colors(el.grade)}">${grade_normal(el.grade)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center justify-items-center">
+                        <div @click.away="open = false" class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center rounded-md pl-4 pr-2
+                                py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
+                                <i class="fas fa-ellipsis-v text-lg"></i>
+                            </button>
+                            <div x-show="open"
+                                x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-100" x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95"
+                                class="absolute right-0 w-full mt-1 origin-top-right rounded-md shadow-lg md:w-48 z-10">
+                                <div class="py-2 bg-hsl-10 rounded-md shadow text-sm">
+                                    <a class="block px-6 py-2 md:mt-0 focus:outline-none focus:shadow-outline
+                                        hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-20 focus:bg-hsl-20
+                                        border-hsl-50 hover:border-l-3 focus:border-l-3"
+                                        href="/score/${el.id}">View Score</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+                }
+
+            })
+
+        cur_best = cur_best + 5
+    }
+
+    function get_recent(n) {
+        axios.get('https://api.{{ domain() }}/get_player_scores?scope=recent&id={{ user["id"] }}&mode={{ mode }}&limit=' + Number(cur_best + 1))
+            .then((r) => {
+                //why
+                resp = r.data.scores.splice(cur_recent - 9, cur_recent - 4)
+                for (el of resp) {
+                    console.log(el)
+                    let timeagovar = new Date(el.play_time).getTime()
+                    pauseel = ``
+                    if (el.pauses > 0) {
+                        pauseel = `<span class="bg-yellow-500 text-black py-0.5 px-1.5 text-xs rounded-full"><b class="font-semibold">PAUSES:</b> ${el.pauses}</span>`
+                    }
+                    recent.innerHTML += `<div class="w-max md:w-full h-20 flex my-2">
+                    <div class="w-auto sm:w-full h-full rounded-lg flex"
+                         style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.70),
+                         hsl(var(--main), 10%, 10%, 0.65)), url(https://assets.ppy.sh/beatmaps/${el.beatmap.set_id}/covers/cover.jpg);
+                         background-position: center; background-size: cover">
+                        <div class="w-auto md:w-full h-full grid grid-cols-12 grid-rows-1">
+                            <!-- Map info -->
+                            <div class="col-span-10 row-span-1 flex flex-col justify-center ml-2">
+                                <p class="font-medium">
+                                    <a  class="w-full text-hsl-80 hover:text-hsl-90 transform duration-200"
+                                        href="/b/${el.beatmap.id}">
+                                        <span class="text-ellipsis overflow-hidden">${el.beatmap.artist} - ${el.beatmap.title} [${el.beatmap.version}]</span>
+                                    </a>
+                                    <span class="ml-1">${mods2str(el.mods).mod_text}</span>
+                                </p>
+                                <div>
+                                    ${pauseel}
+                                    <span>${addCommas(el.score)} / ${el.max_combo}x</span>
+                                    <span class="ml-2 md:ml-3">${timeago().format(timeagovar)}</span>
+                                </div>
+                            </div>
+                            <!-- Score Info -->
+                            <div class="col-span-2 row-span-2 grid grid-cols-3 grid-rows-1 gap-x-1 mr-3">
+                                <div class="col-span-2 row-span-1 flex flex-col items-end justify-center mr-1">
+                                    <span class="text-xl text-hsl-80 font-bold whitespace-nowrap">${Math.round(el.pp * 100) / 100}pp</span>
+                                    <span class="text-hsl-90 whitespace-nowrap">Acc ${Math.round(el.acc * 100) / 100}%</span>
+                                </div>
+                                <div class="col-span-1 row-span-1 flex items-center justify-center">
+                                    <span class="text-3xl font-bold ${rank_colors(el.grade)}">${grade_normal(el.grade)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center justify-items-center">
+                        <div @click.away="open = false" class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center rounded-md pl-4 pr-2
+                                py-2 pd-3.5 h-auto font-medium text-white hover:text-gray-300">
+                                <i class="fas fa-ellipsis-v text-lg"></i>
+                            </button>
+                            <div x-show="open"
+                                x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-100" x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95"
+                                class="absolute right-0 w-full mt-1 origin-top-right rounded-md shadow-lg md:w-48 z-10">
+                                <div class="py-2 bg-hsl-10 rounded-md shadow text-sm">
+                                    <a class="block px-6 py-2 md:mt-0 focus:outline-none focus:shadow-outline
+                                        hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-20 focus:bg-hsl-20
+                                        border-hsl-50 hover:border-l-3 focus:border-l-3"
+                                        href="/score/${el.id}">View Score</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+                }
+
+            })
+
+        cur_recent = cur_recent + 5
+    }
+
+    function get_most_played(n) {
+        axios.get('https://api.{{ domain() }}/get_player_most_played?id={{ user["id"] }}&mode={{ mode }}&limit=' + Number(cur_best + 1))
+            .then((r) => {
+                //why
+                resp = r.data.maps.splice(cur_most_played - 10, cur_most_played - 5)
+                for (el of resp) {
+                    most_played.innerHTML += `
+                <a  class="col-span-1 row-span-1 h-20 rounded-lg bg-hsl-30 flex
+                    hover:bg-hsl-40 hover:opacity-60 transform duration-500"
+                    style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.7),
+                    hsl(var(--main), 10%, 10%, 0.7)), url(https://assets.ppy.sh/beatmaps/${el.set_id}/covers/cover.jpg);
+                    background-position: center; background-size: cover"
+                    href="/b/${el.id}">
+                    <div class="grid grid-cols-6 grid-rows-1 gap-1 h-full w-full">
+                        <div class="row-span-1 col-span-4 md:col-span-5 h-full flex justify-center ml-2 flex-col">
+                            <p class="font-medium truncate">${el.artist} - ${el.title}</p>
+                            <p class="mt-1 truncate">${el.version}</p>
+                        </div>
+                        <div class="row-span-1 col-span-2 md:col-span-1 flex items-end justify-end h-full">
+                            <p class="font-medium text-sm md:text-base mr-2 mb-1 whitespace-nowrap">
+                                Played <span class="text-hsl-80 text-base md:text-lg">${el.plays}x</span>
+                            </p>
+                        </div>
+                    </div>
+                </a>`
+                }
+
+            })
+
+        cur_most_played = cur_most_played + 6
+    }
+    // Execute on load to get first 5 scores
+    get_best(cur_best)
+    get_recent(cur_recent)
+    get_most_played(cur_most_played)
+</script>
+<!-- Graph -->
+<script>
+    days_arr = []
+    pp_arr = []
+    axios.get('https://{{ domain() }}/wapi/get_pp_history?u={{ user["id"] }}&m={{ mode }}')
+        .then((r) => {
+            console.log(r.data)
+            if (r.data.success === false) {
+                document.getElementById('pp-graph').innerHTML = `
+            <p>${r.data.msg}</p>
+            `
+            } else {
+                for (el of r.data.data) {
+
+                    days_arr.push(new Date(el.date).toLocaleDateString(
+                        'pl-PL', { year: 'numeric', month: 'numeric', day: 'numeric' })
+                    )
+                    pp_arr.push(el.pp)
+                }
+                // Graph creation
+                var options = {
+                    // Settings and styling
+                    chart: {
+                        type: 'line',
+                        height: 184,
+                        zoom: {
+                            enabled: false
+                        },
+                        toolbar: {
+                            show: false
+                        },
+                        background: 'rgba(0,0,0,0)'
+                    },
+                    stroke: { curve: 'smooth', width: 3 },
+                    legend: { show: false },
+                    colors: ['hsl(var(--main), 60%, 60%)'],
+                    grid: { show: false },
+                    theme: {
+                        mode: 'dark',
+                    },
+                    markers: {
+                        size: 0,
+                        fillColor: 'hsl(var(--main), 50%, 50%)',
+                        strokeWidth: 0,
+                        hover: { size: 7 }
+                    },
+                    // Data
+                    series: [{
+                        name: 'PP',
+                        data: pp_arr
+                    }],
+                    xaxis: {
+                        categories: days_arr,
+                        labels: { show: false },
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false,
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    },
+                    yaxis: { labels: { show: false } },
+                }
+                var chart = new ApexCharts(document.querySelector("#pp-graph"), options);
+                chart.render();
+            }
+        })
+</script>
+<style>
+    .apexcharts-xcrosshairs,
+    .apexcharts-ycrosshairs {
+        display: none;
+    }
+</style>
+{% endblock %}

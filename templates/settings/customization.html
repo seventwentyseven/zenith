@@ -1,0 +1,393 @@
+{% extends 'settings/base.html' %}
+{% block title %}Profile Customization{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+
+{% block content %}
+<!--! Avatar + Banner and bg -->
+<!--* Avatar -->
+<div class="rounded-lg mx-3 my-3 bg-hsl-25">
+    <div class="mx-3 flex flex-col">
+        <div class="w-full ml-2 mt-3">
+            <p class="font-medium">Profile Apperance - Avatar</p>
+            <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+        </div>
+
+        <div class="my-5 flex flex-col md:flex-row mx-2">
+            <form id="upload-profile" action="/settings/customization/avatar" method="post" enctype="multipart/form-data">
+                <div class="mt-3" id="selection">
+                    <div class="text-sm mb-4">We recommend an image of at least 512x512 (or 1:1 ratio).
+                        You can upload a PNG, JPG under 5MB<br><br>
+                        Please note that uploading nsfw images or images that break the rules<br>
+                        is prohibited and may result in you being banned from changing your avatar
+                    </div>
+                    <label class="file-label">
+                        <input class="hidden" id="file" type="file" accept="image/jpeg" name="avatar">
+                        <span class="px-4 py-2 text-xs rounded-lg text-gray-50 bg-hsl-60
+                                    hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30
+                                    transition duration-200">
+                            <span>
+                                Choose file <i class="fa fa-upload ml-2"></i>
+                            </span>
+                        </span>
+                    </label>
+                    <button class="px-4 py-2 text-xs rounded-lg text-gray-50 bg-hsl-60
+                                hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30
+                                transition duration-200 ml-3"
+                            type="submit">
+                        <p class="text-xs">
+                            <i class="fas fa-check mr-2"></i><span>Save</span>
+                        </p>
+                    </button>
+                </div>
+            </form>
+            <div class="flex flex-col md:ml-auto mt-4 md:-mt-8">
+                <h4 class="text-lg font-medium">Preview</h4>
+                <div class="h-1 w-6 bg-hsl-60 rounded-full mt-1 mb-2"></div>
+                <div class="flex justify-center" id="avatar">
+                    <img id="avatar-img" alt="avatar"
+                         src="https://a.{{ domain() }}/{{ session.user_data['id']}}"
+                         class="rounded-lg h-40 w-40">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--* Banner and BG -->
+<div class="rounded-lg mx-3 my-3 bg-hsl-25">
+    <div class="mx-3 flex flex-col">
+        <div class="w-full ml-2 mt-3">
+            <p class="font-medium">Profile Apperance - Banner and Background</p>
+            <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+        </div>
+
+        <div class="mx-2">
+            <div class="flex flex-col md:flex-row">
+                <div class="flex flex-col w-full md:w-2/3">
+                    <form id="upload-profile" action="/settings/customization/banner_bg" method="post" enctype="multipart/form-data">
+                        <div class="single-block-content avatar-block-content mb-6">
+                            <h4 class="my-3 font-medium">Banner</h4>
+                            <div class="h-1 w-6 bg-hsl-60 rounded-full mt-1 mb-2"></div>
+                            <div class="text-sm">Recommend with 1440x262 pixels with GIF, PNG, JPG, JPEG</div>
+                            <div class="mt-2" id="selection">
+                                <label>
+                                    <input class="hidden" id="file-bn" type="file" name="banner">
+                                    <span class="px-4 py-2 text-xs rounded-lg text-gray-50 bg-hsl-60
+                                          hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30
+                                          transition duration-200">
+                                        Choose file <i class="fa fa-upload fal-2"></i>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="single-block-content avatar-block-content">
+                            <h4 class="my-3 font-medium">Profile Background</h4>
+                            <div class="h-1 w-6 bg-hsl-60 rounded-full mt-1 mb-2"></div>
+                            <div class="text-sm">
+                                Recommend with 16:9 ratio with PNG, JPG, JPEG
+                            </div>
+                            <div class="mt-2" id="selection">
+                                <label>
+                                    <input class="hidden" id="file-bg" type="file" name="background">
+                                    <span class="px-4 py-2 text-xs rounded-lg text-gray-50 bg-hsl-60
+                                          hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30
+                                          transition duration-200">
+                                        Choose file <i class="fa fa-upload"></i>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex justify-center my-4">
+                            <button class='px-4 py-2 text-xs rounded-lg text-gray-50 bg-hsl-60
+                                    hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30
+                                    transition duration-200' type='submit'>
+                                <p>
+                                    <i class='fas fa-check mr-2'></i> Save
+                                </p>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex flex-col md:ml-auto w-full md:w-1/3 mb-3 md:mb-0">
+                    <h4 class="text-lg font-medium">Preview</h4>
+                    <div class="h-1 w-6 bg-hsl-60 rounded-full mt-1 mb-2"></div>
+                    <div class="h-auto flex flex-col w-full">
+                        <div class="bg-hsl-40 rounded-t-lg h-28" id="top-block"></div>
+                        <div class="bg-hsl-20 h-10">
+                            <div class="-mt-12 ml-4">
+                                <img class="h-20 w-20 rounded" id="banner-pv-avatar"
+                                     src="https://a.{{ domain() }}/{{ session['user_data']['id'] }}">
+                            </div>
+                        </div>
+                        <div class="bg-hsl-30 h-10"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--! This grid shit with customs -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mx-3 mb-3">
+    <!--* Page Main Color -->
+    <div class="col-span-1 row-span-1 rounded-lg bg-hsl-25 h-full">
+        <div class="mx-3 flex flex-col">
+            <div class="w-full ml-2 mt-3">
+                <p class="font-medium">Page Apperance - Page main color</p>
+                <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+            </div>
+            <div class="mt-3 mx-2 mb-3">
+                <form>
+                    <label for="hsl-value" class="text-sm text-hsl-90">Select value in range from 0 to 360</label>
+                    <div class="flex mt-1">
+                        <div class="hidden md:block rounded-full h-8 w-8 bg-hsl-50"></div>
+                        <input class="ml-3 bg-hsl-25 outline-none text-hsl-90 border-b-2 border-b-hsl-50
+                               focus:border-b-hsl-60 focus:text-gray-50 transition duration-300 ease-in-out"
+                               type="text" id="hsl-value" name="hsl-value" onkeyup="changeMainColor()">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--* Default Mode -->
+    <div class="col-span-1 row-span-1 rounded-lg bg-hsl-25 h-full">
+        <div class="mx-3 flex flex-col">
+            <div class="w-full ml-2 mt-3">
+                <p class="font-medium">Profile Settings - Default mode</p>
+                <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+            </div>
+            <div class="mt-3 mx-2 mb-3">
+                <form>
+                    <div class="relative inline-flex text-hsl-90">
+                        <i class="fas fa-chevron-down text-lg w-2 h-2 absolute top-0 right-0 m-4 pointer-events-none"></i>
+                        <select class="rounded-lg h-10 pl-5 focus:bg-hsl-20 focus:outline-none
+                                pr-10 bg-hsl-15 hover:bg-hsl-20 appearance-none transition duration-300"
+                                onchange="changeDefaultMode(this.value)"
+                                id="defmode-select">
+                            <option value="0">Std</option>
+                            <option value="1">Taiko</option>
+                            <option value="2">Catch</option>
+                            <option value="3">Mania</option>
+                            <option value="4">Std +Relax</option>
+                            <option value="5">Taiko +Relax</option>
+                            <option value="6">Catch +Relax</option>
+                            <option value="8">Std +AutoPilot</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--* User's Discord -->
+    <div class="col-span-1 row-span-1 rounded-lg bg-hsl-25 h-full">
+        <div class="mx-3 flex flex-col">
+            <div class="w-full ml-2 mt-3">
+                <p class="font-medium">User Info - Discord</p>
+                <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+            </div>
+            <div class="mt-3 mx-2 mb-5">
+                <form>
+                    <div class="flex flex-col md:flex-row mt-1 w-full">
+                        <input class="mx-auto md:ml-3 bg-hsl-25 outline-none text-hsl-90 border-b-2 border-b-hsl-50
+                               focus:border-b-hsl-60 focus:text-gray-50 transition duration-300 ease-in-out
+                               w-11/12 md:w-8/12" id="discord_tag-field"
+                               type="text" id="hsl-value" name="hsl-value" placeholder="Eg. def750#2296">
+                        <button class='mt-2 md:mt-0 mx-auto md:ml-auto px-4 py-2 text-xs rounded-lg bg-hsl-60
+                               hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30 text-gray-50
+                               transition duration-200' onclick="updateDiscord()">
+                           <p class="whitespace-nowrap">
+                               <i class='fas fa-check mr-2'></i> Save
+                           </p>
+                       </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--* User's Location -->
+    <div class="col-span-1 row-span-1 rounded-lg bg-hsl-25 h-full">
+        <div class="mx-3 flex flex-col">
+            <div class="w-full ml-2 mt-3">
+                <p class="font-medium">User Info - Location</p>
+                <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+            </div>
+            <div class="mt-3 mx-2 mb-5">
+                <form>
+                    <div class="flex flex-col md:flex-row mt-1 w-full">
+                        <input class="mx-auto md:ml-3 bg-hsl-25 outline-none text-hsl-90 border-b-2 border-b-hsl-50
+                               focus:border-b-hsl-60 focus:text-gray-50 transition duration-300 ease-in-out
+                               w-11/12 md:w-8/12" id="location-field"
+                               type="text" id="hsl-value" name="hsl-value" placeholder="Eg. Poland">
+                        <button class='mt-2 md:mt-0 mx-auto md:ml-auto px-4 py-2 text-xs rounded-lg
+                               hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30 text-gray-50 bg-hsl-60
+                               transition duration-200' onclick="updateLocation()">
+                           <p class="whitespace-nowrap">
+                               <i class='fas fa-check mr-2'></i> Save
+                           </p>
+                       </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--* Users Interests -->
+    <div class="col-span-1 row-span-1 rounded-lg bg-hsl-25 h-full">
+        <div class="mx-3 flex flex-col">
+            <div class="w-full ml-2 mt-3">
+                <p class="font-medium">User Info - Interests</p>
+                <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+            </div>
+            <div class="mt-3 mx-2 mb-5">
+                <form>
+                    <div class="flex flex-col md:flex-row mt-1 w-full">
+                        <input class="mx-auto md:ml-3 bg-hsl-25 outline-none text-hsl-90 border-b-2 border-b-hsl-50
+                               focus:border-b-hsl-60 focus:text-gray-50 transition duration-300 ease-in-out
+                               w-11/12 md:w-8/12" id="interests-field"
+                               type="text" id="hsl-value" name="hsl-value" placeholder="Eg. Photography">
+                        <button class='mt-2 md:mt-0 mx-auto md:ml-auto px-4 py-2 text-xs rounded-lg
+                               hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30 text-gray-50 bg-hsl-60
+                               transition duration-200' type='submit' onclick="updateInterests()">
+                           <p class="whitespace-nowrap">
+                               <i class='fas fa-check mr-2'></i> Save
+                           </p>
+                       </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--* User's Website -->
+    <div class="col-span-1 row-span-1 rounded-lg bg-hsl-25 h-full">
+        <div class="mx-3 flex flex-col">
+            <div class="w-full ml-2 mt-3">
+                <p class="font-medium">User Info - Website</p>
+                <div class="h-1 w-10 bg-hsl-60 rounded-full mt-1"></div>
+            </div>
+            <div class="mt-3 mx-2 mb-5">
+                <form>
+                    <div class="flex flex-col md:flex-row mt-1 w-full">
+                        <input class="mx-auto md:ml-3 bg-hsl-25 outline-none text-hsl-90 border-b-2 border-b-hsl-50
+                               focus:border-b-hsl-60 focus:text-gray-50 transition duration-300 ease-in-out
+                               w-11/12 md:w-8/12" id="website-field"
+                               type="text" id="hsl-value" name="hsl-value" placeholder="Eg. seventwentyseven.xyz">
+                        <button class='mt-2 md:mt-0 mx-auto md:ml-auto px-4 py-2 text-xs rounded-lg
+                               hover:text-hsl-90 active:bg-gray-50 active:text-hsl-30 text-gray-50 bg-hsl-60
+                               transition duration-200' type='submit' onclick="updateWebsite()">
+                           <p class="whitespace-nowrap">
+                               <i class='fas fa-check mr-2'></i> Save
+                           </p>
+                       </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.css" />
+<!--* Avatar -->
+<script>
+    $("#file")
+      .change(function (e) {
+        var f = e.target.files;
+        if (f.length < 1) {
+          return;
+        }
+        var u = window.URL.createObjectURL(f[0]);
+        var i = $("#avatar-img")[0];
+        i.src = u;
+        $('#avatar-img').attr('src', i.src)
+        $('#banner-pv-avatar').attr('src', i.src)
+      });
+</script>
+<!--* Banner and BG -->
+<script>
+    $("#file-bg")
+      .change(function (e) {
+        var f = e.target.files;
+        if (f.length < 1) {
+          return;
+        }
+        var u = window.URL.createObjectURL(f[0]);
+        var i = $("body")[0];
+        i.src = u;
+        $('body').css({'background': `linear-gradient(hsl(var(--main), 25%, 25%, 20%), hsl(var(--main), 10%, 10%)), url(${i.src})`, 'background-size': 'cover'})
+      });
+
+      $("#file-bn")
+      .change(function (e) {
+        var f = e.target.files;
+        if (f.length < 1) {
+          return;
+        }
+        var u = window.URL.createObjectURL(f[0]);
+        var i = $("#top-block")[0];
+        i.src = u;
+        $('#top-block').css({'background': `linear-gradient(hsl(var(--main), 25%, 25%, 20%), hsl(var(--main), 25%, 25%, 60%)), url(${i.src})`, 'background-size': 'cover'})
+      });
+</script>
+<!--* Main color change -->
+<script>
+    function changeMainColor() {
+        x = document.getElementById("hsl-value").value
+        if (x === '') {
+            x = 230
+        } else {
+            x = Number(x)
+        }
+        $('html').css({'--main': x})
+        axios.post('/wapi/update_color?color=' + x)
+        .then((r) => {
+            console.log(r.data.success, r.data.msg)
+        })
+    }
+</script>
+<!--* Default Mode -->
+<script>
+    function changeDefaultMode(value) {
+        axios.post('/wapi/change_default_mode?mode=' + value)
+        .then((r) => {
+            console.log(r.data.success, r.data.msg)
+        })
+    }
+</script>
+<!--* Update User Customs -->
+<script>
+    function updateDiscord() {
+        const json = JSON.stringify({ data: document.getElementById('discord_tag-field').value });
+        axios.post('https://{{domain() }}/wapi/update_user_discord', json)
+    }
+    function updateWebsite() {
+        const json = JSON.stringify({ data: document.getElementById('website-field').value });
+        axios.post('https://{{domain() }}/wapi/update_user_website', json)
+    }
+    function updateInterests() {
+        const json = JSON.stringify({ data: document.getElementById('interests-field').value });
+        axios.post('https://{{domain() }}/wapi/update_user_interests', json)
+    }
+    function updateLocation() {
+        const json = JSON.stringify({ data: document.getElementById('location-field').value });
+        axios.post('https://{{domain() }}/wapi/update_user_location', json)
+    }
+</script>
+<script>
+    // Get user's defaults
+    axios.get(
+        "https://{{ domain() }}/wapi/get_customization_data"
+    ).then((response) => {
+        data = response.data.result
+
+        document.getElementById("defmode-select").selectedIndex = data.preferred_mode;
+        document.getElementById("location-field").value = data.location;
+        document.getElementById("discord_tag-field").value = data.discord_tag;
+        document.getElementById("interests-field").value = data.interests;
+        document.getElementById("website-field").value = data.website;
+        document.getElementById("hsl-value").value = data.color;
+    })
+</script>
+{% endblock %}

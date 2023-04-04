@@ -1,0 +1,560 @@
+{% extends 'base.html' %}
+{% block title %}Beatmap Search{% endblock %}
+
+{% block header %}
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+<script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+{% endblock %}
+
+
+{% block content %}
+<div class="flex flex-col w-full md:w-10/12 max-w-screen-xl md:mx-auto my-12">
+    <div class="py-24" id="banner"
+        style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.65),
+        hsl(var(--main), 10%, 10%, 0.65)), url(/static/images/leaderb.png);
+        background-position: center; background-size: cover; background-repeat: no-repeat !important;">
+        <div class="flex flex-col justify-center w-11/12 md:w-10/12 mx-auto">
+            <div class="relative flex flex-row">
+                <input  class="w-full mx-auto outline-none py-3 px-4 text-gray-100 bg-hsl-10
+                        rounded focus:bg-hsl-15 focus:text-hsl-90 transition duration-300"
+                        placeholder="Search Beatmaps" aria-label="Search Beatmaps"
+                        aria-describedby="button-addon2" type="search" id="search"
+                        onkeyup="updateSearch()">
+            </div>
+            <div class="w-full mt-10 flex flex-col md:flex-row items-center md:justify-between">
+                <div class="flex flex-row" id="mode-selects">
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                        hover:bg-hsl-40 active:bg-hsl-60 rounded-l-lg transition duration-300"
+                        id="mode-all" onclick="changeMode(null)">
+                        <span class="px-2.5">All</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                        hover:bg-hsl-40 active:bg-hsl-60 transition duration-300 group"
+                        id="mode-0" onclick="changeMode(0)">
+                        <i class="mode-icon osu px-2.5 group-hover:pl-2.5 group-hover:pr-1.5"
+                           id="mode-0_icon"></i>
+                        <span class="hidden group-hover:flex pr-2.5"
+                           id="mode-0_text">Std</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                        hover:bg-hsl-40 active:bg-hsl-60 transition duration-300 group"
+                        id="mode-1" onclick="changeMode(1)">
+                        <i class="mode-icon taiko px-2.5 group-hover:pl-2.5 group-hover:pr-1.5"
+                            id="mode-1_icon"></i>
+                        <span class="hidden group-hover:flex pr-2.5"
+                            id="mode-1_text">Taiko</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                        hover:bg-hsl-40 active:bg-hsl-60 transition duration-300 group"
+                        id="mode-2" onclick="changeMode(2)">
+                        <i class="mode-icon catch px-2.5 group-hover:pl-2.5 group-hover:pr-1.5"
+                            id="mode-2_icon"></i>
+                        <span class="hidden group-hover:flex pr-2.5"
+                            id="mode-2_text">Catch</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                        hover:bg-hsl-40 active:bg-hsl-60 rounded-r-lg transition duration-300 group"
+                        id="mode-3" onclick="changeMode(3)">
+                        <i class="mode-icon mania px-2.5 group-hover:pl-2.5 group-hover:pr-1.5"
+                            id="mode-3_icon"></i>
+                        <span class="hidden group-hover:flex pr-2.5"
+                            id="mode-3_text">Mania</span>
+                    </button>
+                </div>
+                <div class="flex flex-row md:absolute md:left-1/2 md:transform md:-translate-x-1/2 my-2 md:my-0">
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                    hover:bg-hsl-40 active:bg-hsl-60 rounded-l-lg transition duration-300"
+                        id="frozen-0" onclick="changeFrozen(null)">
+                        <span class="px-2.5">All</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                    hover:bg-hsl-40 active:bg-hsl-60 rounded-r-lg transition duration-300 group"
+                    id="frozen-1" onclick="changeFrozen(1)">
+                        <span class="px-2.5">Custom Ranked</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-row">
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                    hover:bg-hsl-40 active:bg-hsl-60 rounded-l-lg transition duration-300"
+                        id="status-all" onclick="changeStatus(null)">
+                        <span class="px-2.5">All</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                    hover:bg-hsl-40 active:bg-hsl-60 transition duration-300 group"
+                        id="status-0" onclick="changeStatus(0)">
+                        <span class="px-2.5 group-hover:pl-2.5 group-hover:pr-1.5 text-sky-400"
+                            id="status-0_icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z"/>
+                                <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                            </svg>
+                        </span>
+                        <span class="hidden group-hover:flex pr-2.5"
+                            id="status-0_text">Ranked</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                    hover:bg-hsl-40 active:bg-hsl-60 transition duration-300 group"
+                        id="status-1" onclick="changeStatus(1)">
+                        <span class="px-2.5 group-hover:pl-2.5 group-hover:pr-1.5 text-pink-500"
+                            id="status-1_icon">
+                            <i class="fas fa-heart"></i>
+                        </span>
+                        <span class="hidden group-hover:flex pr-2.5"
+                            id="status-1_text">Loved</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                    hover:bg-hsl-40 active:bg-hsl-60 transition duration-300 group"
+                        id="status-2" onclick="changeStatus(2)">
+                        <span class="px-2.5 group-hover:pl-2.5 group-hover:pr-1.5 text-green-500"
+                            id="status-2_icon">
+                            <i class="fas fa-check"></i>
+                        </span>
+                        <span class="hidden group-hover:flex pr-2.5"
+                            id="status-2_text">Qualified</span>
+                    </button>
+                    <button class="h-10 w-auto bg-hsl-20 flex items-center justify-center
+                    hover:bg-hsl-40 active:bg-hsl-60 rounded-r-lg transition duration-300 group"
+                        id="status-3" onclick="changeStatus(3)">
+                        <span class="px-2.5 group-hover:pl-2.5 group-hover:pr-1.5 text-gray-100"
+                            id="status-3_icon">
+                            <i class="fas fa-question"></i>
+                        </span>
+                        <span class="hidden group-hover:flex pr-2.5"
+                            id="status-3_text">Unranked</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col bg-hsl-20 rounded-b-lg h-auto">
+        <div class="m-3 grid grid-cols-1 md:grid-cols-2 gap-3" id="results">
+        </div>
+        <div id="load-more-parent">
+            <div class="flex justify-center pb-3" id="load-more">
+                <button class="h-10 w-auto bg-hsl-35 flex items-center justify-center
+                hover:bg-hsl-50 active:bg-hsl-60 rounded-lg transition duration-300"
+                    onclick="loadMore()">
+                    <span class="px-2.5" id="load-more_btn">Load More</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom %}
+<style>
+  /* Change Autocomplete styles in Chrome*/
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    box-shadow: 0 0 0px 1000px rgba(0,0,0,0) inset;
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0px 1000px rgba(0,0,0,0) inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+/* clears the ‘X’ from Internet Explorer */
+input[type=search]::-ms-clear { display: none; width : 0; height: 0; }
+input[type=search]::-ms-reveal { display: none; width : 0; height: 0; }
+/* clears the ‘X’ from Chrome */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration { display: none; }
+</style>
+<script>
+var offset = 0
+var mode = null
+var status = null
+var frozen = null
+
+function mode2str(mapmode) {
+    switch (mapmode) {
+        case 0:
+        case '0':
+            return 'std'
+        case 1:
+        case '1':
+            return 'taiko'
+        case 2:
+        case '2':
+            return 'catch'
+        case 3:
+        case '3':
+            return 'mania'
+    }
+}
+
+function status2str(setstatus) {
+    switch (setstatus) {
+        case 0:
+        case '0':
+            return ['unranked', '<i class="fas fa-question text-gray-200 text-xl"></i>']
+        case 2:
+        case '2':
+            return ['ranked',
+                    `<span class="text-sky-400 text-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-double-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z"/>
+                            <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                        </svg>
+                    </span>`]
+        case 3:
+        case '3':
+            return ['approved', '<i class="fas fa-check text-green-500 text-xl"></i>']
+        case 4:
+        case '4':
+            return ['qualified', '<i class="fas fa-check text-green-500 text-xl"></i>']
+        case 5:
+        case '5':
+            return ['loved', '<i class="fas fa-heart text-pink-500 text-xl"></i>']
+    }
+}
+
+function search(mode, status, frozen, offset) {
+    // Search function with load more functionality built in
+    query = document.getElementById("search").value;
+    if (query.length == 0) {
+        query = null
+    }
+    const json = JSON.stringify({
+        "mode": mode,
+        "status": status,
+        "query": query,
+        "frozen": frozen,
+        "offset": offset
+    });
+    axios.post('/wapi/bmap_search', json)
+    .then((r) => {
+        console.log(r.data.result)
+        for (el of r.data.result) {
+            // Generate diffblock
+            var diffblock = ``
+            for (diff_obj of el.diffs) {
+                // round diff_obj.diff to 2 decimal places
+                diffblock += `
+                <div class="flex flex-row items-center justify-center rounded-full px-2 py-1.5 mx-0.5 group
+                    transision duration-200 hover:pl-2 hover:pr-2.5"
+                    style="background-color: ${diff_obj.diff_color}; color: ${getContrastYIQ(diff_obj.diff_color)};">
+                    <i class="mode-icon ${mode2str(diff_obj.mode)} group-hover:mr-1.5" style="font-size: 18px;"></i>
+                    <span class="hidden group-hover:flex z-30">${Math.round(diff_obj.diff * 100) / 100}</span>
+                </div>
+                `
+            }
+            // Add cards to results
+            status = status2str(el.status)
+            document.getElementById("results").innerHTML += `
+            <a class="col-span-1 row-span-1 h-32 bg-hsl-30 rounded-xl"
+                id="${el.set_id}"
+                href="https://{{ domain() }}/s/${el.set_id}"
+                style="background: linear-gradient(hsl(var(--main), 10%, 10%, 0.66), hsl(var(--main), 10%, 10%, 0.66)),
+                    url(https://assets.ppy.sh/beatmaps/${el.set_id}/covers/cover.jpg);
+                    background-size: cover; background-repeat: no-repeat; background-position: center;">
+                <div class="h-full mx-3 flex flex-col text-hsl-90 whitespace-nowrap">
+                    <div class="flex flex-row">
+                        <div class="flex items-center justify-center ${status[0]}">
+                            ${status[1]}
+                        </div>
+                        <div class="flex flex-col ml-2 break-words overflow-x-hidden">
+                            <span class="mt-1.5 font-medium text-lg">${el.title}</span>
+                            <span class="-mt-1 font-medium text-white">by ${el.artist}</span>
+                        </div>
+                        <div class="ml-auto mr-2 flex mt-1.5 items-center">
+                            <i class="fas fa-heart text-pink-400"></i>
+                            <span class="ml-1.5">${el.fav_count}</span>
+                        </div>
+                    </div>
+                    <span class="mt-1.5 text-sm font-medium">Mapped by ${el.creator}</span>
+                    <div class="mt-auto mb-2 flex flex-row text-xs overflow-hidden">
+                        ${diffblock}
+                    </div>
+                </div>
+            </a>`;
+        }
+        tippyReAdd()
+        // Delete load more button when there is less than 30 results
+        if (r.data.result.length < 30 && document.getElementById("load-more")) {
+            document.getElementById("load-more").remove();
+        }
+        // Get id of first element in results and set it as banner background
+        if (document.getElementById("results").innerHTML.length > 0) {
+            document.getElementById("banner").style.background = `
+            linear-gradient(hsl(var(--main), 10%, 10%, 0.66), hsl(var(--main), 10%, 10%, 0.66)),
+            url(https://assets.ppy.sh/beatmaps/${document.getElementById("results").firstElementChild.id}/covers/fullsize.jpg)
+            no-repeat center`
+        }
+    })
+}
+
+// This is stupid but I'm too lazy to make better implementation, works for now
+// TODO: Rewrite this
+function changeMode(locmode) {
+    btn_list = ['mode-all', 'mode-0', 'mode-1', 'mode-2', 'mode-3']
+    for (btn of btn_list) {
+        document.getElementById(btn).classList.remove('bg-hsl-40');
+        document.getElementById(btn).classList.add('bg-hsl-20');
+        if (btn != 'mode-all') {
+            // Icon
+            document.getElementById(btn + '_icon').classList.remove('pl-2.5', 'pr-1.5');
+            document.getElementById(btn + '_icon').classList.add(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5');
+            // Text
+            document.getElementById(btn + '_text').classList.remove('flex')
+            document.getElementById(btn + '_text').classList.add('group-hover:flex', 'hidden')
+        }
+    }
+    switch(locmode) {
+        case null:
+            // Button
+            document.getElementById('mode-all').classList.add('bg-hsl-40')
+            document.getElementById('mode-all').classList.remove('bg-hsl-20')
+            break
+        case 0:
+            // Button
+            document.getElementById('mode-0').classList.add('bg-hsl-40')
+            document.getElementById('mode-0').classList.remove('bg-hsl-20')
+            // Icon
+            document.getElementById('mode-0_icon').classList.add('pl-2.5', 'pr-1.5')
+            document.getElementById('mode-0_icon').classList.remove(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5')
+            // Text
+            document.getElementById('mode-0_text').classList.add('flex')
+            document.getElementById('mode-0_text').classList.remove('group-hover:flex', 'hidden')
+            break
+        case 1:
+            // Button
+            document.getElementById('mode-1').classList.add('bg-hsl-40')
+            document.getElementById('mode-1').classList.remove('bg-hsl-20')
+            // Icon
+            document.getElementById('mode-1_icon').classList.add('pl-2.5', 'pr-1.5')
+            document.getElementById('mode-1_icon').classList.remove(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5')
+            // Text
+            document.getElementById('mode-1_text').classList.add('flex')
+            document.getElementById('mode-1_text').classList.remove('group-hover:flex', 'hidden')
+            break
+        case 2:
+            // Button
+            document.getElementById('mode-2').classList.add('bg-hsl-40')
+            document.getElementById('mode-2').classList.remove('bg-hsl-20')
+            // Icon
+            document.getElementById('mode-2_icon').classList.add('pl-2.5', 'pr-1.5')
+            document.getElementById('mode-2_icon').classList.remove(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5')
+            // Text
+            document.getElementById('mode-2_text').classList.add('flex')
+            document.getElementById('mode-2_text').classList.remove('group-hover:flex', 'hidden')
+            break
+        case 3:
+            // Button
+            document.getElementById('mode-3').classList.add('bg-hsl-40')
+            document.getElementById('mode-3').classList.remove('bg-hsl-20')
+            // Icon
+            document.getElementById('mode-3_icon').classList.add('pl-2.5', 'pr-1.5')
+            document.getElementById('mode-3_icon').classList.remove(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5')
+            // Text
+            document.getElementById('mode-3_text').classList.add('flex')
+            document.getElementById('mode-3_text').classList.remove('group-hover:flex', 'hidden')
+            break
+    }
+    mode = locmode
+    updateSearch(mode, status, frozen, offset)
+}
+
+function changeStatus(locstatus) {
+    butn_list = ['status-all', 'status-0', 'status-1', 'status-2', 'status-3']
+    for (btn of butn_list) {
+        document.getElementById(btn).classList.remove('bg-hsl-40');
+        document.getElementById(btn).classList.add('bg-hsl-20');
+        if (btn != 'status-all') {
+            // Icon
+            document.getElementById(btn + '_icon').classList.remove('pl-2.5', 'pr-1.5');
+            document.getElementById(btn + '_icon').classList.add(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5');
+            // Text
+            document.getElementById(btn + '_text').classList.remove('flex')
+            document.getElementById(btn + '_text').classList.add('group-hover:flex', 'hidden')
+        }
+    }
+    switch(locstatus) {
+        case null:
+            // Button
+            document.getElementById('status-all').classList.add('bg-hsl-40')
+            document.getElementById('status-all').classList.remove('bg-hsl-20')
+            break
+        case 0:
+            // Button
+            document.getElementById('status-0').classList.add('bg-hsl-40')
+            document.getElementById('status-0').classList.remove('bg-hsl-20')
+            // Icon
+            document.getElementById('status-0_icon').classList.add('pl-2.5', 'pr-1.5')
+            document.getElementById('status-0_icon').classList.remove(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5')
+            // Text
+            document.getElementById('status-0_text').classList.add('flex')
+            document.getElementById('status-0_text').classList.remove('group-hover:flex', 'hidden')
+            break
+        case 1:
+            // Button
+            document.getElementById('status-1').classList.add('bg-hsl-40')
+            document.getElementById('status-1').classList.remove('bg-hsl-20')
+            // Icon
+            document.getElementById('status-1_icon').classList.add('pl-2.5', 'pr-1.5')
+            document.getElementById('status-1_icon').classList.remove(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5')
+            // Text
+            document.getElementById('status-1_text').classList.add('flex')
+            document.getElementById('status-1_text').classList.remove('group-hover:flex', 'hidden')
+            break
+        case 2:
+            // Button
+            document.getElementById('status-2').classList.add('bg-hsl-40')
+            document.getElementById('status-2').classList.remove('bg-hsl-20')
+            // Icon
+            document.getElementById('status-2_icon').classList.add('pl-2.5', 'pr-1.5')
+            document.getElementById('status-2_icon').classList.remove(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5')
+            // Text
+            document.getElementById('status-2_text').classList.add('flex')
+            document.getElementById('status-2_text').classList.remove('group-hover:flex', 'hidden')
+            break
+        case 3:
+            // Button
+            document.getElementById('status-3').classList.add('bg-hsl-40')
+            document.getElementById('status-3').classList.remove('bg-hsl-20')
+            // Icon
+            document.getElementById('status-3_icon').classList.add('pl-2.5', 'pr-1.5')
+            document.getElementById('status-3_icon').classList.remove(
+                'group-hover:pl-2.5', 'group-hover:pr-1.5', 'px-2.5')
+            // Text
+            document.getElementById('status-3_text').classList.add('flex')
+            document.getElementById('status-3_text').classList.remove('group-hover:flex', 'hidden')
+            break
+    }
+    status = locstatus
+    updateSearch(mode, status, frozen, offset)
+}
+
+function changeFrozen(locfrozen) {
+    butn_list = ['frozen-0', 'frozen-1']
+    for (btn of butn_list) {
+        document.getElementById(btn).classList.remove('bg-hsl-40');
+        document.getElementById(btn).classList.add('bg-hsl-20');
+        }
+
+    switch(locfrozen) {
+        case null:
+            // Button
+            document.getElementById('frozen-0').classList.add('bg-hsl-40')
+            document.getElementById('frozen-0').classList.remove('bg-hsl-20')
+            break
+        case 1:
+            // Button
+            document.getElementById('frozen-1').classList.add('bg-hsl-40')
+            document.getElementById('frozen-1').classList.remove('bg-hsl-20')
+    }
+    frozen = locfrozen
+    updateSearch(mode, status, frozen, offset)
+}
+
+// End of to rewrite
+function updateSearch(mode, status, frozen, offset) {
+    query = document.getElementById("search").value;
+    // delete child elements from results
+    document.getElementById("results").innerHTML = "";
+
+    // Wait until user stops typing in input field, then execute search()
+    if (window.timer) {
+        clearTimeout(window.timer);
+    }
+    window.timer = setTimeout(function() {
+        search(mode, status, frozen, offset);
+        // if load-more does not exist, add it to the end
+        if (document.getElementById("load-more") == null) {
+            document.getElementById("load-more-parent").innerHTML +=`
+                <div class="flex justify-center pb-3" id="load-more">
+                    <button class="h-10 w-auto bg-hsl-35 flex items-center justify-center
+                    hover:bg-hsl-50 active:bg-hsl-60 rounded-lg transition duration-300"
+                        onclick="loadMore()">
+                        <span class="px-2.5" id="load-more_btn">Load More</span>
+                    </button>
+                </div>`
+        }
+    }, 1000);
+}
+
+
+changeMode(null)
+changeStatus(0)
+changeFrozen(1)
+
+// Load more when user reaches bottom of page
+function loadMore() {
+    // disable loadmore button for 2 seconds
+    document.getElementById("load-more").disabled = true;
+    document.getElementById('load-more_btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    setTimeout(function() {
+        document.getElementById("load-more").disabled = false;
+        document.getElementById('load-more_btn').innerHTML = 'Load More';
+    }, 400);
+    offset += 30;
+    search(mode, status, frozen, offset);
+}
+
+function getContrastYIQ(hexcolor){
+    hexcolor = hexcolor.replace("#", "");
+    var r = parseInt(hexcolor.substr(0,2),16);
+    var g = parseInt(hexcolor.substr(2,2),16);
+    var b = parseInt(hexcolor.substr(4,2),16);
+    var yiq = ((r*299)+(g*587)+(b*114))/1000;
+    return (yiq >= 128) ? 'black' : 'white';
+}
+function tippyReAdd() {
+    //0
+    tippy('.unranked', {
+        content: "UNRANKED",
+        theme: 'translucent'
+    });
+    //2
+    tippy('.ranked', {
+        content: "RANKED",
+        theme: 'translucent'
+    });
+    //3
+    tippy('.approved', {
+        content: "APPROVED",
+        theme: 'translucent'
+    });
+    //4
+    tippy('.qualified', {
+        content: "QUALIFIED",
+        theme: 'translucent'
+    });
+    //5
+    tippy('.loved', {
+        content: "LOVED",
+        theme: 'translucent'
+    });
+}
+</script>
+
+<!--! Tippy -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/tippy.js@6/animations/scale.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/tippy.js@6/themes/translucent.css"
+/>
+{% endblock %}

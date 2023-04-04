@@ -1,0 +1,158 @@
+{% if custom == True %}
+<nav class="absolute w-full overflow-x-clip" id="navbar-c">
+{% else %}
+<nav class="absolute w-full overflow-x-clip" id="navbar">
+{% endif %}
+    <div class="bg-hsl-50" id="navbar-colourer">
+        <div x-data="{ open: false }" class="flex flex-col px-4 mx-auto
+            md:items-center md:justify-between md:flex-row md:px-6 lg:px-12 md:bg-transparent"
+            :class="{'bg-hsl-10': open}">
+            <div class="p-4 flex flex-row items-center justify-between">
+                <a href="/" class="text-lg font-semibold tracking-widest text-white rounded-lg
+                    focus:outline-none focus:shadow-outline">727<span class="text-gray-300">.xyz</span>
+                </a>
+                <button class="md:hidden rounded-lg focus:outline-none focus:shadow-outline" @click="open = !open">
+                    <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+                        <path x-show="!open" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        <path x-show="open" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav :class="{'flex': open, 'hidden': !open}"
+                class="flex-col flex-grow pb-4 md:pb-0 hidden md:flex md:flex-row">
+                <a class="px-3 py-2 mt-2 text-sm font-semibold md:mt-0
+                    hover:text-hsl-90 transition duration-200
+                    focus:outline-none focus:shadow-outline" href="/leaderboard">Leaderboard</a>
+                <a class="px-3 py-2 mt-2 text-sm font-semibold md:mt-0
+                    hover:text-hsl-90 transition duration-200
+                    focus:outline-none focus:shadow-outline" href="/beatmaps">Beatmaps</a>
+                <div @click.away="open = false" class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex flex-row items-center w-full px-3 py-2 mt-2 text-sm
+                        font-semibold text-left bg-transparent rounded-lg md:w-auto md:inline md:mt-0 focus:outline-none">
+                        <span>Docs</span>
+                        <svg fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open, 'rotate-0': !open}" class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-1"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div x-show="open"
+                        x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-100" x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 w-full mt-2 origin-top-right rounded-md shadow-lg md:w-48 z-10">
+                        <div class="py-2 bg-hsl-15 rounded-md shadow">
+                            <a class="block px-6 py-2 text-sm font-semibold bg-transparent md:mt-0
+                                hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
+                                border-hsl-50 hover:border-l-3 focus:border-l-3
+                                focus:outline-none focus:shadow-outline" href="/docs/rules">Rules</a>
+                            <a class="block px-6 py-2 mt-2 text-sm font-semibold bg-transparent md:mt-0
+                                hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
+                                border-hsl-50 hover:border-l-3 focus:border-l-3
+                                focus:outline-none focus:shadow-outline" href="/docs/privacy_policy">Privacy Policy</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-col flex-grow flex md:justify-end md:flex-row" id="nav-right-row">
+                    <!-- User Search-->
+                    <div class="hidden md:flex ml-auto mr-4 w-44" id="user-search-box">
+                        <input type="text" name="search-bar"
+                            class="bg-hsl-20 rounded-full py-2 px-5 text-hsl-90 font-light text-sm
+                            focus:bg-hsl-25 transition duration-300 outline-none"
+                            placeholder="Search User" onkeyup="searchUsers(this.value)"/>
+                        <div class="hidden mt-12 bg-hsl-25-10 w-48 py-2 rounded-lg" id="search-results">
+                        </div>
+                    </div>
+                    {% if 'authenticated' in session %}
+                    <div @click.away="open = false" class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex flex-row items-center w-full px-3 mt-2 text-sm
+                            font-semibold bg-transparent rounded-lg md:w-auto md:mt-0 focus:outline-none h-full">
+                            <div class="h-8 w-8 mr-2 rounded-full bg-cover"
+                                style="background-image: url(https://a.{{ domain() }}/{{ session['user_data']['id'] }});"></div>
+                            <span>{{ session['user_data']['name'] }}</span>
+                            <svg fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open, 'rotate-0': !open}" class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-px"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div x-show="open"
+                            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-100" x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 w-full mt-2 origin-top-right rounded-md shadow-lg md:w-48 z-10">
+                            <div class="py-2 bg-hsl-15 rounded-md shadow">
+                                <a class="block px-6 py-2 text-sm font-semibold bg-transparent md:mt-0
+                                    hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
+                                    border-hsl-50 hover:border-l-3 focus:border-l-3
+                                    focus:outline-none focus:shadow-outline" href="/u/{{ session['user_data']['id'] }}">Profile</a>
+                                <a class="block px-6 py-2 text-sm font-semibold bg-transparent md:mt-0
+                                    hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
+                                    border-hsl-50 hover:border-l-3 focus:border-l-3
+                                    focus:outline-none focus:shadow-outline" href="/relationships">Relationships</a>
+                                <a class="block px-6 py-2 mt-2 text-sm font-semibold bg-transparent md:mt-0
+                                    hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
+                                    border-hsl-50 hover:border-l-3 focus:border-l-3
+                                    focus:outline-none focus:shadow-outline" href="/settings">Settings</a>
+                                <a class="block px-6 py-2 mt-2 text-sm font-semibold bg-transparent md:mt-0
+                                    hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
+                                    border-hsl-50 hover:border-l-3 focus:border-l-3
+                                    focus:outline-none focus:shadow-outline" href="/logout">Logout</a>
+                                {% if session['user_data']['is_admin'] == True %}
+                                <a class="block px-6 py-2 mt-2 text-sm font-semibold bg-transparent md:mt-0
+                                    hover:text-hsl-90 focus:text-hsl-90 hover:bg-hsl-25 focus:bg-hsl-25
+                                    border-hsl-50 hover:border-l-3 focus:border-l-3
+                                    focus:outline-none focus:shadow-outline" href="/admin">Admin Panel</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a class="px-3 py-2 mt-2 text-sm font-semibold md:mt-0
+                        hover:text-hsl-90 transition duration-200
+                        focus:outline-none focus:shadow-outline" href="/login">Login</a>
+                    <a class="px-3 py-2 mt-2 text-sm font-semibold md:mt-0
+                        hover:text-hsl-90 transition duration-200
+                        focus:outline-none focus:shadow-outline" href="/register">Register</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </div>
+</nav>
+<div class="absolute top-16 w-full">
+{% if tohome == True %}
+{% include 'components/flashes.html' %}
+{% endif %}
+</div>
+<!-- Search -->
+<script>
+    resbox = document.getElementById('search-results')
+    function searchUsers(querry) {
+        if (querry.length != 0) {
+            axios.get('https://{{ domain() }}/wapi/search_users?q=' + querry)
+            .then(r => {
+                r = r.data.users
+                if (r.length != 0) {
+                    resbox.classList.add('absolute')
+                    resbox.classList.remove('hidden')
+                    resbox.innerHTML = ""
+                    for (el of r) {
+                        resbox.innerHTML +=
+                    `<a href="/u/${el.id}">
+                            <div class="w-full py-0.5 text-sm text-gray-200 hover:bg-hsl-20
+                                transition duration-200 ease-in-out">
+                                <div class="flex items-center mx-2 my-0.5">
+                                    <img src="https://a.{{ domain() }}/${el.id}" class="h-8 w-8 rounded-full mr-2">
+                                    <span>${el.name}</span>
+                                </div>
+                            </div>
+                        </a>`
+                    }
+                } else {
+                    resbox.classList.add('hidden')
+                    resbox.classList.remove('absolute')
+                    resbox.innerHTML = ""
+                }
+            })
+        } else {
+            resbox.innerHTML = ""
+            resbox.classList.add('hidden')
+            resbox.classList.remove('absolute')
+        }
+    }
+</script>

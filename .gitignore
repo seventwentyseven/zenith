@@ -1,0 +1,7 @@
+zconfig.py
+.data
+.env.save
+styles/*
+static/css/style.css
+__pycache__
+node_modules
