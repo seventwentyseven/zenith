@@ -1,5 +1,5 @@
 //? NextJS and React imports
-import { GetServerSidePropsContext, NextPage } from 'next'
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -10,11 +10,14 @@ import { initTabs } from 'flowbite'
 
 //? Our components
 import BackgroundImage from '../../../components/BackgroundImages'
-import BadgeList from '../../../components/badges/BadgeList'
 import GamemodeSwitcher from '../../../components/GamemodeSwitcher'
+import GradeBlock from '../../../components/GradeBlock'
 import Layout from '../../../components/Layout'
+import PPChart from '../../../components/PPChart'
 import ProfileRank from '../../../components/ProfileRank'
 import ProfileStatsRight from '../../../components/ProfileStatsRight'
+import UserLevel from '../../../components/UserLevel'
+import BadgeList from '../../../components/badges/BadgeList'
 
 //? Functions and types
 import { getActionStringFromInt } from '../../../constants/IngameActions'
@@ -24,11 +27,7 @@ import {
 } from '../../../controllers/UserLevelCalculation'
 import { IPlayerData, IPlayerStatus } from '../../../types/UserData'
 
-import GradeBlock from '../../../components/GradeBlock'
-import UserLevel from '../../../components/UserLevel'
-
-import LineChart from 'react-apexcharts'
-import PPChart from '../../../components/PPChart'
+import { FaBars } from 'react-icons/fa'
 
 interface IData {
   data: {
@@ -36,6 +35,7 @@ interface IData {
     playerData: IPlayerData
   }
 }
+
 const convertTimestamp = (timestampInSeconds: number) => {
   const days = Math.floor(timestampInSeconds / 86400)
   const hours = Math.floor((timestampInSeconds % 86400) / 3600)
@@ -59,7 +59,7 @@ const convertTimestamp = (timestampInSeconds: number) => {
 }
 
 //! This is for fetching data from api, I'm still a noob at this
-export const getServerSideProps = async (
+export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
   // Getting player's status
@@ -201,10 +201,10 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
             </div>
           </div>
           <div className="flex flex-row gap-x-3">
-            <div className="p-24 ml-[16rem] w-8/12 flex flex-col items-center justify-center border-r-px">
+            <div className="ml-[16rem] w-8/12 flex flex-col items-center justify-center border-r-px">
               <PPChart
-              // userid={data.playerData.player.info.id}
-              // gamemode={gameMode}
+                userid={data.playerData.player.info.id}
+                gamemode={gameMode}
               />
             </div>
             <ProfileStatsRight data={data.playerData.player.stats[gameMode]} />
@@ -229,11 +229,11 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
                 <li role="presentation">
                   <button
                     className="inline-block px-5 py-3 border-b-4 border-transparent text-white hover:text-hsl-80 hover:border-hsl-60 aria-selected:border-hsl-50 aria-selected:text-hsl-90 tansition-all duration-200"
-                    id="profile-tab"
-                    data-tabs-target="#profile"
+                    id="best-scores-tab"
+                    data-tabs-target="#best-scores"
                     type="button"
                     role="tab"
-                    aria-controls="profile"
+                    aria-controls="best-scores"
                     aria-selected="false"
                   >
                     <span className="-mb-[5px]">Best</span>
@@ -242,11 +242,11 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
                 <li role="presentation">
                   <button
                     className="inline-block px-5 py-3 border-b-4 border-transparent text-white hover:text-hsl-80 hover:border-hsl-60 aria-selected:border-hsl-50 aria-selected:text-hsl-90 tansition-all duration-200"
-                    id="dashboard-tab"
-                    data-tabs-target="#dashboard"
+                    id="recent-scores-tab"
+                    data-tabs-target="#recent-scores"
                     type="button"
                     role="tab"
-                    aria-controls="dashboard"
+                    aria-controls="recent-scores"
                     aria-selected="false"
                   >
                     <span className="-mb-[5px]">Recent</span>
@@ -254,12 +254,12 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
                 </li>
                 <li role="presentation">
                   <button
-                    className="inline-block px-5 py-3 border-b-4 border-transparent text-white hover:text-hsl-80 hover:border-hsl-60 aria-selected:border-hsl-50 aria-selected:text-hsl-90 tansition-all duration-200"
-                    id="contacts-tab"
-                    data-tabs-target="#contacts"
+                    className="inline-block px-5 py-3 border-b-4 border-transparent text-white hover:text-hsl-80 hover:border-hsl-60 aria-selected:border-hsl-50 aria-selected:text-hsl-90 transition-all duration-200"
+                    id="first-places-tab"
+                    data-tabs-target="#first-places"
                     type="button"
                     role="tab"
-                    aria-controls="contacts"
+                    aria-controls="first-places"
                     aria-selected="false"
                   >
                     <span className="-mb-[5px]">First</span>
@@ -271,24 +271,38 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
 
           <div id="myTabContent">
             <div
-              className="hidden py-4 px-2 rounded-lg"
-              id="profile"
+              className="hidden py-4 px-2 rounded-lg aria-selected:flex flex-col"
+              id="best-scores"
               role="tabpanel"
-              aria-labelledby="profile-tab"
+              aria-labelledby="best-scores-tab"
             >
-              <div className="flex flex-row font-bold ">
+              <div className="flex flex-row font-bold mt-1 mb-4 ">
                 <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
                 <span className="-mb-0.5 ml-1.5">Best Scores</span>
                 <span className="-mb-1 ml-2 h-min px-2.5 py-1 text-sm text-slate-300 leading-3 font-bold bg-hsl-5 bg-opacity-50 rounded-full shadow">
                   100
                 </span>
               </div>
+              {/* Actual scores (1) */}
+              <div className="flex flex-col overflow-x-hidden">
+                <div className="w-full h-24 rounded-xl flex group">
+                  <div
+                    className="bg-hsl-10 rounded-xl min-w-full h-full transition duration-300 bg-center bg-cover group-hover:-translate-x-[4%]"
+                    style={{
+                      backgroundImage: `linear-gradient(180deg, hsla(230, 10%, 10%, 0.5), hsla(230, 10%, 10%, 0.5)), url("https://seventwentyseven.xyz/banners/${data.playerData.player.info.id}")`
+                    }}
+                  ></div>
+                  <div className="w-[4%] h-full hidden group-hover:flex transition duration-300 items-center justify-center">
+                    <FaBars />
+                  </div>
+                </div>
+              </div>
             </div>
             <div
               className="hidden py-4 px-2 rounded-lg"
-              id="dashboard"
+              id="recent-scores"
               role="tabpanel"
-              aria-labelledby="dashboard-tab"
+              aria-labelledby="recent-scores-tab"
             >
               <div className="flex flex-row font-bold ">
                 <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
@@ -300,9 +314,9 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
             </div>
             <div
               className="hidden py-4 px-2 rounded-lg"
-              id="contacts"
+              id="first-places"
               role="tabpanel"
-              aria-labelledby="contacts-tab"
+              aria-labelledby="first-places-tab"
             >
               <div className="flex flex-row font-bold ">
                 <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
