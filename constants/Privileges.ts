@@ -5,32 +5,36 @@ export enum Privileges {
   Frozen = 1 << 2, // Read-only mode for the user
 
   // has bypass to low-ceiling anticheat measures (trusted).
-  WhitelistedStd = 1 << 3,
-  WhitelistedTaiko = 1 << 4,
-  WhitelistedCatch = 1 << 5,
-  WhitelistedMania = 1 << 6,
+  WhitelistedStdVn = 1 << 3,
+  WhitelistedTaikoVn = 1 << 4,
+  WhitelistedCatchVn = 1 << 5,
+  WhitelistedManiaVn = 1 << 6,
+  WhitelistedStdRx = 1 << 7,
+  WhitelistedTaikoRx = 1 << 8,
+  WhitelistedCatchRx = 1 << 9,
+  WhitelistedStdAp = 1 << 10,
 
   // Elevated users
-  Supporter = 1 << 7, // Has supporter tag
-  Alumni = 1 << 8, // Ex-Staff member with big contributions
-  TournamentManager = 1 << 9, // Can create tournaments
+  Supporter = 1 << 11, // Has supporter tag
+  Alumni = 1 << 12, // Ex-Staff member with big contributions
+  TournamentManager = 1 << 13, // Can create tournaments
 
   // Staff (Nominators) Access to ranking maps
-  NominatorStd = 1 << 10,
-  NominatorTaiko = 1 << 11,
-  NominatorCatch = 1 << 12,
-  NominatorMania = 1 << 13,
-  QatStd = 1 << 14,
-  QatTaiko = 1 << 15,
-  QatCatch = 1 << 16,
-  QatMania = 1 << 17,
+  NominatorStd = 1 << 14,
+  NominatorTaiko = 1 << 15,
+  NominatorCatch = 1 << 16,
+  NominatorMania = 1 << 17,
+  QatStd = 1 << 18,
+  QatTaiko = 1 << 19,
+  QatCatch = 1 << 20,
+  QatMania = 1 << 21,
 
-  Moderator = 1 << 18, // Access to moderation tools
-  CommunityManager = 1 << 19, // MOD+ADMIN + Posting articles and news
-  Administrator = 1 << 20, // MOD + ADMIN
-  HeadAdmin = 1 << 21, // MOD+ADMIN + Managing staff
-  Developer = 1 << 22, // Full access to everything
-  Owner = 1 << 23, // Allmighty one
+  Moderator = 1 << 22, // Access to moderation tools
+  CommunityManager = 1 << 23, // MOD+ADMIN + Posting articles and news
+  Administrator = 1 << 24, // MOD + ADMIN
+  HeadAdmin = 1 << 25, // MOD+ADMIN + Managing staff
+  Developer = 1 << 26, // Full access to everything
+  Owner = 1 << 27, // Allmighty one
 
   Nominators = NominatorStd | NominatorCatch | NominatorTaiko | NominatorMania,
 
@@ -54,10 +58,14 @@ export enum Privileges {
     Developer |
     Owner,
 
-  Whitelisted = WhitelistedStd |
-    WhitelistedTaiko |
-    WhitelistedCatch |
-    WhitelistedMania
+  Whitelisted = WhitelistedStdVn |
+    WhitelistedTaikoVn |
+    WhitelistedCatchVn |
+    WhitelistedManiaVn |
+    WhitelistedStdRx |
+    WhitelistedTaikoRx |
+    WhitelistedCatchRx |
+    WhitelistedStdAp
 }
 
 const hasRole = (
