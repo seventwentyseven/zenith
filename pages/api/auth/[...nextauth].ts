@@ -27,6 +27,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         console.log(credentials)
+        console.log(process.env.API_URL)
 
         const res = await fetch(`${process.env.API_URL}/v2/auth/login`, {
           method: 'POST',
@@ -53,6 +54,7 @@ export const authOptions: NextAuthOptions = {
         if (!res.ok) {
           console.log(tokenJson)
           console.log(res.headers)
+          console.log(await res.text())
           throw new Error(tokenJson.error || tokenJson)
         }
 
