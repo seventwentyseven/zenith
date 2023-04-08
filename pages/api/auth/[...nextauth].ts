@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import config from '../../../config.json'
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -27,9 +28,9 @@ export const authOptions: NextAuthOptions = {
         }
 
         console.log(credentials)
-        console.log(process.env.API_URL)
+        console.log(config.apiUrl)
 
-        const res = await fetch(`${process.env.API_URL}/v2/auth/login`, {
+        const res = await fetch(`${config.apiUrl}/v2/auth/login`, {
           method: 'POST',
           body: JSON.stringify(payload),
           headers: {
@@ -63,7 +64,7 @@ export const authOptions: NextAuthOptions = {
 
           console.log(tokenJson)
 
-          const userRes = await fetch(`${process.env.API_URL}/v2/auth/@me`, {
+          const userRes = await fetch(`${config.apiUrl}/v2/auth/@me`, {
             headers: { token: tokenJson.token }
           })
 

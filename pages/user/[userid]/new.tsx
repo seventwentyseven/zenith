@@ -16,7 +16,9 @@ import {
   getLevelFromScore,
   getLevelScoreRequirement
 } from '../../../controllers/UserLevelCalculation'
-import { IPlayerData, IPlayerStatus } from '../../../types/user-data'
+import { IPlayerData, IPlayerStatus } from '../../../types/UserData'
+
+import config from '../../../config.json'
 
 interface IData {
   data: {
@@ -31,13 +33,13 @@ export const getServerSideProps = async (
 ) => {
   // Getting player's status
   const playerStatusRes = await fetch(
-    `${process.env.API_URL}/v1/get_player_status?id=${context.query.userid}`
+    `${config.apiUrl}/v1/get_player_status?id=${context.query.userid}`
   )
   const playerStatus = await playerStatusRes.json()
 
   // Getting player's stats
   const playerDataRes = await fetch(
-    `${process.env.API_URL}/v1/get_player_info?id=${context.query.userid}&scope=all`
+    `${config.apiUrl}/v1/get_player_info?id=${context.query.userid}&scope=all`
   )
   let playerData = await playerDataRes.json()
 

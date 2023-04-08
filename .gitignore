@@ -28,9 +28,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# local env files
+# configuration
 .env*.local
 .env
+config.json
 
 # vercel
 .vercel
@@ -39,7 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# vscope
+# vscode
 .vscode
 
 yarn.lock

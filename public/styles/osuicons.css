@@ -1,45 +1,30 @@
 @font-face {
-    font-family: osu-mode;
-    src: url(./osu-fonts.ttf) format('truetype');
+  font-family: osu-mode;
+  src: url(./osu-fonts.ttf) format('truetype');
 }
 
 .mode-icon {
-    font-family: osu-mode;
-    font-weight: 400;
-    font-style: initial;
+  font-family: osu-mode;
+  font-weight: 400;
+  font-style: initial;
 }
 
 .osu::before {
-    content: '\E800';
-    position: relative;
-    margin: 0px;
-    z-index: 500;
+  content: '\E800';
 }
 
 .std::before {
-    content: '\E800';
-    position: relative;
-    margin: 0px;
-    z-index: 500;
+  content: '\E800';
 }
 
 .catch::before {
-    content: '\E801';
-    position: relative;
-    margin: 0px;
-    z-index: 500;
+  content: '\E801';
 }
 
 .mania::before {
-    content: '\E802';
-    position: relative;
-    margin: 0px;
-    z-index: 500;
+  content: '\E802';
 }
 
 .taiko::before {
-    content: '\E803';
-    position: relative;
-    margin: 0px;
-    z-index: 500;
+  content: '\E803';
 }

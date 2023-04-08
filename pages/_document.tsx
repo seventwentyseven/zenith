@@ -1,5 +1,6 @@
 import { Html, Head, Main, NextScript } from 'next/document'
-import Script from 'next/script'
+// import Script from 'next/script'
+// import config from '../config.json'
 
 export default function Document() {
   return (
@@ -53,9 +54,9 @@ export default function Document() {
           color="#5bbad5"
         />
         <link rel="shortcut icon" href="/favicons/favicon.ico" />
-        {/* -- Global site tag (gtag.js) - Google Analytics */}
+        {/* -- Global site tag (gtag.js) - Google Analytics
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-5GVFCZY1N3"
+          src={`https://www.googletagmanager.com/gtag/js?id=${config.googleAnalyticsId}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -64,9 +65,9 @@ export default function Document() {
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
 
-          gtag('config', 'G-5GVFCZY1N3');
+          gtag('config', '${config.googleAnalyticsId}');
         `}
-        </Script>
+        </Script> */}
       </Head>
       <body className="bg-hsl-15 font-comfortaa text-white">
         <Main />

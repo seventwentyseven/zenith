@@ -1,10 +1,11 @@
-import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import BackgroundImage from '../../components/BackgroundImages'
 import Layout from '../../components/Layout'
 import Pagination from '../../components/Pagination'
+import config from '../../config.json'
+import GamemodeSwitcher from '../../components/GamemodeSwitcher'
 
 interface IData {
   leaderboards: ILeaderboard
@@ -36,13 +37,9 @@ interface ILeaderboardEntry {
   clan_tag: string | null
 }
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
+export const getServerSideProps = async () => {
   // Getting leaderboards from api
-  const leaderboardsRes = await fetch(
-    `${process.env.API_URL}/v1/get_leaderboard`
-  )
+  const leaderboardsRes = await fetch(`${config.apiUrl}/v1/get_leaderboard`)
   const leaderboards = await leaderboardsRes.json()
 
   return {
@@ -56,19 +53,28 @@ const Leaderboard = ({ leaderboards }: IData) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [leaderboard, setLeaderboard] = useState<ILeaderboard>(leaderboards)
+  const [gameMode, setGameMode] = useState<number>(0)
+  const [oldGameMode, setOldGameMode] = useState<number>(0)
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-      let leaderboardsApiLink = `${process.env.API_URL}/v1/get_leaderboard?offset=${offset}`
-      const leaderboardsReq = await fetch(leaderboardsApiLink)
+      const leaderboardsReq = await fetch(
+        `${config.apiUrl}/v1/get_leaderboard?offset=${offset}&mode=${gameMode}`
+      )
       const leaderboardToSet = await leaderboardsReq.json()
 
       setLeaderboard(leaderboardToSet)
       setLoading(false)
     }
-    fetchData()
-  }, [offset])
+    if (oldGameMode !== gameMode) {
+      setOffset(0)
+      fetchData()
+      setOldGameMode(gameMode)
+    } else {
+      fetchData()
+    }
+  }, [offset, gameMode])
 
   const handleNextPage = () => {
     if (leaderboard.leaderboard.length < 50) {
@@ -109,8 +115,12 @@ const Leaderboard = ({ leaderboards }: IData) => {
         <title>727 Leaderboard</title>
       </Head>
       <BackgroundImage blur />
-      <div className="top-0 mt-28 w-full dark">
+      <div className="top-0 mt-28 w-full dark mb-6">
         <div className="relative max-w-screen-xl mx-auto overflow-x-auto sm:rounded-lg">
+          <div className="flex flex-row items-center justify-between mb-4 px-4">
+            <span className="text-xl">Leaderboard</span>
+            <GamemodeSwitcher gameMode={gameMode} setGameMode={setGameMode} />
+          </div>
           <table className="w-full text-sm text-left text-gray-500 dark:text-white/60">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-hsl-15 dark:text-gray-400">
               <tr>
@@ -163,7 +173,6 @@ const Leaderboard = ({ leaderboards }: IData) => {
               })}
             </tbody>
           </table>
-
           <Pagination
             offset={offset}
             length={leaderboard.leaderboard.length}

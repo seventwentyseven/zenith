@@ -120,19 +120,31 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
         </div>
         <div className="px-3 py-2 flex flex-col items-center justify-between gap-2">
           <button
-            className="btn btn-md btn-primary w-full"
+            className={classNames(
+              'btn btn-md',
+              gameMode === 0 ? 'btn-secondary' : 'btn-primary',
+              'w-full'
+            )}
             onClick={() => setGameMode(0)}
           >
             vanilla
           </button>
           <button
-            className="btn btn-md btn-primary w-full"
+            className={classNames(
+              'btn btn-md',
+              gameMode === 4 ? 'btn-secondary' : 'btn-primary',
+              'w-full'
+            )}
             onClick={() => setGameMode(4)}
           >
             relax
           </button>
           <button
-            className="btn btn-md btn-primary w-full"
+            className={classNames(
+              'btn btn-md',
+              gameMode === 8 ? 'btn-secondary' : 'btn-primary',
+              'w-full'
+            )}
             onClick={() => setGameMode(8)}
           >
             autopilot
@@ -154,13 +166,21 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
         </div>
         <div className="px-3 py-2 flex flex-col items-center justify-between gap-2">
           <button
-            className="btn btn-md btn-primary w-full"
+            className={classNames(
+              'btn btn-md',
+              gameMode === 1 ? 'btn-secondary' : 'btn-primary',
+              'w-full'
+            )}
             onClick={() => setGameMode(1)}
           >
             vanilla
           </button>
           <button
-            className="btn btn-md btn-primary w-full"
+            className={classNames(
+              'btn btn-md',
+              gameMode === 5 ? 'btn-secondary' : 'btn-primary',
+              'w-full'
+            )}
             onClick={() => setGameMode(5)}
           >
             relax
@@ -182,13 +202,21 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
         </div>
         <div className="px-3 py-2 flex flex-col items-center justify-between gap-2">
           <button
-            className="btn btn-md btn-primary w-full"
+            className={classNames(
+              'btn btn-md',
+              gameMode === 2 ? 'btn-secondary' : 'btn-primary',
+              'w-full'
+            )}
             onClick={() => setGameMode(2)}
           >
             vanilla
           </button>
           <button
-            className="btn btn-md btn-primary w-full"
+            className={classNames(
+              'btn btn-md',
+              gameMode === 6 ? 'btn-secondary' : 'btn-primary',
+              'w-full'
+            )}
             onClick={() => setGameMode(6)}
           >
             relax
@@ -208,7 +236,11 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
         </div>
         <div className="px-3 pb-2 flex flex-col items-center justify-between gap-2">
           <button
-            className="btn btn-md btn-primary w-full"
+            className={classNames(
+              'btn btn-md',
+              gameMode === 3 ? 'btn-secondary' : 'btn-primary',
+              'w-full'
+            )}
             onClick={() => setGameMode(3)}
           >
             Vanilla
