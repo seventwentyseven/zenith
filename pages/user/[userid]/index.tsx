@@ -18,6 +18,8 @@ import ProfileRank from '../../../components/ProfileRank'
 import ProfileStatsRight from '../../../components/ProfileStatsRight'
 import UserLevel from '../../../components/UserLevel'
 import BadgeList from '../../../components/badges/BadgeList'
+import BestScores from '../../../components/user/scores/BestScores'
+import RecentScores from '../../../components/user/scores/RecentScores'
 
 //? Functions and types
 import { getActionStringFromInt } from '../../../constants/IngameActions'
@@ -27,7 +29,8 @@ import {
 } from '../../../controllers/UserLevelCalculation'
 import { IPlayerData, IPlayerStatus } from '../../../types/UserData'
 
-import { FaBars } from 'react-icons/fa'
+//? Server configuration
+import config from '../../../config.json'
 
 interface IData {
   data: {
@@ -37,9 +40,9 @@ interface IData {
 }
 
 const convertTimestamp = (timestampInSeconds: number) => {
-  const days = Math.floor(timestampInSeconds / 86400)
-  const hours = Math.floor((timestampInSeconds % 86400) / 3600)
-  const minutes = Math.floor((timestampInSeconds % 3600) / 60)
+  const days = Math.round(timestampInSeconds / 86400)
+  const hours = Math.round((timestampInSeconds % 86400) / 3600)
+  const minutes = Math.round((timestampInSeconds % 3600) / 60)
 
   let formattedTimestamp = ''
 
@@ -64,13 +67,13 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
   // Getting player's status
   const playerStatusRes = await fetch(
-    `${process.env.API_URL}/v1/get_player_status?id=${context.query.userid}`
+    `${config.apiUrl}/v1/get_player_status?id=${context.query.userid}`
   )
   const playerStatus: IPlayerStatus = await playerStatusRes.json()
 
   // Getting player's stats
   const playerDataRes = await fetch(
-    `${process.env.API_URL}/v1/get_player_info?id=${context.query.userid}&scope=all`
+    `${config.apiUrl}/v1/get_player_info?id=${context.query.userid}&scope=all`
   )
   let playerData: IPlayerData = await playerDataRes.json()
 
@@ -99,6 +102,8 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
   )
 
   useEffect(() => initTabs(), [])
+
+  let playerStatistics = data.playerData.player.stats[gameMode]
 
   return (
     <Layout>
@@ -152,30 +157,26 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
               alt="User avatar"
               width={256}
               height={256}
-              className="rounded-xl shadow-xl ml-4 z-50"
+              className="rounded-xl shadow-xl ml-4 z-50 pointer-events-none"
             />
             <GradeBlock
-              xh_count={data.playerData.player.stats[gameMode].xh_count}
-              x_count={data.playerData.player.stats[gameMode].x_count}
-              sh_count={data.playerData.player.stats[gameMode].sh_count}
-              s_count={data.playerData.player.stats[gameMode].s_count}
-              a_count={data.playerData.player.stats[gameMode].a_count}
+              xh_count={playerStatistics.xh_count}
+              x_count={playerStatistics.x_count}
+              sh_count={playerStatistics.sh_count}
+              s_count={playerStatistics.s_count}
+              a_count={playerStatistics.a_count}
             />
           </div>
           <div className="flex flex-row ml-[15.75rem] justify-between -mt-1 mb-2">
             <div className="flex flex-row gap-4">
               <UserLevel
-                level={data.playerData.player.stats[gameMode].level}
-                levelProgress={
-                  data.playerData.player.stats[gameMode].level_progress
-                }
+                level={playerStatistics.level}
+                levelProgress={playerStatistics.level_progress}
               />
               <div className="flex flex-col items-start justify-center ml-1">
                 <span className="font-bold text-hsl-90 select-none">pp</span>
                 <span className="text-xl font-light">
-                  {data.playerData.player.stats[gameMode].pp.toLocaleString(
-                    'en-US'
-                  )}
+                  {playerStatistics.pp.toLocaleString('en-US')}
                 </span>
               </div>
               <div className="flex flex-col ml-3 items-start justify-center">
@@ -183,20 +184,16 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
                   Play Time
                 </span>
                 <span className="text-xl font-light">
-                  {convertTimestamp(
-                    data.playerData.player.stats[gameMode].playtime
-                  )}
+                  {convertTimestamp(playerStatistics.playtime)}
                 </span>
               </div>
             </div>
             <div className="flex flex-row gap-14 mr-8">
               <ProfileRank
-                countryRank={
-                  data.playerData.player.stats[gameMode].country_rank
-                }
+                countryRank={playerStatistics.country_rank}
                 // country={data.playerData.player.info.country}
-                globalRank={data.playerData.player.stats[gameMode].rank}
-                // peakGlobal={[{ date: new Date(), rank: 2137 }]}
+                globalRank={playerStatistics.rank}
+              // peakGlobal={[{ date: new Date(), rank: 2137 }]}
               />
             </div>
           </div>
@@ -207,7 +204,7 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
                 gamemode={gameMode}
               />
             </div>
-            <ProfileStatsRight data={data.playerData.player.stats[gameMode]} />
+            <ProfileStatsRight data={playerStatistics} />
           </div>
         </section>
         {/* 2nd Block (Scores) */}
@@ -277,26 +274,18 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
               aria-labelledby="best-scores-tab"
             >
               <div className="flex flex-row font-bold mt-1 mb-4 ">
-                <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
+                {/* <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
                 <span className="-mb-0.5 ml-1.5">Best Scores</span>
                 <span className="-mb-1 ml-2 h-min px-2.5 py-1 text-sm text-slate-300 leading-3 font-bold bg-hsl-5 bg-opacity-50 rounded-full shadow">
                   100
-                </span>
+                </span> */}
               </div>
               {/* Actual scores (1) */}
-              <div className="flex flex-col overflow-x-hidden">
-                <div className="w-full h-24 rounded-xl flex group">
-                  <div
-                    className="bg-hsl-10 rounded-xl min-w-full h-full transition duration-300 bg-center bg-cover group-hover:-translate-x-[4%]"
-                    style={{
-                      backgroundImage: `linear-gradient(180deg, hsla(230, 10%, 10%, 0.5), hsla(230, 10%, 10%, 0.5)), url("https://seventwentyseven.xyz/banners/${data.playerData.player.info.id}")`
-                    }}
-                  ></div>
-                  <div className="w-[4%] h-full hidden group-hover:flex transition duration-300 items-center justify-center">
-                    <FaBars />
-                  </div>
-                </div>
-              </div>
+
+              <BestScores
+                userid={data.playerData.player.info.id}
+                gamemode={gameMode}
+              />
             </div>
             <div
               className="hidden py-4 px-2 rounded-lg"
@@ -304,13 +293,18 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
               role="tabpanel"
               aria-labelledby="recent-scores-tab"
             >
-              <div className="flex flex-row font-bold ">
-                <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
+              <div className="flex flex-row font-bold mt-1 mb-4">
+                {/* <div className="h-[0.9em] w-1 my-auto bg-hsl-50 rounded-full"></div>
                 <span className="-mb-0.5 ml-1.5">Recent Scores</span>
                 <span className="-mb-1 ml-2 h-min px-2.5 py-1 text-sm text-slate-300 leading-3 font-bold bg-hsl-5 bg-opacity-50 rounded-full shadow">
                   100
-                </span>
+                </span> */}
               </div>
+
+              <RecentScores
+                userid={data.playerData.player.info.id}
+                gamemode={gameMode}
+              />
             </div>
             <div
               className="hidden py-4 px-2 rounded-lg"
