@@ -2,40 +2,11 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import BackgroundImage from '../../components/BackgroundImages'
+import GamemodeSwitcher from '../../components/GamemodeSwitcher'
 import Layout from '../../components/Layout'
 import Pagination from '../../components/Pagination'
 import config from '../../config.json'
-import GamemodeSwitcher from '../../components/GamemodeSwitcher'
-
-interface IData {
-  leaderboards: ILeaderboard
-}
-
-interface ILeaderboard {
-  status: boolean
-  leaderboard: ILeaderboardEntry[]
-}
-
-interface ILeaderboardEntry {
-  player_id: number
-  name: string
-  country: string
-  tscore: number
-  rscore: number
-  pp: number
-  plays: number
-  playtime: number
-  acc: number
-  max_combo: number
-  xh_count: number
-  x_count: number
-  sh_count: number
-  s_count: number
-  a_count: number
-  clan_id: number
-  clan_name: string | null
-  clan_tag: string | null
-}
+import { ILeaderboard } from '../../types/Leaderboard'
 
 export const getServerSideProps = async () => {
   // Getting leaderboards from api
@@ -49,7 +20,7 @@ export const getServerSideProps = async () => {
   }
 }
 
-const Leaderboard = ({ leaderboards }: IData) => {
+const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [leaderboard, setLeaderboard] = useState<ILeaderboard>(leaderboards)
