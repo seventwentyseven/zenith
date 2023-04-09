@@ -22,12 +22,12 @@ const LoginPage = () => {
   return (
     <Layout>
       <Head>
-        <title>Sign in</title>
+        <title>727 - Sign in</title>
       </Head>
       <BackgroundImage blur />
       <section className="max-w-screen-sm w-full">
         <div className="rounded-lg py-4 px-6 bg-hsl-15 bg-opacity-50 backdrop-blur-xl flex flex-row items-center justify-between mb-8">
-          <span className="font-semibold text-3xl text-white">Zaloguj się</span>
+          <span className="font-semibold text-3xl text-white">Sign in</span>
           <Link
             href="/auth/signup"
             className="text-blue-300 duration-150 hover:text-blue-400 focus:text-blue-400 active:text-blue-500"
