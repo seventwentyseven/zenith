@@ -17,7 +17,6 @@ const NotFound = () => {
             (╯°□°)╯︵ ┻━┻
           </span>
         </div>
-        {/* Put lorem ipsum here, then dotted list */}
         <span className="text-xl font-medium mt-3">
           There might be few reasons for this:
         </span>
