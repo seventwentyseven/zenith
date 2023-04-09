@@ -9,7 +9,9 @@ If you use npm:
 ```bash
 git clone https://github.com/seventwentyseven/zenith
 cd zenith
-git checkout main-v2
+
+# Install dependencies
+npm install
 
 # For development purposes. Has hot reload on every file save, and compiles every page every time the server is opened.
 npm run dev
@@ -26,7 +28,9 @@ If you use yarn:
 ```bash
 git clone https://github.com/seventwentyseven/zenith
 cd zenith
-git checkout main-v2
+
+# Install dependencies
+yarn
 
 # For development purposes. Has hot reload on every file save, and compiles every page every time the server is opened.
 yarn dev
