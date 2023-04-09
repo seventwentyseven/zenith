@@ -1,11 +1,11 @@
 import Image from 'next/image'
 
 //? Grade images
-import gradeXH from '../public/grades/XH.png'
-import gradeX from '../public/grades/X.png'
-import gradeSH from '../public/grades/SH.png'
-import gradeS from '../public/grades/S.png'
-import gradeA from '../public/grades/A.png'
+import gradeXH from '../../../public/grades/XH.png'
+import gradeX from '../../../public/grades/X.png'
+import gradeSH from '../../../public/grades/SH.png'
+import gradeS from '../../../public/grades/S.png'
+import gradeA from '../../../public/grades/A.png'
 
 interface IProps {
   xh_count: number

@@ -1,4 +1,4 @@
-import { RankColor } from '../constants/Gradients'
+import { RankColor } from '../../../constants/Gradients'
 import { initPopovers } from 'flowbite'
 import { useEffect } from 'react'
 interface IProps {
@@ -7,7 +7,7 @@ interface IProps {
   // peakGlobalRank: Record<Date, number>[]
 }
 // TODO: Add country name tooltip on country rank
-const ProfileRank = ({ countryRank, globalRank }: IProps) => {
+const UserRank = ({ countryRank, globalRank }: IProps) => {
   const rankColor = RankColor(globalRank)
   console.log(globalRank)
   useEffect(() => initPopovers(), [])
@@ -51,4 +51,4 @@ const ProfileRank = ({ countryRank, globalRank }: IProps) => {
   )
 }
 
-export default ProfileRank
+export default UserRank

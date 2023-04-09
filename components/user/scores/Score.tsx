@@ -25,7 +25,7 @@ const Score = ({
   bmapVersion: string
 }) => {
   return (
-    <div className="w-full h-24 rounded-xl flex group">
+    <div className="w-full h-24 flex group">
       <div
         className="bg-hsl-10 flex flex-row items-center justify-between px-4 rounded-xl min-w-full h-full transition duration-300 bg-center bg-cover group-hover:-translate-x-[4%]"
         style={{
@@ -37,7 +37,8 @@ const Score = ({
             {bmapArtist} - {bmapTitle} [{bmapVersion}]
           </Link>
           <span>
-            {score.toLocaleString('en-US')}; Max combo: {maxCombo.toLocaleString('en-US')}
+            {score.toLocaleString('en-US')}; Max combo:{' '}
+            {maxCombo.toLocaleString('en-US')}
           </span>
         </div>
         <div className="flex flex-row items-center gap-4 text-hsl-80 text-3xl">

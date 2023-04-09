@@ -1,6 +1,6 @@
-import { IPlayerStatsModeData } from '../types/UserData'
+import { IPlayerStatsModeData } from '../../../types/UserData'
 
-const ProfileStatsRight = ({ data }: { data: IPlayerStatsModeData }) => {
+const UserStats = ({ data }: { data: IPlayerStatsModeData }) => {
   return (
     <div className="w-4/12 grid grid-cols-2 gap-y-3px gap-x-4 h-min">
       <span className="col-span-1 font-bold">Accuracy</span>
@@ -27,4 +27,4 @@ const ProfileStatsRight = ({ data }: { data: IPlayerStatsModeData }) => {
   )
 }
 
-export default ProfileStatsRight
+export default UserStats
