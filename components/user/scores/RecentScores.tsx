@@ -1,42 +1,8 @@
-import { ISODateString } from 'next-auth'
 import { useEffect, useState } from 'react'
 import { fetchScores } from '../../../controllers/UserScoresFetching'
-import { IBeatmap } from '../../../types/Map'
+import { IScore } from '../../../types/Score'
 import LoadingSpinner from '../../LoadingSpinner'
 import Score from './Score'
-
-// def's old thing
-/* <div className="w-full h-24 rounded-xl flex group"><div
-        className="bg-hsl-10 rounded-xl min-w-full h-full transition duration-300 bg-center bg-cover group-hover:-translate-x-[4%]"
-        style={{
-          backgroundImage: `linear-gradient(180deg, hsla(230, 10%, 10%, 0.5), hsla(230, 10%, 10%, 0.5)), url("https://seventwentyseven.xyz/banners/3")`
-        }}
-      />
-      <div className="w-[4%] h-full hidden group-hover:flex transition duration-300 items-center justify-center">
-        <FaBars />
-      </div></div> */
-
-interface IScore {
-  id: number
-  score: number
-  pp: number
-  acc: number
-  max_combo: number
-  mods: number
-  n300: number
-  n100: number
-  n50: number
-  nmiss: number
-  ngeki: number
-  nkatu: number
-  grade: 'F' | 'D' | 'C' | 'B' | 'A' | 'S' | 'SH' | 'X' | 'XH'
-  status: number
-  mode: number
-  play_time: ISODateString
-  time_elapsed: number
-  perfect: number
-  beatmap: IBeatmap
-}
 
 const RecentScores = ({
   userid,
