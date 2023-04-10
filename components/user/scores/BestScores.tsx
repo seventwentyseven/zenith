@@ -107,7 +107,7 @@ const BestScores = ({
                 increaseOffset()
               }}
             >
-              More score
+              More scores
             </button>
           )
         )}

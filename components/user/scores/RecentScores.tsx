@@ -106,7 +106,7 @@ const RecentScores = ({
                 increaseOffset()
               }}
             >
-              More score
+              More scores
             </button>
           )
         )}
