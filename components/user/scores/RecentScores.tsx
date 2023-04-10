@@ -67,23 +67,7 @@ const RecentScores = ({
       {scores &&
         scores.length > 0 &&
         scores.map((score, index) => {
-          return (
-            <Score
-              key={`score-${index}`}
-              scoreId={score.id}
-              score={score.score}
-              pp={score.pp}
-              acc={score.acc}
-              maxCombo={score.max_combo}
-              grade={score.grade}
-              bmapId={score.beatmap.id}
-              bmapSetId={score.beatmap.set_id}
-              bmapArtist={score.beatmap.artist}
-              bmapTitle={score.beatmap.title}
-              bmapVersion={score.beatmap.version}
-              playTime={score.play_time}
-            />
-          )
+          return <Score key={`score-${index}`} score={score} />
         })}
 
       {scores.length === 0 ? (loading ? '' : 'No scores') : ''}
