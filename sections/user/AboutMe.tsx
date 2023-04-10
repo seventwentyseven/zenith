@@ -2,7 +2,6 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm'
 
-// TODO: Maybe try and find some library where you don't have to use dangerouslySetInnerHtml?
 const AboutMeSection = ({ aboutMe }: { aboutMe: string | null }) => {
   if (aboutMe === null) return <></>
 

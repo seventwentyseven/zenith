@@ -212,7 +212,9 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
           </div>
         </section>
 
-        <AboutMeSection />
+        <AboutMeSection
+          aboutMe={data.playerData.player.info.userpage_content}
+        />
 
         <ScoresSection
           gamemode={gameMode}
