@@ -13,6 +13,13 @@ cd zenith
 # Install dependencies
 npm install
 
+# Configure server
+cp .env.local.example .env.local
+nano .env.local
+
+cp config.json.example config.json
+nano config.json
+
 # For development purposes. Has hot reload on every file save, and compiles every page every time the server is opened.
 npm run dev
 
@@ -31,6 +38,13 @@ cd zenith
 
 # Install dependencies
 yarn
+
+# Configure server
+cp .env.local.example .env.local
+nano .env.local
+
+cp config.json.example config.json
+nano config.json
 
 # For development purposes. Has hot reload on every file save, and compiles every page every time the server is opened.
 yarn dev
