@@ -1,9 +1,13 @@
+import { ISODateString } from 'next-auth'
 import Link from 'next/link'
-import { FaBars } from 'react-icons/fa'
+import { FaAccusoft, FaBars } from 'react-icons/fa'
+import TimeAgo from 'timeago-react'
+import GradeImage from '../../Grade'
 
 const Score = ({
   scoreId,
   pp,
+  acc,
   score,
   grade,
   maxCombo,
@@ -11,18 +15,21 @@ const Score = ({
   bmapSetId,
   bmapArtist,
   bmapTitle,
-  bmapVersion
+  bmapVersion,
+  playTime
 }: {
   scoreId: number
   score: number
   maxCombo: number
   pp: number
+  acc: Number
   grade: string
   bmapId: number
   bmapSetId: number
   bmapArtist: string
   bmapTitle: string
   bmapVersion: string
+  playTime: ISODateString
 }) => {
   return (
     <div className="w-full h-24 flex group">
@@ -36,14 +43,22 @@ const Score = ({
           <Link href={`/beatmaps/${bmapId}`} className="text-xl">
             {bmapArtist} - {bmapTitle} [{bmapVersion}]
           </Link>
-          <span>
-            {score.toLocaleString('en-US')}; Max combo:{' '}
-            {maxCombo.toLocaleString('en-US')}
-          </span>
+          <div className="flex flex-row gap-2">
+            <span>Score: {score.toLocaleString('en-US')}</span>
+            <span>Max Combo: {maxCombo.toLocaleString('en-US')}</span>
+            <span>
+              Played: <TimeAgo datetime={playTime} />
+            </span>
+          </div>
         </div>
-        <div className="flex flex-row items-center gap-4 text-hsl-80 text-3xl">
-          <span>{Math.round(pp)}pp</span>
-          <span className="text-5xl">{grade}</span>
+        <div className="flex flex-row items-center gap-4 text-hsl-90">
+          <div className="flex flex-col text-hsl-80">
+            <span className="text-2xl font-bold">{Math.round(pp)}pp</span>
+            <span>{acc.toFixed(2)}%</span>
+          </div>
+          <span className="text-5xl w-[68px] h-full">
+            <GradeImage name={grade} />
+          </span>
         </div>
       </div>
       <div className="w-[4%] h-full opacity-0 scale-0 flex translate-x-0 group-hover:scale-100 transition group-hover:opacity-100 group-hover:-translate-x-7 duration-300 items-center justify-center">

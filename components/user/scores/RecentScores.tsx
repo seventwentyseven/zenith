@@ -73,6 +73,7 @@ const RecentScores = ({
               scoreId={score.id}
               score={score.score}
               pp={score.pp}
+              acc={score.acc}
               maxCombo={score.max_combo}
               grade={score.grade}
               bmapId={score.beatmap.id}
@@ -80,6 +81,7 @@ const RecentScores = ({
               bmapArtist={score.beatmap.artist}
               bmapTitle={score.beatmap.title}
               bmapVersion={score.beatmap.version}
+              playTime={score.play_time}
             />
           )
         })}
