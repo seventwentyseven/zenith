@@ -1,54 +1,37 @@
-import gradeXH from '../public/grades/XH.png'
-import gradeX from '../public/grades/X.png'
-import gradeSH from '../public/grades/SH.png'
-import gradeS from '../public/grades/S.png'
-import gradeA from '../public/grades/A.png'
-import gradeB from '../public/grades/B.png'
-import gradeC from '../public/grades/C.png'
-import gradeD from '../public/grades/D.png'
-import gradeF from '../public/grades/F.png'
+import gradeA from '../assets/grades/A.png'
+import gradeB from '../assets/grades/B.png'
+import gradeC from '../assets/grades/C.png'
+import gradeD from '../assets/grades/D.png'
+import gradeF from '../assets/grades/F.png'
+import gradeS from '../assets/grades/S.png'
+import gradeSH from '../assets/grades/SH.png'
+import gradeX from '../assets/grades/X.png'
+import gradeXH from '../assets/grades/XH.png'
 
-import Image from 'next/image'
+import Image, { StaticImageData } from 'next/image'
 
 interface IProps {
   name: string
 }
 
-const GradeImage = ({ name }: IProps) => {
-  let imageSrc
-
-  switch (name) {
-    case 'XH':
-      imageSrc = gradeXH
-      break
-    case 'X':
-      imageSrc = gradeX
-      break
-    case 'SH':
-      imageSrc = gradeSH
-      break
-    case 'S':
-      imageSrc = gradeS
-      break
-    case 'A':
-      imageSrc = gradeA
-      break
-    case 'B':
-      imageSrc = gradeB
-      break
-    case 'C':
-      imageSrc = gradeC
-      break
-    case 'D':
-      imageSrc = gradeD
-      break
-    case 'F':
-    default:
-      imageSrc = gradeF
-      break
-  }
-
-  return <Image src={imageSrc} alt={name} />
+interface IGradeImageMap {
+  [key: string]: StaticImageData
 }
 
-export default GradeImage
+const GradeImageMap: IGradeImageMap = {
+  XH: gradeXH,
+  X: gradeX,
+  SH: gradeSH,
+  S: gradeS,
+  A: gradeA,
+  B: gradeB,
+  C: gradeC,
+  D: gradeD,
+  F: gradeF
+}
+
+const Grade = ({ name }: IProps) => {
+  return <Image src={GradeImageMap[name] || gradeF} alt={name} />
+}
+
+export default Grade

@@ -2,7 +2,8 @@ import Link from 'next/link'
 import { FaBars } from 'react-icons/fa'
 import TimeAgo from 'timeago-react'
 import { IScore } from '../../../types/Score'
-import GradeImage from '../../Grade'
+import Grade from '../../Grade'
+import ModsImageList from '../../Mods'
 
 const Score = ({ score }: { score: IScore }) => {
   return (
@@ -27,12 +28,13 @@ const Score = ({ score }: { score: IScore }) => {
           </div>
         </div>
         <div className="flex flex-row items-center gap-4 text-hsl-90">
+          <ModsImageList mods={score.mods} />
           <div className="flex flex-col text-hsl-80">
             <span className="text-2xl font-bold">{Math.round(score.pp)}pp</span>
             <span className="text-white/70">{score.acc.toFixed(2)}%</span>
           </div>
           <span className="text-5xl w-[68px] h-full">
-            <GradeImage name={score.grade} />
+            <Grade name={score.grade} />
           </span>
         </div>
       </div>
