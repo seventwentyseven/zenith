@@ -1,3 +1,4 @@
+import { Privileges } from '../../constants/Privileges'
 import BadgeDeveloper from './BadgeDeveloper'
 import BadgeOwner from './BadgeOwner'
 import BadgeHeadAdmin from './BadgeHeadAdmin'
@@ -12,53 +13,40 @@ import BadgeWhitelisted from './BadgeWhitelisted'
 import BadgeFrozen from './BadgeFrozen'
 import BadgeRestricted from './BadgeRestricted'
 
-import { Privileges } from '../../constants/Privileges'
+const badges = [
+  { privilege: Privileges.Owner, component: BadgeOwner },
+  { privilege: Privileges.Developer, component: BadgeDeveloper },
+  { privilege: Privileges.HeadAdmin, component: BadgeHeadAdmin },
+  { privilege: Privileges.Administrator, component: BadgeAdmin },
+  { privilege: Privileges.Moderator, component: BadgeModerator },
+  { privilege: Privileges.CommunityManager, component: BadgeCommunityManager },
+  { privilege: Privileges.Qats, component: BadgeQAT },
+  { privilege: Privileges.Nominators, component: BadgeNominator },
+  { privilege: Privileges.Alumni, component: BadgeAlumni },
+  { privilege: Privileges.Supporter, component: BadgeSupporter },
+  { privilege: Privileges.Whitelisted, component: BadgeWhitelisted },
+  { privilege: Privileges.Frozen, component: BadgeFrozen }
+]
 
 interface IProps {
   priv: number
 }
 
 const BadgeList = ({ priv }: IProps) => {
-  console.log(priv)
+  let userBadges = badges.filter(
+    ({ privilege }) => (priv & privilege) === privilege
+  )
 
-  let userPrivilegesArray: String[] = []
-
-  // This is for checking what roles the User has, it is quite useless as it only logs in the server console
-  for (const privilege in Privileges) {
-    if (isNaN(Number(privilege))) {
-      const privilegeValue = Privileges[privilege]
-      if (
-        typeof privilegeValue === 'number' &&
-        (priv & privilegeValue) === privilegeValue
-        // &&
-        // privilegeValue !== Privileges.Staff
-      ) {
-        userPrivilegesArray.push(Privileges[privilegeValue])
-      }
-    }
-  }
+  if (!(priv & Privileges.Unrestricted))
+    userBadges.push({
+      privilege: Privileges.Unrestricted,
+      component: BadgeRestricted
+    })
   return (
     <div className="flex flex-row gap-2 max-w-3xl flex-wrap">
-      {priv & Privileges.Owner ? <BadgeOwner /> : null}
-      {priv & Privileges.Developer ? <BadgeDeveloper /> : null}
-      {priv & Privileges.HeadAdmin ? (
-        <BadgeHeadAdmin />
-      ) : priv & Privileges.Administrator ? (
-        <BadgeAdmin />
-      ) : priv & Privileges.Moderator ? (
-        <BadgeModerator />
-      ) : null}
-      {priv & Privileges.CommunityManager ? <BadgeCommunityManager /> : null}
-      {/* TODO: Mutually exclusive if same */}
-      {priv & Privileges.Qats ? <BadgeQAT priv={priv} /> : null}
-      {priv & Privileges.Nominators ? <BadgeNominator priv={priv} /> : null}
-
-      {priv & Privileges.Alumni ? <BadgeAlumni /> : null}
-      {priv & Privileges.Supporter ? <BadgeSupporter /> : null}
-      {/* Show whitelisted only if user has the Whitelisted Privileges and does not have any of staff privileges */}
-      {priv & Privileges.Whitelisted ? <BadgeWhitelisted priv={priv} /> : null}
-      {priv & Privileges.Frozen ? <BadgeFrozen /> : null}
-      {!(priv & Privileges.Unrestricted) ? <BadgeRestricted /> : null}
+      {userBadges.map(({ component: BadgeComponent }) => (
+        <BadgeComponent key={BadgeComponent.name} priv={priv} />
+      ))}
     </div>
   )
 }
