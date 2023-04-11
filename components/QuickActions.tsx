@@ -5,7 +5,7 @@ const QuickActions = () => {
   const { data: session } = useSession()
 
   return (
-    <div className="hidden xl:block w-[35%] rounded-lg p-4 bg-hsl-15 bg-opacity-50 backdrop-blur-xl text-white shadow ml-2 select-none border-white/20 border-px">
+    <section className="hidden xl:block w-[35%] rounded-lg p-4 bg-hsl-15 bg-opacity-50 backdrop-blur-xl text-white shadow ml-2 select-none border-white/20 border-px">
       <div className="flex flex-col w-full">
         <span className="text-center text-base-content mb-2">
           Quick actions
@@ -18,14 +18,8 @@ const QuickActions = () => {
           >
             Profile
           </Link>
-          {/* <Link href="/beatmaps" className="btn btn-lg btn-secondary w-full">
+          <Link href="/beatmaps" className="btn btn-lg btn-secondary w-full">
             Beatmaps
-          </Link> */}
-          <Link
-            href={`/user/${session?.user.id}/old`}
-            className="btn btn-lg btn-secondary w-full whitespace-nowrap"
-          >
-            Profile (old)
           </Link>
           <Link
             href="/api/auth/signout"
@@ -35,7 +29,7 @@ const QuickActions = () => {
           </Link>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
