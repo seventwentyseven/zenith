@@ -1,13 +1,14 @@
+import Image from 'next/image'
 import React from 'react'
 
 type IProps = {
   size?: number
 }
 
-const Logo = ({ size }: IProps) => {
+const HeaderLogo = ({ size }: IProps) => {
   if (!size) size = 64
   return (
-    <img
+    <Image
       src="https://seventwentyseven.xyz/static/favicon/apple-touch-icon.png"
       alt="727.xyz logo"
       width={size}
@@ -17,4 +18,4 @@ const Logo = ({ size }: IProps) => {
   )
 }
 
-export default Logo
+export default HeaderLogo
