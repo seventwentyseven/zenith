@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import BackgroundImage from '../../components/BackgroundImages'
+import BackgroundImage from '../../components/BackgroundImage'
 import GamemodeSwitcher from '../../components/GamemodeSwitcher'
 import Layout from '../../components/Layout'
 import Pagination from '../../components/Pagination'
@@ -90,7 +90,7 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
         <div className="relative max-w-screen-xl mx-auto overflow-x-auto sm:rounded-lg">
           <div className="flex flex-row items-center justify-between mb-4 px-4">
             <span className="text-xl">Leaderboard</span>
-            <GamemodeSwitcher gameMode={gameMode} setGameMode={setGameMode} />
+            <GamemodeSwitcher gamemode={gameMode} setGamemode={setGameMode} />
           </div>
           <table className="w-full text-sm text-left text-gray-500 dark:text-white/60">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-hsl-15 dark:text-gray-400">
@@ -147,6 +147,7 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
           <Pagination
             offset={offset}
             length={leaderboard.leaderboard.length}
+            pageLength={50}
             previousPageFunction={handlePreviousPage}
             nextPageFunction={handleNextPage}
           />

@@ -1,6 +1,7 @@
 interface IProps {
   offset: number
   length: number
+  pageLength: number
   previousPageFunction: () => 0 | undefined
   nextPageFunction: () => 0 | undefined
 }
@@ -8,6 +9,7 @@ interface IProps {
 const Pagination = ({
   offset,
   length,
+  pageLength,
   previousPageFunction,
   nextPageFunction
 }: IProps) => {
@@ -30,7 +32,7 @@ const Pagination = ({
           <li>
             <button
               className={
-                length < 50
+                length < pageLength
                   ? 'pointer-effects-none relative block rounded bg-transparent py-1.5 px-3 text-sm text-neutral-500 transition-all duration-300 dark:text-neutral-400'
                   : 'relative block rounded bg-transparent py-1.5 px-3 text-sm text-neutral-600 transition-all duration-300 hover:bg-neutral-100 dark:text-white dark:hover:bg-neutral-700 dark:hover:text-white'
               }
