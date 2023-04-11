@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { FaAddressCard } from 'react-icons/fa'
 
 //? Our components
-import BackgroundImage from '../../../components/BackgroundImages'
+import BackgroundImage from '../../../components/BackgroundImage'
 import Layout from '../../../components/Layout'
 
 //? Functions and types

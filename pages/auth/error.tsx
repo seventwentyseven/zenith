@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import BackgroundImage from '../../components/BackgroundImages'
+import BackgroundImage from '../../components/BackgroundImage'
 import Layout from '../../components/Layout'
 
 const AuthError = () => {

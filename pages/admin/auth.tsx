@@ -2,7 +2,7 @@ import * as crypto from 'crypto'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useState } from 'react'
-import BackgroundImage from '../../components/BackgroundImages'
+import BackgroundImage from '../../components/BackgroundImage'
 import Layout from '../../components/Layout'
 
 const AdminLoginPage = () => {

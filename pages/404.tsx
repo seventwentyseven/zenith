@@ -1,12 +1,12 @@
 import { useRouter } from 'next/router'
-import BackgroundImage from '../components/BackgroundImages'
+import BackgroundImage from '../components/BackgroundImage'
 import Layout from '../components/Layout'
 
 const NotFound = () => {
   const router = useRouter()
   return (
     <Layout>
-      <BackgroundImage nogradient opacity={0.65} blur />
+      <BackgroundImage disableGradient opacity={0.65} blur />
 
       <section className="w-2/5 rounded py-6 px-6 bg-hsl-20 bg-opacity-70 backdrop-blur-lg flex flex-col text-white">
         <div className="flex items-center font-nunito text-transparent font-bold">

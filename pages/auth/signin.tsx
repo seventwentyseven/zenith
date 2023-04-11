@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
 import Layout from '../../components/Layout'
-import BackgroundImage from '../../components/BackgroundImages'
+import BackgroundImage from '../../components/BackgroundImage'
 
 const LoginPage = () => {
   const [username, setUsername] = useState<string>('')

@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { initTabs } from 'flowbite'
 
 //? Our components
-import BackgroundImage from '../../../components/BackgroundImages'
+import BackgroundImage from '../../../components/BackgroundImage'
 import GamemodeSwitcher from '../../../components/GamemodeSwitcher'
 import GradeBlock from '../../../components/user/stats/GradeBlock'
 import Layout from '../../../components/Layout'
@@ -136,7 +136,7 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
               </div>
             )}
             <div className="absolute top-0 right-0 m-5 mb-9">
-              <GamemodeSwitcher gameMode={gameMode} setGameMode={setGameMode} />
+              <GamemodeSwitcher gamemode={gameMode} setGamemode={setGameMode} />
             </div>
             <div className="flex flex-col justify-center self-start items-start pt-2 ml-72">
               <div className="flex flex-row justify-center items-center mb-4">
