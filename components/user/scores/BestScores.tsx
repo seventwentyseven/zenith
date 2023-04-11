@@ -79,7 +79,7 @@ const BestScores = ({
             disabled
             className="btn btn-md btn-primary cursor-not-allowed"
           >
-            <LoadingSpinner />
+            <LoadingSpinner color="white" />
             <span>Loading</span>
           </button>
         ) : (
