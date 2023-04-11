@@ -3,49 +3,49 @@ import { initPopovers } from 'flowbite'
 import { SetStateAction, useEffect, useState } from 'react'
 
 interface IProps {
-  gameMode: number
-  setGameMode: React.Dispatch<SetStateAction<number>>
+  gamemode: number
+  setGamemode: React.Dispatch<SetStateAction<number>>
 }
 
-const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
+interface IModeState {
+  std: boolean
+  taiko: boolean
+  catch: boolean
+  mania: boolean
+}
+
+interface IModeStateMap {
+  [key: number]: IModeState
+}
+
+const ModeStateMap: IModeStateMap = {
+  0: { std: true, taiko: false, catch: false, mania: false },
+  1: { std: false, taiko: true, catch: false, mania: false },
+  2: { std: false, taiko: false, catch: true, mania: false },
+  3: { std: false, taiko: false, catch: false, mania: true },
+  4: { std: true, taiko: false, catch: false, mania: false },
+  5: { std: false, taiko: true, catch: false, mania: false },
+  6: { std: false, taiko: false, catch: true, mania: false },
+  8: { std: true, taiko: false, catch: false, mania: false }
+}
+
+const GamemodeSwitcher = ({ gamemode, setGamemode }: IProps) => {
   const [stdSelected, setStdSelected] = useState<boolean>(false)
   const [taikoSelected, setTaikoSelected] = useState<boolean>(false)
   const [catchSelected, setCatchSelected] = useState<boolean>(false)
   const [maniaSelected, setManiaSelected] = useState<boolean>(false)
+
   useEffect(() => {
     initPopovers()
   })
 
-  //! Please, for the love of God, do NOT look at the useEffect below.
   useEffect(() => {
-    if (gameMode === 0 || gameMode === 4 || gameMode === 8) {
-      setStdSelected(true)
-      setTaikoSelected(false)
-      setCatchSelected(false)
-      setManiaSelected(false)
-    } else if (gameMode === 1 || gameMode === 5) {
-      setStdSelected(false)
-      setTaikoSelected(true)
-      setCatchSelected(false)
-      setManiaSelected(false)
-    } else if (gameMode === 2 || gameMode === 6) {
-      setStdSelected(false)
-      setTaikoSelected(false)
-      setCatchSelected(true)
-      setManiaSelected(false)
-    } else if (gameMode === 3) {
-      setStdSelected(false)
-      setTaikoSelected(false)
-      setCatchSelected(false)
-      setManiaSelected(true)
-    } else {
-      // Invalid game mode, reset all state variables to false
-      setStdSelected(false)
-      setTaikoSelected(false)
-      setCatchSelected(false)
-      setManiaSelected(false)
-    }
-  }, [gameMode])
+    const selectedGamemode = ModeStateMap[gamemode] || {}
+    setStdSelected(!!selectedGamemode.std)
+    setTaikoSelected(!!selectedGamemode.taiko)
+    setCatchSelected(!!selectedGamemode.catch)
+    setManiaSelected(!!selectedGamemode.mania)
+  }, [gamemode])
 
   return (
     <div className="dark flex flex-row gap-2">
@@ -58,7 +58,7 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
             ? 'bg-hsl-55 bg-opacity-80 hover:bg-hsl-75 hover:bg-opacity-60'
             : 'bg-hsl-15 bg-opacity-60 hover:bg-hsl-10 hover:bg-opacity-80'
         }`}
-        onClick={() => setGameMode(0)}
+        onClick={() => setGamemode(0)}
       >
         <i className="mode-icon osu"></i>
       </button>
@@ -72,7 +72,7 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
             ? 'bg-hsl-55 bg-opacity-80 hover:bg-hsl-75 hover:bg-opacity-60'
             : 'bg-hsl-15 bg-opacity-60 hover:bg-hsl-10 hover:bg-opacity-80'
         }`}
-        onClick={() => setGameMode(1)}
+        onClick={() => setGamemode(1)}
       >
         <i className="mode-icon taiko"></i>
       </button>
@@ -85,7 +85,7 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
             ? 'bg-hsl-55 bg-opacity-80 hover:bg-hsl-75 hover:bg-opacity-60'
             : 'bg-hsl-15 bg-opacity-60 hover:bg-hsl-10 hover:bg-opacity-80'
         }`}
-        onClick={() => setGameMode(2)}
+        onClick={() => setGamemode(2)}
       >
         <i className="mode-icon catch"></i>
       </button>
@@ -98,7 +98,7 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
             ? 'bg-hsl-55 bg-opacity-80 hover:bg-hsl-75 hover:bg-opacity-60'
             : 'bg-hsl-15 bg-opacity-60 hover:bg-hsl-10 hover:bg-opacity-80'
         }`}
-        onClick={() => setGameMode(3)}
+        onClick={() => setGamemode(3)}
       >
         <i className="mode-icon mania"></i>
       </button>
@@ -122,30 +122,30 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
           <button
             className={classNames(
               'btn btn-md',
-              gameMode === 0 ? 'btn-secondary' : 'btn-primary',
+              gamemode === 0 ? 'btn-secondary' : 'btn-primary',
               'w-full'
             )}
-            onClick={() => setGameMode(0)}
+            onClick={() => setGamemode(0)}
           >
             vanilla
           </button>
           <button
             className={classNames(
               'btn btn-md',
-              gameMode === 4 ? 'btn-secondary' : 'btn-primary',
+              gamemode === 4 ? 'btn-secondary' : 'btn-primary',
               'w-full'
             )}
-            onClick={() => setGameMode(4)}
+            onClick={() => setGamemode(4)}
           >
             relax
           </button>
           <button
             className={classNames(
               'btn btn-md',
-              gameMode === 8 ? 'btn-secondary' : 'btn-primary',
+              gamemode === 8 ? 'btn-secondary' : 'btn-primary',
               'w-full'
             )}
-            onClick={() => setGameMode(8)}
+            onClick={() => setGamemode(8)}
           >
             autopilot
           </button>
@@ -168,20 +168,20 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
           <button
             className={classNames(
               'btn btn-md',
-              gameMode === 1 ? 'btn-secondary' : 'btn-primary',
+              gamemode === 1 ? 'btn-secondary' : 'btn-primary',
               'w-full'
             )}
-            onClick={() => setGameMode(1)}
+            onClick={() => setGamemode(1)}
           >
             vanilla
           </button>
           <button
             className={classNames(
               'btn btn-md',
-              gameMode === 5 ? 'btn-secondary' : 'btn-primary',
+              gamemode === 5 ? 'btn-secondary' : 'btn-primary',
               'w-full'
             )}
-            onClick={() => setGameMode(5)}
+            onClick={() => setGamemode(5)}
           >
             relax
           </button>
@@ -204,20 +204,20 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
           <button
             className={classNames(
               'btn btn-md',
-              gameMode === 2 ? 'btn-secondary' : 'btn-primary',
+              gamemode === 2 ? 'btn-secondary' : 'btn-primary',
               'w-full'
             )}
-            onClick={() => setGameMode(2)}
+            onClick={() => setGamemode(2)}
           >
             vanilla
           </button>
           <button
             className={classNames(
               'btn btn-md',
-              gameMode === 6 ? 'btn-secondary' : 'btn-primary',
+              gamemode === 6 ? 'btn-secondary' : 'btn-primary',
               'w-full'
             )}
-            onClick={() => setGameMode(6)}
+            onClick={() => setGamemode(6)}
           >
             relax
           </button>
@@ -238,10 +238,10 @@ const GamemodeSwitcher = ({ gameMode, setGameMode }: IProps) => {
           <button
             className={classNames(
               'btn btn-md',
-              gameMode === 3 ? 'btn-secondary' : 'btn-primary',
+              gamemode === 3 ? 'btn-secondary' : 'btn-primary',
               'w-full'
             )}
-            onClick={() => setGameMode(3)}
+            onClick={() => setGamemode(3)}
           >
             Vanilla
           </button>
