@@ -2,6 +2,7 @@ import { initPopovers } from 'flowbite'
 import { Session } from 'next-auth'
 import Link from 'next/link'
 import { useEffect } from 'react'
+import HeaderSearchModal from './HeaderSearchModal'
 
 type IProps = {
   session: Session | null
@@ -12,7 +13,8 @@ const HeaderRightBlock = ({ session }: IProps) => {
   })
   if (session) {
     return (
-      <div className="dark flex flex-row w-full items-center justify-end">
+      <div className="dark flex flex-row w-full items-center justify-end gap-6">
+        <HeaderSearchModal />
         <Link
           data-popover-target="user-menu"
           data-popover-placement="bottom"

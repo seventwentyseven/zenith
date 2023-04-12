@@ -2,7 +2,6 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import HeaderNavigation from './HeaderNavigation'
 import HeaderRightBlock from './HeaderRightBlock'
-import HeaderSearchModal from './HeaderSearchModal'
 import HeaderLogo from './HeaderLogo'
 
 const Header = () => {
@@ -18,10 +17,8 @@ const Header = () => {
           <HeaderLogo />
         </Link>
         <HeaderNavigation session={session} />
-        <div>
-          <HeaderSearchModal />
-          <HeaderRightBlock session={session} />
-        </div>
+
+        <HeaderRightBlock session={session} />
       </nav>
     </header>
   )
