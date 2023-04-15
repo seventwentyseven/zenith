@@ -10,7 +10,7 @@ const AboutMeSection = ({ aboutMe }: { aboutMe: string | null }) => {
       <div className="text-xl font-bold border-b-2 border-hsl-50 pb-0.5 w-min whitespace-nowrap ml-2">
         About Me
       </div>
-      <div className="prose prose-invert p-2">
+      <div className="prose prose-invert p-2 max-w-full">
         <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
           {aboutMe.replaceAll('\n', '  \n\n')}
         </ReactMarkdown>
