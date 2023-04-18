@@ -107,6 +107,11 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
 
   useEffect(() => initTabs(), [])
 
+  useEffect(
+    () => setGameMode(data.playerData.player.info.preferred_mode),
+    [data]
+  )
+
   let playerStatistics = data.playerData.player.stats[gameMode]
 
   return (
