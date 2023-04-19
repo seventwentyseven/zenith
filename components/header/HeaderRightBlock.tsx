@@ -14,7 +14,7 @@ const HeaderRightBlock = ({ session }: IProps) => {
   if (session) {
     return (
       <div className="dark flex flex-row w-full items-center justify-end gap-6">
-        <HeaderSearchModal />
+        <HeaderSearchModal token={session.user.token} />
         <Link
           data-popover-target="user-menu"
           data-popover-placement="bottom"
