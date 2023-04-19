@@ -302,14 +302,13 @@ const DonatePage = () => {
               <div className="w-full h-full z-10 -translate-y-[100%] flex flex-col p-4">
                 <div className="flex flex-row items-center mb-2">
                   <figure className="h-10 w-10 text-lg rounded-lg font-bold font-nunito bg-hsl-50 group-hover:bg-hsl-25 group-hover:bg-opacity-80 transition duration-300 flex items-center justify-center">
-                    8
+                    11
                   </figure>
-                  <h4 className="text-lg -mb-1 ml-3">Card color</h4>
+                  <h4 className="text-lg -mb-1 ml-3">Golden Name</h4>
                 </div>
                 <p>
-                  Like with Nitro on Discord, now you'll have ability to{' '}
-                  <s>permanently blind people</s> change the colors of your user
-                  card! This includes theme, and gradient colors!
+                  With supporter tag, your in game nickname will have golden
+                  color to stand out from the crowd!
                 </p>
               </div>
             </figure>
