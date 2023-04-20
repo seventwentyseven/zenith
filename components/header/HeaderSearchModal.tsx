@@ -106,7 +106,7 @@ const HeaderSearchModal = ({ token }: { token: User['token'] }) => {
             <input
               type="search"
               id="search-dropdown"
-              className="inline-block p-2.5 w-[calc(100%-9.75rem)] z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+              className="inline-block p-2.5 w-[calc(100%-6.75rem)] z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
               placeholder="Search"
               onChange={e => setQuery(e.target.value)}
             />
@@ -115,25 +115,25 @@ const HeaderSearchModal = ({ token }: { token: User['token'] }) => {
       </form>
       {data?.data.players?.map((player, index) => {
         return (
-          <Link href={`/user/${player.id}`} key={`search-player-${index}`}>
-            <SearchResult >
-              <Dialog.Close asChild>
+          <Dialog.Close asChild key={`search-player-${index}`}>
+            <Link href={`/user/${player.id}`}>
+              <SearchResult backgroundImageUrl={`https://seventwentyseven.xyz/banners/${player.id}`}>
                 <button>{player.name}</button>
-              </Dialog.Close>
-            </SearchResult>
-          </Link>
+              </SearchResult>
+            </Link>
+          </Dialog.Close>
         )
       })}
       <hr />
       {data?.data.beatmaps?.map((beatmap, index) => {
         return (
-          <Link key={`search-beatmap-${index}`} href={`/beatmap/${beatmap.set_id}`}>
-            <SearchResult >
-              <Dialog.Close asChild>
+          <Dialog.Close asChild key={`search-beatmap-${index}`} >
+            <Link href={`/beatmap/${beatmap.set_id}`}>
+              <SearchResult backgroundImageUrl={`https://assets.ppy.sh/beatmaps/${beatmap.set_id}/covers/cover.jpg`}>
                 <button>{beatmap.artist} - {beatmap.title}</button>
-              </Dialog.Close>
-            </SearchResult>
-          </Link>
+              </SearchResult>
+            </Link>
+          </Dialog.Close>
         )
       })}
       <button onClick={() => setOffset(offset + 5)}>more ppl</button>

@@ -49,7 +49,6 @@ export const Modal = ({
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'black',
                 position: 'absolute',
                 top: '10px',
                 right: '10px'
