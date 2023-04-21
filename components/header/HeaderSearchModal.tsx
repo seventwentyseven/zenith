@@ -23,6 +23,7 @@ const HeaderSearchModal = ({ token }: { token: User['token'] }) => {
   const [query, setQuery] = useState<string>('')
   const [debouncedQuery] = useDebounce(query, 1000)
   const [offset, setOffset] = useState<number>(0)
+  const [limit, setLimit] = useState<number>(5)
   const [data, setData] = useState<ISearchResponse>()
 
   useEffect(() => {
@@ -32,11 +33,11 @@ const HeaderSearchModal = ({ token }: { token: User['token'] }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (debouncedQuery !== '') {
-        setData(await search(debouncedQuery, category, token, offset))
+        setData(await search(debouncedQuery, category, token, offset, limit))
       }
     }
     fetchData()
-  }, [debouncedQuery, category, offset, token])
+  }, [debouncedQuery, category, offset, token, limit])
 
   return (
     <Modal
@@ -136,7 +137,7 @@ const HeaderSearchModal = ({ token }: { token: User['token'] }) => {
           </Dialog.Close>
         )
       })}
-      <button onClick={() => setOffset(offset + 5)}>more ppl</button>
+      <button onClick={() => setLimit(limit + 5)}>more ppl</button>
     </Modal>
   )
 }
