@@ -107,18 +107,12 @@ const GamemodeSwitcher = ({ gamemode, setGamemode }: IProps) => {
         data-popover
         id="popover-std"
         role="tooltip"
-        className={classNames(
-          'absolute z-10 invisible inline-block w-48 text-sm font-light text-gray-500',
-          'transition-opacity duration-300 bg-white border border-gray-200 rounded-lg',
-          'shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800'
-        )}
+        className="absolute z-10 invisible inline-block w-48 text-sm font-light transition-opacity duration-300 rounded-lg shadow-sm shadow-hsl-5 bg-hsl-15 bg-opacity-80 opacity-0"
       >
-        <div className="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 className="font-semibold text-gray-900 dark:text-white text-center">
-            osu!
-          </h3>
+        <div className="px-3 py-2 ">
+          <h3 className="font-semibold text-gray-200 text-center">osu!</h3>
         </div>
-        <div className="px-3 py-2 flex flex-col items-center justify-between gap-2">
+        <div className="px-3 pb-2 flex flex-col items-center justify-between gap-2">
           <button
             className={classNames(
               'btn btn-md',
@@ -157,14 +151,12 @@ const GamemodeSwitcher = ({ gamemode, setGamemode }: IProps) => {
         data-popover
         id="popover-taiko"
         role="tooltip"
-        className="absolute z-10 invisible inline-block w-48 text-sm font-light text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+        className="absolute z-10 invisible inline-block w-48 text-sm font-light transition-opacity duration-300 rounded-lg shadow-sm shadow-hsl-5 bg-hsl-15 bg-opacity-80 opacity-0"
       >
-        <div className="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 className="font-semibold text-gray-900 dark:text-white text-center">
-            osu!taiko
-          </h3>
+        <div className="px-3 py-2 ">
+          <h3 className="font-semibold text-gray-200 text-center">osu!taiko</h3>
         </div>
-        <div className="px-3 py-2 flex flex-col items-center justify-between gap-2">
+        <div className="px-3 pb-2 flex flex-col items-center justify-between gap-2">
           <button
             className={classNames(
               'btn btn-md',
@@ -193,14 +185,12 @@ const GamemodeSwitcher = ({ gamemode, setGamemode }: IProps) => {
         data-popover
         id="popover-catch"
         role="tooltip"
-        className="absolute z-10 invisible inline-block w-48 text-sm font-light text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+        className="absolute z-10 invisible inline-block w-48 text-sm font-light transition-opacity duration-300 rounded-lg shadow-sm shadow-hsl-5 bg-hsl-15 bg-opacity-80 opacity-0"
       >
-        <div className="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 className="font-semibold text-gray-900 dark:text-white text-center">
-            osu!catch
-          </h3>
+        <div className="px-3 py-2 ">
+          <h3 className="font-semibold text-gray-200 text-center">osu!catch</h3>
         </div>
-        <div className="px-3 py-2 flex flex-col items-center justify-between gap-2">
+        <div className="px-3 pb-2 flex flex-col items-center justify-between gap-2">
           <button
             className={classNames(
               'btn btn-md',
@@ -229,7 +219,7 @@ const GamemodeSwitcher = ({ gamemode, setGamemode }: IProps) => {
         data-popover
         id="popover-mania"
         role="tooltip"
-        className="absolute z-10 invisible inline-block w-48 text-sm font-light transition-opacity duration-300 rounded-lg shadow-sm shadow-hsl-5 bg-hsl-15 bg-opacity-75 opacity-0"
+        className="absolute z-10 invisible inline-block w-48 text-sm font-light transition-opacity duration-300 rounded-lg shadow-sm shadow-hsl-5 bg-hsl-15 bg-opacity-80 opacity-0"
       >
         <div className="px-3 py-2 ">
           <h3 className="font-semibold text-gray-200 text-center">osu!mania</h3>
