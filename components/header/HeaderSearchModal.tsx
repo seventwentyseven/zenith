@@ -114,29 +114,39 @@ const HeaderSearchModal = ({ token }: { token: User['token'] }) => {
           </div>
         </div>
       </form>
-      {data?.data.players?.map((player, index) => {
-        return (
-          <Dialog.Close asChild key={`search-player-${index}`}>
-            <Link href={`/user/${player.id}`}>
-              <SearchResult backgroundImageUrl={`https://seventwentyseven.xyz/banners/${player.id}`}>
-                <button>{player.name}</button>
-              </SearchResult>
-            </Link>
-          </Dialog.Close>
-        )
-      })}
+      <div className="flex flex-col w-full gap-2 my-4">
+        {data?.data.players?.map((player, index) => {
+          return (
+            <Dialog.Close asChild key={`search-player-${index}`}>
+              <Link href={`/user/${player.id}`}>
+                <SearchResult
+                  backgroundImageUrl={`https://seventwentyseven.xyz/banners/${player.id}`}
+                >
+                  <button>{player.name}</button>
+                </SearchResult>
+              </Link>
+            </Dialog.Close>
+          )
+        })}
+      </div>
       <hr />
-      {data?.data.beatmaps?.map((beatmap, index) => {
-        return (
-          <Dialog.Close asChild key={`search-beatmap-${index}`} >
-            <Link href={`/beatmap/${beatmap.set_id}`}>
-              <SearchResult backgroundImageUrl={`https://assets.ppy.sh/beatmaps/${beatmap.set_id}/covers/cover.jpg`}>
-                <button>{beatmap.artist} - {beatmap.title}</button>
-              </SearchResult>
-            </Link>
-          </Dialog.Close>
-        )
-      })}
+      <div className="flex flex-col w-full gap-2 my-4">
+        {data?.data.beatmaps?.map((beatmap, index) => {
+          return (
+            <Dialog.Close asChild key={`search-beatmap-${index}`}>
+              <Link href={`/beatmap/${beatmap.set_id}`}>
+                <SearchResult
+                  backgroundImageUrl={`https://assets.ppy.sh/beatmaps/${beatmap.set_id}/covers/cover.jpg`}
+                >
+                  <button>
+                    {beatmap.artist} - {beatmap.title}
+                  </button>
+                </SearchResult>
+              </Link>
+            </Dialog.Close>
+          )
+        })}
+      </div>
       <button onClick={() => setLimit(limit + 5)}>more ppl</button>
     </Modal>
   )
