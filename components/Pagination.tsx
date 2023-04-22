@@ -21,8 +21,8 @@ const Pagination = ({
             <button
               className={
                 offset === 0
-                  ? 'pointer-events-none relative block rounded bg-transparent py-1.5 px-3 text-sm text-neutral-500 transition-all duration-300 dark:text-neutral-400'
-                  : 'relative block rounded bg-transparent py-1.5 px-3 text-sm text-neutral-600 transition-all duration-300 hover:bg-neutral-100 dark:text-white dark:hover:bg-neutral-700 dark:hover:text-white'
+                  ? 'pointer-events-none relative block rounded bg-transparent py-1.5 px-3 text-sm transition-all duration-300 text-hsl-90'
+                  : 'relative block rounded-full bg-transparent py-1.5 px-3 text-sm text-white transition-all duration-300 hover:bg-hsl-25'
               }
               onClick={previousPageFunction}
             >
@@ -33,8 +33,8 @@ const Pagination = ({
             <button
               className={
                 length < pageLength
-                  ? 'pointer-effects-none relative block rounded bg-transparent py-1.5 px-3 text-sm text-neutral-500 transition-all duration-300 dark:text-neutral-400'
-                  : 'relative block rounded bg-transparent py-1.5 px-3 text-sm text-neutral-600 transition-all duration-300 hover:bg-neutral-100 dark:text-white dark:hover:bg-neutral-700 dark:hover:text-white'
+                  ? 'pointer-effects-none relative block rounded bg-transparent py-1.5 px-3 text-sm transition-all duration-300 text-hsl-90'
+                  : 'relative block rounded-full bg-transparent py-1.5 px-3 text-sm text-white transition-all duration-300 hover:bg-hsl-25'
               }
               onClick={nextPageFunction}
             >
