@@ -7,6 +7,7 @@ import Layout from '../../components/Layout'
 import Pagination from '../../components/Pagination'
 import config from '../../config.json'
 import { ILeaderboard } from '../../types/Leaderboard'
+import { RankColor } from '../../constants/Gradients'
 
 export const getServerSideProps = async () => {
   // Getting leaderboards from api
@@ -117,6 +118,7 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
             </thead>
             <tbody>
               {leaderboard.leaderboard.map((entry, index) => {
+                let rankColor = RankColor(index + offset + 1)
                 return (
                   <tr
                     key={`lb-entry-${index + 1}`}
@@ -126,7 +128,14 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
                       scope="row"
                       className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     >
-                      #{index + offset + 1}
+                      <span
+                        className={`font-extrabold font-nunito text-transparent text-xl bg-clip-text -mt-1.5`}
+                        style={{
+                          backgroundImage: `linear-gradient(to bottom, ${rankColor[0]}, ${rankColor[1]})`
+                        }}
+                      >
+                        #{index + offset + 1}
+                      </span>
                     </th>
                     <td className="px-6 py-4">
                       <Link href={`/user/${entry.player_id}`}>
