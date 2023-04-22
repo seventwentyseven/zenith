@@ -1,13 +1,10 @@
-import { Session } from 'next-auth'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { isStaff } from '../../controllers/UserPrivileges'
 
-interface IProps {
-  session: Session | null
-}
-
-const HeaderNavigation = ({ session }: IProps) => {
+const HeaderNavigation = () => {
+  const { data: session } = useSession()
   const [hasStaff, setHasStaff] = useState<boolean>(false)
 
   useEffect(() => {
@@ -17,7 +14,7 @@ const HeaderNavigation = ({ session }: IProps) => {
 
     console.log(session)
     console.log(hasStaff)
-  }, [session])
+  }, [session, hasStaff])
 
   return (
     <nav className="flex flex-row items-center justify-center">
