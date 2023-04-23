@@ -55,3 +55,5 @@ yarn start
 
 # It will compile all the pages and start a server at localhost:3000
 ```
+
+You will need a server that will redirect requests at a domain to localhost:3000, for example nginx.
