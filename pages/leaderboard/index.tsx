@@ -138,9 +138,19 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
                       </span>
                     </th>
                     <td className="px-6 py-4">
-                      <Link href={`/user/${entry.player_id}`}>
-                        {entry.name}
-                      </Link>
+                      <div className="flex flex-row items-center gap-2">
+                        <img
+                          src={`https://seventwentyseven.xyz/static/images/flags/${entry.country.toUpperCase()}.png`}
+                          alt={`${entry.country} flag`}
+                          className="h-5 w-auto"
+                        />
+                        <Link
+                          href={`/user/${entry.player_id}`}
+                          className="text-lg mt-[2px]"
+                        >
+                          {entry.name}
+                        </Link>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       {entry.acc.toFixed(2)}%
