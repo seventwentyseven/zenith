@@ -1,13 +1,11 @@
 import { initPopovers } from 'flowbite'
-import { Session } from 'next-auth'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useEffect } from 'react'
 import HeaderSearchModal from './HeaderSearchModal'
 
-type IProps = {
-  session: Session | null
-}
-const HeaderRightBlock = ({ session }: IProps) => {
+const HeaderRightBlock = () => {
+  const { data: session } = useSession()
   useEffect(() => {
     initPopovers()
   })
