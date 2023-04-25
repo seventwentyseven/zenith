@@ -5,9 +5,15 @@ import BackgroundImage from '../../components/BackgroundImage'
 import GamemodeSwitcher from '../../components/GamemodeSwitcher'
 import Layout from '../../components/Layout'
 import Pagination from '../../components/Pagination'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from '../../components/ui/HoverCard'
 import config from '../../config.json'
-import { ILeaderboard } from '../../types/Leaderboard'
 import { RankColor } from '../../constants/Gradients'
+import { ILeaderboard } from '../../types/Leaderboard'
+import Image from 'next/image'
 
 export const getServerSideProps = async () => {
   // Getting leaderboards from api
@@ -144,12 +150,33 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
                           alt={`${entry.country} flag`}
                           className="h-5 w-auto"
                         />
-                        <Link
-                          href={`/user/${entry.player_id}`}
-                          className="text-lg mt-[2px]"
-                        >
-                          {entry.name}
-                        </Link>
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            <Link
+                              href={`/user/${entry.player_id}`}
+                              className="text-lg mt-[2px]"
+                            >
+                              {entry.name}
+                            </Link>
+                          </HoverCardTrigger>
+                          <HoverCardContent side="right">
+                            <div className="flex flex-row gap-2">
+                              <Image
+                                src={`https://a.seventwentyseven.xyz/${entry.player_id}`}
+                                alt="User image"
+                                width={64}
+                                height={64}
+                                className="rounded-xl"
+                              />
+                              <div className="flex flex-col justify-between">
+                                <span className="text-2xl font-semibold">
+                                  {entry.name}
+                                </span>
+                                <span>Last online {entry.playtime}</span>
+                              </div>
+                            </div>
+                          </HoverCardContent>
+                        </HoverCard>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
