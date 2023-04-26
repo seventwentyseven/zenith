@@ -151,13 +151,11 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
                           className="h-5 w-auto"
                         />
                         <HoverCard>
-                          <HoverCardTrigger>
-                            <Link
-                              href={`/user/${entry.player_id}`}
-                              className="text-lg mt-[2px]"
-                            >
-                              {entry.name}
-                            </Link>
+                          <HoverCardTrigger
+                            href={`/user/${entry.player_id}`}
+                            className="text-lg mt-[2px]"
+                          >
+                            {entry.name}
                           </HoverCardTrigger>
                           <HoverCardContent side="right">
                             <div className="flex flex-row gap-2">
@@ -169,9 +167,7 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
                                 className="rounded-xl"
                               />
                               <div className="flex flex-col justify-between">
-                                <span className="text-2xl font-semibold">
-                                  {entry.name}
-                                </span>
+                                <span>{entry.name}</span>
                                 <span>Last online {entry.playtime}</span>
                               </div>
                             </div>
