@@ -145,9 +145,11 @@ const UserPage: NextPage<IData> = ({ data }: IData) => {
             </div>
             <div className="flex flex-col justify-center self-start items-start pt-2 ml-72">
               <div className="flex flex-row justify-center items-center mb-4">
-                <img
+                <Image
                   src={`https://seventwentyseven.xyz/static/images/flags/${data.playerData.player.info.country.toUpperCase()}.png`}
                   alt={`${data.playerData.player.info.country} flag`}
+                  width={70}
+                  height={47}
                   className="h-7 w-auto"
                 />
                 <span className="text-3xl font-bold mx-2">

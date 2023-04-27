@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import Link from 'next/link'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import BackgroundImage from '../../components/BackgroundImage'
 import GamemodeSwitcher from '../../components/GamemodeSwitcher'
@@ -13,7 +13,6 @@ import {
 import config from '../../config.json'
 import { RankColor } from '../../constants/Gradients'
 import { ILeaderboard } from '../../types/Leaderboard'
-import Image from 'next/image'
 
 export const getServerSideProps = async () => {
   // Getting leaderboards from api
@@ -145,9 +144,11 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
                     </th>
                     <td className="px-6 py-4">
                       <div className="flex flex-row items-center gap-2">
-                        <img
+                        <Image
                           src={`https://seventwentyseven.xyz/static/images/flags/${entry.country.toUpperCase()}.png`}
                           alt={`${entry.country} flag`}
+                          width={70}
+                          height={47}
                           className="h-5 w-auto"
                         />
                         <HoverCard>
