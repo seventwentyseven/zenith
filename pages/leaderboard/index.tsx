@@ -144,6 +144,7 @@ const Leaderboard = ({ leaderboards }: { leaderboards: ILeaderboard }) => {
                     </th>
                     <td className="px-6 py-4">
                       <div className="flex flex-row items-center gap-2">
+                        
                         <Image
                           src={`https://seventwentyseven.xyz/static/images/flags/${entry.country.toUpperCase()}.png`}
                           alt={`${entry.country} flag`}
