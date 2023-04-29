@@ -1,5 +1,5 @@
 import BestScores from '../../components/user/scores/BestScores'
-// import FirstPlaceScores from '../../components/user/scores/FirstPlaceScores'
+import FirstPlaceScores from '../../components/user/scores/FirstPlaceScores'
 import RecentScores from '../../components/user/scores/RecentScores'
 
 const ScoresSection = ({
@@ -91,7 +91,7 @@ const ScoresSection = ({
           role="tabpanel"
           aria-labelledby="first-places-tab"
         >
-          {/* <FirstPlaceScores userid={userid} gamemode={gamemode} /> */}
+          <FirstPlaceScores userid={userid} gamemode={gamemode} />
         </div>
       </div>
     </section>
