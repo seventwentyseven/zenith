@@ -4,7 +4,6 @@ import Image from 'next/image'
 
 //? Flowbite imports
 import Layout from '../../components/Layout'
-import BackgroundImage from '../../components/BackgroundImage'
 
 //? Our components
 
@@ -47,9 +46,10 @@ const DonatePage = () => {
               <div
                 className="w-full h-full rounded-2xl z-0 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-200"
                 style={{
-                  backgroundImage: `linear-gradient(180deg, hsla(230, 15%, 15%, 0.4), hsla(230, 15%, 15%, 0.4)), url("https://seventwentyseven.xyz/backgrounds/26")`,
+                  backgroundImage: `linear-gradient(180deg, hsla(230, 15%, 15%, 0.5), hsla(230, 15%, 15%, 0.5)), url("https://assets.dzifors.tk/donor/screen1.png")`,
                   backgroundSize: 'cover',
-                  backgroundRepeat: 'no-repeat'
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center'
                 }}
               />
               <div className="w-full h-full z-10 -translate-y-[100%] flex flex-col p-4">
@@ -62,10 +62,10 @@ const DonatePage = () => {
                   </h4>
                 </div>
                 <p>
-                  By upgrading to a supporter tag, you can choose a custom
-                  banner, background, and color scheme for your profile. This
-                  will give your profile a unique and personalized touch, making
-                  it truly yours!
+                  With supporter tag, you can choose a custom banner,
+                  background, and color scheme for your profile. This will give
+                  your profile a unique and personalized touch, making it truly
+                  yours!
                 </p>
               </div>
             </figure>
@@ -87,7 +87,7 @@ const DonatePage = () => {
                   <h4 className="text-lg -mb-1 ml-3">User Card Theme</h4>
                 </div>
                 <p>
-                  Like with Nitro on Discord, now you'll have ability to{' '}
+                  Like with Nitro on Discord, now you&apos;ll have ability to{' '}
                   <s>permanently blind people</s> change the colors of your user
                   card! This includes theme, and gradient colors!
                 </p>
@@ -112,9 +112,9 @@ const DonatePage = () => {
                 </div>
                 <p>
                   With supporter tag, you can view and compete on leaderboards
-                  for any map, even if it's unranked. While these scores won't
-                  count towards global rankings, you can still enjoy the
-                  competition and challenge yourself against other players.
+                  for any map, even if it&apos;s unranked. While these scores
+                  won&apos;t count towards global rankings, you can still enjoy
+                  the competition and challenge yourself against other players.
                 </p>
               </div>
             </figure>
@@ -137,8 +137,8 @@ const DonatePage = () => {
                 </div>
                 <p>
                   On our discord server, we have a channel dedicated to voting
-                  for new features, designs and more. With supporter tag, you'll
-                  be able to vote on these polls!
+                  for new features, designs and more. With supporter tag,
+                  you&apos;ll be able to vote on these polls!
                 </p>
               </div>
             </figure>
@@ -185,10 +185,10 @@ const DonatePage = () => {
                   <h4 className="text-lg -mb-1 ml-3">Score Details</h4>
                 </div>
                 <p>
-                  On score page, you'll be able to view more details about the
-                  score, such as the hit deviancy graph, the accuracy graph and
-                  more. This will allow you to better understand what went wrong
-                  and how to improve!
+                  On score page, you&apos;ll be able to view more details about
+                  the score, such as the hit deviancy graph, the accuracy graph
+                  and more. This will allow you to better understand what went
+                  wrong and how to improve!
                 </p>
               </div>
             </figure>
@@ -210,9 +210,10 @@ const DonatePage = () => {
                   <h4 className="text-lg -mb-1 ml-3">Most played history</h4>
                 </div>
                 <p>
-                  With supporter tag, you'll be able to view all your plays on
-                  specific map with links to responsible scores. This will allow
-                  you to easily compare your scores and see how you've improved!
+                  With supporter tag, you&apos;ll be able to view all your plays
+                  on specific map with links to responsible scores. This will
+                  allow you to easily compare your scores and see how
+                  you&apos;ve improved!
                 </p>
               </div>
             </figure>
@@ -236,8 +237,8 @@ const DonatePage = () => {
                   </h4>
                 </div>
                 <p>
-                  Once a month, you'll have ability to change your nickname and
-                  wipe your profile!
+                  Once a month, you&apos;ll have ability to change your nickname
+                  and wipe your profile!
                 </p>
               </div>
             </figure>
@@ -259,9 +260,9 @@ const DonatePage = () => {
                   <h4 className="text-lg -mb-1 ml-3">Badge on profile</h4>
                 </div>
                 <p>
-                  With supporter you'll get profile badge that not only displays
-                  your support for our server, but also upgrades over time as
-                  you continue to support us!
+                  With supporter you&apos;ll get profile badge that not only
+                  displays your support for our server, but also upgrades over
+                  time as you continue to support us!
                 </p>
               </div>
             </figure>
