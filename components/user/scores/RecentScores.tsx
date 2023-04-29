@@ -61,7 +61,6 @@ const RecentScores = ({
     fetchRecentScoresFirstTime()
   }, [gamemode, userid])
 
-  console.log(`scores.length: ${scores.length}`)
   return (
     <div className="flex flex-col gap-2 overflow-x-hidden">
       {scores &&

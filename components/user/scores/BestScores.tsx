@@ -61,7 +61,7 @@ const BestScores = ({
     fetchBestScoresFirstTime()
   }, [gamemode, userid])
 
-  console.log(`scores.length: ${scores.length}`)
+  console.log(`[BestScores] scores.length: ${scores.length}`)
   console.log(scores)
   return (
     <div className="flex flex-col gap-2 overflow-x-hidden">
