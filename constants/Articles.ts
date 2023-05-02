@@ -12,15 +12,6 @@ export interface IArticle {
 
 export const articles: IArticle[] = [
   {
-    articleId: 1,
-    articleTitle: 'Article numero uno',
-    articleBody: 'Lorem ipsum dolor sit amet',
-    articleThumbnail: 'https://seventwentyseven.xyz/banners/26',
-    articleCreationDate: 1677005187000,
-    authorId: 4,
-    authorName: 'def750'
-  },
-  {
     articleId: 2,
     articleTitle: 'Article numero dos',
     articleBody:
@@ -29,5 +20,14 @@ export const articles: IArticle[] = [
     articleCreationDate: 1674315533116,
     authorId: 3,
     authorName: 'dzifors'
-  }
+  },
+  {
+    articleId: 1,
+    articleTitle: 'Article numero uno',
+    articleBody: 'Lorem ipsum dolor sit amet',
+    articleThumbnail: 'https://seventwentyseven.xyz/banners/26',
+    articleCreationDate: 1677005187000,
+    authorId: 4,
+    authorName: 'def750'
+  },
 ]
