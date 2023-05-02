@@ -15,7 +15,7 @@ import LoadingSection from '../sections/home/Loading'
 const Home: NextPage = () => {
   const { status } = useSession()
 
-  if (status === 'authenticated')
+  if (status === 'authenticated') {
     return (
       <Layout>
         <Head>
@@ -40,8 +40,9 @@ const Home: NextPage = () => {
         </div>
       </Layout>
     )
+  }
 
-  if (status === 'unauthenticated')
+  if (status === 'unauthenticated') {
     return (
       <Layout>
         <Head>
@@ -53,6 +54,7 @@ const Home: NextPage = () => {
         <AboutUs />
       </Layout>
     )
+  }
 
   return (
     <Layout>
