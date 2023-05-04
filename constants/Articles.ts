@@ -12,16 +12,6 @@ export interface IArticle {
 
 export const articles: IArticle[] = [
   {
-    articleId: 2,
-    articleTitle: 'Article numero dos',
-    articleBody:
-      'I live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your walls',
-    articleThumbnail: 'https://seventwentyseven.xyz/banners/26',
-    articleCreationDate: 1674315533116,
-    authorId: 3,
-    authorName: 'dzifors'
-  },
-  {
     articleId: 1,
     articleTitle: 'Article numero uno',
     articleBody: 'Lorem ipsum dolor sit amet',
@@ -30,4 +20,14 @@ export const articles: IArticle[] = [
     authorId: 4,
     authorName: 'def750'
   },
+  {
+    articleId: 2,
+    articleTitle: 'Article numero dos',
+    articleBody:
+      'I live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your wallsI live in your walls',
+    articleThumbnail: 'https://seventwentyseven.xyz/banners/26',
+    articleCreationDate: 1674315533116,
+    authorId: 3,
+    authorName: 'dzifors'
+  }
 ]
