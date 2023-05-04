@@ -1,17 +1,25 @@
-import { initPopovers } from 'flowbite'
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
-import { useEffect } from 'react'
-import HeaderSearchModal from './HeaderSearchModal'
+//? NextJS imports
 import Image from 'next/image'
+import Link from 'next/link'
+
+//? NextAuth session
+import { useSession } from 'next-auth/react'
+
+//? Our components
+import {
+  HoverCard,
+  HoverCardArrow,
+  HoverCardContent,
+  HoverCardPortal,
+  HoverCardTrigger
+} from '../ui/HoverCard'
+import HeaderSearchModal from './HeaderSearchModal'
+
+//? Icons
 import { FaHeart } from 'react-icons/fa'
 
 const HeaderRightBlock = () => {
   const { data: session } = useSession()
-
-  useEffect(() => {
-    initPopovers()
-  })
 
   if (session) {
     return (
@@ -22,56 +30,53 @@ const HeaderRightBlock = () => {
         >
           <FaHeart className="text-xl" />
         </a>
+
         <HeaderSearchModal token={session.user.token} />
-        <Link
-          data-popover-target="user-menu"
-          data-popover-placement="bottom"
-          href={`/user/${session.user.id}`}
-        >
-          <Image
-            src={`https://a.seventwentyseven.xyz/${session.user.id}`}
-            alt="User image"
-            width={64}
-            height={64}
-            className="rounded-full w-12 h-12 duration-150 hover:opacity-60"
-          />
-        </Link>
 
-        <div
-          data-popover
-          id="user-menu"
-          role="tooltip"
-          className="absolute z-50 invisible inline-block w-48 text-sm font-light text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-        >
-          <div className="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg z-50">
-            <h3 className="font-semibold text-gray-900 dark:text-white text-center">
-              {session.user.name}
-            </h3>
-          </div>
-          <div className="px-3 py-2 flex flex-col items-center justify-between gap-2 z-50">
-            <Link
-              href={`/user/${session.user.id}`}
-              className="btn btn-md btn-primary w-full"
+        <HoverCard>
+          <HoverCardTrigger href={`/user/${session.user.id}`}>
+            <Image
+              src={`https://a.seventwentyseven.xyz/${session.user.id}`}
+              alt="User image"
+              width={64}
+              height={64}
+              className="rounded-full w-12 h-12 duration-150 hover:opacity-60"
+            />
+          </HoverCardTrigger>
+          <HoverCardPortal>
+            <HoverCardContent
+              side="bottom"
+              className="z-50 inline-block w-48 bg-hsl-15 bg-opacity-80 shadow-sm shadow-hsl-5 rounded-lg font-light"
             >
-              Profile
-            </Link>
+              <h3 className="px-3 py-2 font-semibold text-gray-200 text-center">
+                {session.user.name}
+              </h3>
+              <div className="px-3 pb-2 flex flex-col items-center justify-between gap-2">
+                <Link
+                  href={`/user/${session.user.id}`}
+                  className="btn btn-md btn-primary w-full"
+                >
+                  Profile
+                </Link>
 
-            <Link
-              href="/settings"
-              className="btn btn-md btn-primary w-full z-50"
-            >
-              Settings
-            </Link>
+                <Link
+                  href="/settings"
+                  className="btn btn-md btn-primary w-full z-50"
+                >
+                  Settings
+                </Link>
 
-            <Link
-              href="/auth/signout"
-              className="btn btn-md btn-primary w-full z-50"
-            >
-              Sign out
-            </Link>
-          </div>
-          <div data-popper-arrow></div>
-        </div>
+                <Link
+                  href="/auth/signout"
+                  className="btn btn-md btn-primary w-full z-50"
+                >
+                  Sign out
+                </Link>
+              </div>
+              <HoverCardArrow className="fill-hsl-15 opacity-80" />
+            </HoverCardContent>
+          </HoverCardPortal>
+        </HoverCard>
       </div>
     )
   }
