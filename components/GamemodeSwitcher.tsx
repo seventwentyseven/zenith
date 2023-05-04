@@ -1,5 +1,4 @@
 import classNames from 'classnames'
-import { initPopovers } from 'flowbite'
 import { SetStateAction, useEffect, useState } from 'react'
 import {
   HoverCard,
@@ -40,10 +39,6 @@ const GamemodeSwitcher = ({ gamemode, setGamemode }: IProps) => {
   const [taikoSelected, setTaikoSelected] = useState<boolean>(false)
   const [catchSelected, setCatchSelected] = useState<boolean>(false)
   const [maniaSelected, setManiaSelected] = useState<boolean>(false)
-
-  useEffect(() => {
-    initPopovers()
-  })
 
   useEffect(() => {
     const selectedGamemode = ModeStateMap[gamemode] || {}
