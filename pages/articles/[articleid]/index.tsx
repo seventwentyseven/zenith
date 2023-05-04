@@ -4,6 +4,13 @@ import Layout from '../../../components/Layout'
 
 import { articles } from '../../../constants/Articles'
 import Link from 'next/link'
+import {
+  ScrollArea,
+  ScrollAreaCorner,
+  ScrollAreaScrollbar,
+  ScrollAreaThumb,
+  ScrollAreaViewport
+} from '../../../components/ui/ScrollArea'
 
 const ArticlePage = () => {
   const router = useRouter()
@@ -34,12 +41,30 @@ const ArticlePage = () => {
             {currentArticle.articleTitle}
           </div>
           <div className="w-full flex flex-col items-center justify-start h-full p-4 rounded-lg bg-hsl-15 bg-opacity-50 backdrop-blur-xl">
-            <span className="h-full">{currentArticle.articleBody}</span>
+            <ScrollArea className="w-full h-full overflow-hidden m-4">
+              <ScrollAreaViewport className="h-full">
+                <span>{currentArticle.articleBody}</span>
+              </ScrollAreaViewport>
+              <ScrollAreaScrollbar orientation="vertical">
+                <ScrollAreaThumb />
+              </ScrollAreaScrollbar>
+              <ScrollAreaScrollbar orientation="horizontal">
+                <ScrollAreaThumb />
+              </ScrollAreaScrollbar>
+              <ScrollAreaCorner />
+            </ScrollArea>
+
             <div className="flex flex-row justify-self-end gap-3">
-              <Link href={`/articles/${currentArticle.articleId - 1}`}>
+              <Link
+                href={`/articles/${currentArticle.articleId - 1}`}
+                className="btn btn-md btn-primary"
+              >
                 Previous article
               </Link>
-              <Link href={`/articles/${currentArticle.articleId + 1}`}>
+              <Link
+                href={`/articles/${currentArticle.articleId + 1}`}
+                className="btn btn-md btn-primary"
+              >
                 Next article
               </Link>
             </div>
