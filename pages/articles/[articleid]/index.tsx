@@ -36,13 +36,25 @@ const ArticlePage = () => {
             )
           })}
         </div>
-        <div className="w-9/12 flex flex-col items-center justify-center gap-3">
-          <div className="w-full flex flex-row items-center justify-center p-4 rounded-lg bg-hsl-15 bg-opacity-50 backdrop-blur-xl">
+        <div className="w-9/12 max-h-[40rem] flex flex-col items-center justify-center gap-3">
+          <div className="w-full h-14 flex flex-row items-center justify-between p-4 rounded-lg bg-hsl-15 bg-opacity-50 backdrop-blur-xl">
+            <Link
+              href={`/articles/${currentArticle.articleId - 1}`}
+              className="btn btn-md btn-primary"
+            >
+              Previous article
+            </Link>
             {currentArticle.articleTitle}
+            <Link
+              href={`/articles/${currentArticle.articleId + 1}`}
+              className="btn btn-md btn-primary"
+            >
+              Next article
+            </Link>
           </div>
-          <div className="w-full flex flex-col items-center justify-start h-full p-4 rounded-lg bg-hsl-15 bg-opacity-50 backdrop-blur-xl">
-            <ScrollArea className="w-full h-full overflow-hidden m-4">
-              <ScrollAreaViewport className="h-full">
+          <div className="w-full h-[calc(100%-4.25rem)] flex flex-col items-center justify-start p-4 rounded-lg bg-hsl-15 bg-opacity-50 backdrop-blur-xl">
+            <ScrollArea className="h-full">
+              <ScrollAreaViewport className="h-full overflow-hidden">
                 <span>{currentArticle.articleBody}</span>
               </ScrollAreaViewport>
               <ScrollAreaScrollbar orientation="vertical">
@@ -54,7 +66,7 @@ const ArticlePage = () => {
               <ScrollAreaCorner />
             </ScrollArea>
 
-            <div className="flex flex-row justify-self-end gap-3">
+            {/* <div className="flex flex-row justify-self-end gap-3">
               <Link
                 href={`/articles/${currentArticle.articleId - 1}`}
                 className="btn btn-md btn-primary"
@@ -67,7 +79,7 @@ const ArticlePage = () => {
               >
                 Next article
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
