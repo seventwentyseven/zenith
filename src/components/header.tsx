@@ -8,6 +8,9 @@ import { Dropdown, DropdownContent, DropdownTrigger } from './ui/dropdown'
 import { motion } from 'framer-motion'
 
 //TODO: Make header
+/**
+* The header component
+*/
 const Header = () => {
   const { data: session } = useSession()
 
@@ -25,28 +28,39 @@ const Header = () => {
             />
           </Link>
 
-          <nav className="flex flex-row items-center justify-center">
-            <Link href="/leaderboard">
-              <Button size="lg" variant="ghost">
-                Leaderboard
-              </Button>
-            </Link>
-            <Link href="/beatmaps" className="btn btn-lg btn-ghost">
-              <Button size="lg" variant="ghost">
-                Beatmaps
-              </Button>
-            </Link>
-            <Link href="/docs" className="btn btn-lg btn-ghost mr-0">
-              <Button size="lg" variant="ghost">
-                Docs
-              </Button>
-            </Link>
+          <motion.nav
+            animate={{
+              transition: { delayChildren: 0.7, staggerChildren: 0.2 }
+            }}
+            className="flex flex-row items-center justify-center"
+          >
+            <motion.div initial={{ y: 0 }} animate={{ y: [0, -5, 0] }}>
+              <Link href="/leaderboard">
+                <Button size="lg" variant="ghost">
+                  Leaderboard
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div initial={{ y: 0 }} animate={{ y: [0, -5, 0] }}>
+              <Link href="/beatmaps" className="btn btn-lg btn-ghost">
+                <Button size="lg" variant="ghost">
+                  Beatmaps
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div initial={{ y: 0 }} animate={{ y: [0, -5, 0] }}>
+              <Link href="/docs" className="btn btn-lg btn-ghost mr-0">
+                <Button size="lg" variant="ghost">
+                  Docs
+                </Button>
+              </Link>
+            </motion.div>
             {/* {hasStaff && (
               <Link href="/admin" className="btn btn-lg btn-ghost">
                 Admin Panel
               </Link>
             )} */}
-          </nav>
+          </motion.nav>
         </div>
 
         {session && (
@@ -79,14 +93,26 @@ const Header = () => {
                   'w-48 select-none pt-4'
                 )}
               >
-                <div
+                <motion.div
+                  animate={{
+                    transition: { staggerChildren: 5, delayChildren: 1 }
+                  }}
                   className={cn(
                     'flex w-48 flex-col items-center justify-center',
                     'gap-2 bg-hsl-35-15 bg-opacity-80 transition duration-200',
                     'rounded-lg p-4 pt-2'
                   )}
                 >
-                  <span>{session.user.name}</span>
+                  <motion.span
+                    initial={{ x: -10 }}
+                    animate={{
+                      x: 0,
+                      animationDuration: '0.5s',
+                      animationDelay: '0.15s'
+                    }}
+                  >
+                    {session.user.name}
+                  </motion.span>
                   <Link href={`/user/${session.user.id}`} className="w-full">
                     <Button size="lg" className="w-full">
                       Profile
@@ -97,7 +123,7 @@ const Header = () => {
                       Sign out
                     </Button>
                   </Link>
-                </div>
+                </motion.div>
               </DropdownContent>
             </Dropdown>
           </div>

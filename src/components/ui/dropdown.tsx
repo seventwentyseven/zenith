@@ -1,5 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ReactNode, createContext, useContext, useState } from 'react'
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useState,
+  ButtonHTMLAttributes
+} from 'react'
 import { cn } from '~/lib/utils'
 
 type DropdownProps = {
@@ -24,8 +30,8 @@ export function Dropdown({ children, className }: DropdownProps) {
   )
 }
 
-export function DropdownTrigger({ children }: DropdownProps) {
-  return <div className="group z-50">{children}</div>
+export function DropdownTrigger({ children }: DropdownProps, ...props) {
+  return <div className="group z-50" {...props}>{children}</div>
 }
 
 export function DropdownContent({ children, className }: DropdownProps) {
@@ -36,10 +42,24 @@ export function DropdownContent({ children, className }: DropdownProps) {
       {hovered ? (
         <motion.div
           key="dropdown-content"
-          initial={{ opacity: 0, scale: 0.75 }}
-          animate={{ opacity: 100, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.75 }}
+          // initial={{ opacity: 0, scale: 0.75 }}
+          // animate={{ opacity: 100, scale: 1 }}
+          // exit={{ opacity: 0, scale: 0.75 }}
+          initial={{ x: 0 }}
+          animate={{
+            clipPath: hovered
+              ? 'inset(0% 0% 0% 0% round 10px)'
+              : 'inset(10% 50% 90% 50% round 10px)',
+            transition: {
+              staggerChildren: 0.5
+            }
+          }}
+          exit={{ clipPath: 'inset(10% 50% 90% 50% round 10px)' }}
           className={cn('group', className)}
+          style={{
+            clipPath: 'inset(10% 50% 90% 50% round 10px)',
+            pointerEvents: hovered ? 'auto' : 'none'
+          }}
         >
           {children}
         </motion.div>
