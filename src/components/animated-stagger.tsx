@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
-import { useAnimate, stagger, motion } from 'framer-motion'
-import { cn } from '~/lib/utils'
-import Image from 'next/image'
-import { FaChevronDown } from 'react-icons/fa'
+import { motion, stagger, useAnimate } from 'framer-motion'
 import { useSession } from 'next-auth/react'
+import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { FaChevronDown } from 'react-icons/fa'
+import { cn } from '~/lib/utils'
 import { Button } from './ui/button'
 
 const staggerMenuItems = stagger(0.1, { startDelay: 0.15 })
@@ -44,7 +44,7 @@ function useMenuAnimation(isOpen: boolean) {
   return scope
 }
 
-export default function App() {
+export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const scope = useMenuAnimation(isOpen)
 
@@ -52,20 +52,16 @@ export default function App() {
 
   return (
     <motion.nav
-      // whileHover={() => setIsOpen(!isOpen)}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
       className="group transition duration-150"
       ref={scope}
     >
-      <motion.a
-        whileTap={{ scale: 0.97 }}
+      <Link
         href={`/user/${session?.user.id}`}
         className={cn(
-          'flex flex-row items-center justify-between rounded-lg bg-transparent px-4 py-2',
-          'w-48 transition duration-150 group-hover:bg-hsl-35-15 group-hover:bg-opacity-80'
+          'flex w-48 flex-row items-center justify-between rounded-lg bg-transparent px-4 py-2 transition duration-150 group-hover:bg-hsl-35-15 group-hover:bg-opacity-80'
         )}
-        // onClick={() => setIsOpen(!isOpen)}
       >
         <Image
           src={`https://a.seventwentyseven.xyz/${session?.user.id}`}
@@ -78,7 +74,7 @@ export default function App() {
           <span>{session?.user.name}</span>
           <FaChevronDown className="transition duration-150 group-hover:rotate-180" />
         </div>
-      </motion.a>
+      </Link>
       <div className="absolute w-48 select-none pt-4 transition duration-150">
         <ul
           className={cn(
@@ -108,8 +104,6 @@ export default function App() {
               </Button>
             </Link>
           </li>
-          {/* <li>Item 4 </li>
-          <li>Item 5 </li> */}
         </ul>
       </div>
     </motion.nav>
