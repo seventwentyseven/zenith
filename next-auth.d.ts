@@ -5,7 +5,7 @@ import 'next-auth/jwt'
 
 declare module 'next-auth' {
   interface User {
-    id: string | number
+    id: number
     name: string
     safe_name: string
     token: string
