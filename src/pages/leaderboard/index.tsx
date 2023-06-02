@@ -17,7 +17,7 @@ export const LeaderboardEntryContext = createContext<{
 
 const LeaderboardPage = () => {
   const [page, setPage] = useState<number>(0)
-  const [mode, setMode] = useState<number>(0)
+  const [mode, ] = useState<number>(0)
 
   const {
     data: leaderboardEntries,

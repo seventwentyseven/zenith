@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
-import { X509Certificate } from 'crypto'
 
 export type LeaderboardEntry = {
   player_id: number
