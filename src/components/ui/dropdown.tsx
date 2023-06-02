@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import {
+  HtmlHTMLAttributes,
   ReactNode,
   createContext,
   useContext,
-  useState,
-  ButtonHTMLAttributes
+  useState
 } from 'react'
 import { cn } from '~/lib/utils'
 
@@ -30,8 +30,14 @@ export function Dropdown({ children, className }: DropdownProps) {
   )
 }
 
-export function DropdownTrigger({ children }: DropdownProps, ...props) {
-  return <div className="group z-50" {...props}>{children}</div>
+interface DropdownTriggerProps extends HtmlHTMLAttributes<HTMLDivElement> {}
+
+export function DropdownTrigger({ children, ...props }: DropdownTriggerProps) {
+  return (
+    <div className="group z-50" {...props}>
+      {children}
+    </div>
+  )
 }
 
 export function DropdownContent({ children, className }: DropdownProps) {
