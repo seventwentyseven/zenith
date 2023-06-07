@@ -22,7 +22,7 @@ const BackgroundImage = ({
 }: IProps) => {
   const { data: session, status } = useSession()
 
-  userid = status === 'authenticated' ? session.user.id : 3
+  userid = userid ? userid : status === 'authenticated' ? session.user.id : 3
 
   if (!opacity) opacity = 0.5
   if (!disableGradient) disableGradient = false
