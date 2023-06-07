@@ -4,25 +4,25 @@ import { useRouter } from 'next/router'
 import { createContext } from 'react'
 import BackgroundImage from '~/components/background-image'
 import Layout from '~/components/layout'
-import Banner from '~/sections/user/banner'
 import { useUser } from '~/hooks/use-user'
-import { UserContextType } from '~/types/user'
+import AboutMe from '~/sections/user/about-me'
+import Banner from '~/sections/user/banner'
 import Stats from '~/sections/user/stats'
+import Scores from '~/sections/user/scores'
+import { UserContextType } from '~/types/user'
 
 export const UserContext = createContext<UserContextType>({} as UserContextType)
 
 const UserPage = () => {
   const router = useRouter()
-  const { useridOrName } = router.query
+  const { user } = router.query
 
-  const userid = Number(useridOrName)
+  const userid = Number(user)
   console.log('userid:', userid)
 
-  if (useridOrName !== undefined && isNaN(userid))
+  if (user !== undefined && isNaN(userid))
     axios
-      .get(
-        `${process.env.NEXT_PUBLIC_API_DOMAIN}/v2/players/${useridOrName}/get_id`
-      )
+      .get(`${process.env.NEXT_PUBLIC_API_DOMAIN}/v2/players/${user}/get_id`)
       .then(response => router.push(`/user/${response.data.data.id}`))
 
   const { data, isLoading, error } = useUser(userid)
@@ -64,6 +64,8 @@ const UserPage = () => {
         <div className="mx-auto mt-32 flex min-h-screen w-full max-w-screen-xl flex-col items-center">
           <Banner />
           <Stats />
+          <AboutMe />
+          <Scores />
         </div>
       </UserContext.Provider>
     </Layout>
