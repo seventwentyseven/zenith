@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { useContext } from 'react'
-import { UserContext } from '~/pages/user/[useridOrName]'
+import { UserContext } from '~/pages/user/[user]'
 
 const UserAvatar = () => {
   const { userData } = useContext(UserContext)
