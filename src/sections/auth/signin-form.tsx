@@ -42,7 +42,8 @@ export default function SigninForm() {
         type="text"
         name="username"
         id="username"
-        className="rounded-lg bg-hsl-35-15 bg-opacity-40 px-3 py-2 focus:border-px focus:border-white/40 focus:bg-hsl-10 focus:outline-none focus:ring-0"
+        // className="rounded-lg bg-hsl-35-15 bg-opacity-40 px-3 py-2 focus:border-px focus:border-white/40 focus:bg-hsl-10 focus:outline-none focus:ring-0"
+        className="rounded-lg bg-hsl-35-15 bg-opacity-40 px-3 py-2 focus:border-px focus:border-white/40 focus:bg-hsl-35-15 focus:outline-none focus:ring-0"
         onChange={e => dispatch({ username: e.target.value })}
       />
 
@@ -53,7 +54,8 @@ export default function SigninForm() {
         type="password"
         name="password"
         id="password"
-        className="rounded-lg bg-hsl-35-15 bg-opacity-40 px-3 py-2 focus:border-px focus:border-white/40 focus:bg-hsl-10 focus:outline-none focus:ring-0"
+        // className="rounded-lg border-px border-white bg-hsl-35-15 bg-opacity-40 px-3 py-2 outline-white focus:border-px focus:border-white/40 focus:bg-hsl-10 focus:outline-none focus:ring-0"
+        className="rounded-lg bg-hsl-35-15 bg-opacity-40 px-3 py-2 focus:border-px focus:border-white/40 focus:bg-hsl-35-15 focus:outline-none focus:ring-0"
         onChange={e => dispatch({ password: hashPassword(e.target.value) })}
       />
       <Button size="lg" type="submit" className="mt-7">
