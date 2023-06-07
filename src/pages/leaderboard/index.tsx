@@ -17,7 +17,7 @@ export const LeaderboardEntryContext = createContext<{
 
 const LeaderboardPage = () => {
   const [page, setPage] = useState<number>(0)
-  const [mode, ] = useState<number>(0)
+  const [mode] = useState<number>(0)
 
   const {
     data: leaderboardEntries,
@@ -39,7 +39,7 @@ const LeaderboardPage = () => {
   return (
     <Layout>
       <BackgroundImage blur />
-      <table className="mt-24 max-w-screen-xl rounded-lg bg-hsl-35-15 bg-opacity-80">
+      <table className="mt-24 max-w-screen-xl rounded-lg bg-hsl-35-10 bg-opacity-80">
         <thead>
           <tr>
             <th scope="col" className="px-6 py-3">
