@@ -47,6 +47,7 @@ module.exports = {
           95: 'hsl(var(--main), 95%, 95%)',
 
           '35-15': 'hsl(var(--main), 35%, 15%)',
+          '35-10': 'hsl(var(--main), 35%, 10%)',
           '30-15': 'hsl(var(--main), 30%, 15%)',
           '25-30': 'hsl(var(--main), 25%, 30%)',
           '25-10': 'hsl(var(--main), 25%, 10%)',
